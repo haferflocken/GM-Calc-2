@@ -1,45 +1,69 @@
-//A scrollable frame that arranges its elements into a list and can be told to rearrange them if one changes size.
+//A scrollable frame that arranges its elements into a list and can be told to rearrange them from a certain point (useful if, for example, an element changes size).
+//Can align elements along the x axis (xAlign), have an offset from that margin (xAlignOffset), and space elements out vertically (ySpacing).
 
 package org.gmcalc2.gui;
 
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableFrame;
+import org.haferlib.slick.gui.ElementYComparator;
 
 import org.newdawn.slick.Color;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ScrollableCSGFrame extends ScrollableFrame {
 	
+	public static final byte XALIGN_LEFT = 0;
+	public static final byte XALIGN_CENTER = 1;
+	public static final byte XALIGN_RIGHT = 2;
+	
+	private byte xAlign;
+	private int xAlignOffset;
 	private int ySpacing;
 	
-	public ScrollableCSGFrame(int x, int y, int width, int height, int depth, int scrollBarWidth, Color scrollBarColor, int ySpacing) {
+	public ScrollableCSGFrame(int x, int y, int width, int height, int depth, int scrollBarWidth, Color scrollBarColor, byte xAlign, int xAlignOffset, int ySpacing) {
 		super(x, y, width, height, depth, scrollBarWidth, scrollBarColor);
+		if (xAlign == XALIGN_LEFT || xAlign == XALIGN_CENTER || xAlign == XALIGN_RIGHT)
+			this.xAlign = xAlign;
+		else
+			this.xAlign = XALIGN_LEFT;
+		this.xAlignOffset = xAlignOffset;
 		this.ySpacing = ySpacing;
 	}
+	
+	public ScrollableCSGFrame(int x, int y, int width, int height, int depth, int scrollBarWidth, Color scrollBarColor) {
+		this(x, y, width, height, depth, scrollBarWidth, scrollBarColor, XALIGN_LEFT, 0, 0);
+	}
 
-	public ScrollableCSGFrame(GUIElement[] elements, int x, int y, int width, int height, int depth, int scrollBarWidth, Color scrollBarColor, int ySpacing) {
-		this(x, y, width, height, depth, scrollBarWidth, scrollBarColor, ySpacing);
+	public ScrollableCSGFrame(GUIElement[] elements, int x, int y, int width, int height, int depth, int scrollBarWidth, Color scrollBarColor, byte xAlign, int xAlignOffset, int ySpacing) {
+		this(x, y, width, height, depth, scrollBarWidth, scrollBarColor, xAlign, xAlignOffset, ySpacing);
 		addElements(elements);
 	}
 	
-	/*private int getBottomY() {
-		//We can assume the last element is on bottom.
+	public ScrollableCSGFrame(GUIElement[] elements, int x, int y, int width, int height, int depth, int scrollBarWidth, Color scrollBarColor) {
+		this(elements, x, y, width, height, depth, scrollBarWidth, scrollBarColor, XALIGN_LEFT, 0, 0);
+	}
+	
+	private int getBottomY() {
+		//Get the elements and loop through them to find which is on bottom.
 		ArrayList<GUIElement> elements = subcontext.getElements();
-		if (elements.size() > 0) {
-			GUIElement e = elements.get(elements.size() - 1);
-			return e.getY() + e.getHeight();
+		int bottomY = y1;
+		for (GUIElement e : elements) {
+			int elementY2 = e.getY() + e.getHeight();
+			if (elementY2 > bottomY)
+				bottomY = elementY2;
 		}
-		return 0;
+		return bottomY;
 	}
 	
 	public void addElement(GUIElement e) {
 		//Find the bottom y to align to. 
-		int yAlign = getBottomY() + ySpacing;
+		int yPos = getBottomY() + ySpacing;
 		
 		//Align the element.
 		e.setX(x1);
-		e.setY(yAlign);
+		e.setY(yPos);
 		
 		//Add the element.
 		super.addElement(e);
@@ -47,22 +71,37 @@ public class ScrollableCSGFrame extends ScrollableFrame {
 	
 	public void addElements(GUIElement[] es) {
 		//Find the bottom y to align to. 
-		int yAlign = getBottomY() + ySpacing;
+		int yPos = getBottomY() + ySpacing;
+		
+		//Figure out the x position we're aligning to.
+		int xPos;
+		switch (xAlign) {
+			case XALIGN_LEFT: xPos = x1 + xAlignOffset; break;
+			case XALIGN_CENTER: xPos = x1 + getWidth() / 2 + xAlignOffset; break;
+			default: xPos = x1 + getWidth() + xAlignOffset; break;
+		}
 		
 		//Align the elements.
 		for (int i = 0; i < es.length; i++) {
-			es[i].setX(x1);
-			es[i].setY(yAlign);
-			yAlign += es[i].getHeight() + ySpacing;
+			switch (xAlign) {
+				case XALIGN_LEFT: es[i].setX(xPos); break;
+				case XALIGN_CENTER: es[i].setX(xPos - es[i].getWidth() / 2); break;
+				default: es[i].setX(xPos - es[i].getWidth()); break;
+			}
+			es[i].setY(yPos);
+			yPos += es[i].getHeight() + ySpacing;
 		}
 		
 		//Add the elements.
 		super.addElements(es);
-	}*/
+	}
 	
 	public void realignFromElement(GUIElement e) {
+		//Get a copy of the elements list sorted by Y.
+		ArrayList<GUIElement> elements = new ArrayList<GUIElement>(subcontext.getElements());
+		Collections.sort(elements, new ElementYComparator());
+		
 		//Get the index of the element.
-		ArrayList<GUIElement> elements = subcontext.getElements();
 		int i;
 		for (i = 0; i < elements.size(); i++) {
 			if (elements.get(i).equals(e))
@@ -73,11 +112,11 @@ public class ScrollableCSGFrame extends ScrollableFrame {
 			return;
 		
 		//Reposition the elements below the index.
-		int yAlign = e.getY() + e.getHeight();
+		int yPos = e.getY() + e.getHeight();
 		for (i += 1; i < elements.size(); i++) {
 			e = elements.get(i);
-			e.setY(yAlign);
-			yAlign += e.getHeight() + ySpacing;
+			e.setY(yPos);
+			yPos += e.getHeight() + ySpacing;
 		}
 		
 		//Recalculate the scrolling fields.

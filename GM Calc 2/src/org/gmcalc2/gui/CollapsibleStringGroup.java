@@ -175,8 +175,7 @@ public class CollapsibleStringGroup implements GUIElement {
 	
 	@Override
 	public void mouseDown(int x, int y, int button) {
-		//Drag this around.
-		//TODO
+		//TODO: Drag this around.
 	}
 	
 	@Override

@@ -37,31 +37,31 @@ public class Tab extends GUISubcontext {
 		int columnWidth = width / 3;
 		int columnHeight = height - font.getLineHeight();
 		int inventoryColumnX = x2 - columnWidth;
-		ScrollableCSGFrame inventoryColumn = new ScrollableCSGFrame(inventoryColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white, 0);
+		ScrollableCSGFrame inventoryColumn = new ScrollableCSGFrame(inventoryColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
 		subcontext.addElement(inventoryColumn);
 		int equippedColumnX = inventoryColumnX - columnWidth;
-		ScrollableCSGFrame equippedColumn = new ScrollableCSGFrame(equippedColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white, 0);
+		ScrollableCSGFrame equippedColumn = new ScrollableCSGFrame(equippedColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
 		subcontext.addElement(equippedColumn);
 		int statColumnX = equippedColumnX - columnWidth;
-		ScrollableCSGFrame statColumn = new ScrollableCSGFrame(statColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white, 0);
+		ScrollableCSGFrame statColumn = new ScrollableCSGFrame(statColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
 		subcontext.addElement(statColumn);
 		
 		//Fill the columns up.
 		GUIElement[] statsTest = new GUIElement[15];
 		for (int i = 0; i < statsTest.length; i++) {
-			statsTest[i] = new CollapsibleStringGroup(statColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, statColumnX, tabY2 + i * GMCalc2.BODYFONT_HEIGHT * 4, columnWidth, GMCalc2.BODYFONT, true);
+			statsTest[i] = new CollapsibleStringGroup(statColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, 0, 0, columnWidth, GMCalc2.BODYFONT, true);
 		}
 		statColumn.addElements(statsTest);
 		
 		statsTest = new GUIElement[1];
 		for (int i = 0; i < statsTest.length; i++) {
-			statsTest[i] = new CollapsibleStringGroup(equippedColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, equippedColumnX, tabY2 + i * GMCalc2.BODYFONT_HEIGHT  * 4, columnWidth, GMCalc2.BODYFONT, true);
+			statsTest[i] = new CollapsibleStringGroup(equippedColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, 0, 0, columnWidth, GMCalc2.BODYFONT, true);
 		}
 		equippedColumn.addElements(statsTest);
 		
 		statsTest = new GUIElement[1];
 		for (int i = 0; i < statsTest.length; i++) {
-			statsTest[i] = new CollapsibleStringGroup(inventoryColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, inventoryColumnX, tabY2 + i * GMCalc2.BODYFONT_HEIGHT * 4, columnWidth, GMCalc2.BODYFONT, true);
+			statsTest[i] = new CollapsibleStringGroup(inventoryColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, 0, 0, columnWidth, GMCalc2.BODYFONT, true);
 		}
 		inventoryColumn.addElements(statsTest);
 	}
