@@ -10,30 +10,35 @@ import org.haferlib.slick.gui.GUIElement;
 
 public class CollapsibleStringGroup implements GUIElement {
 	
+	private ScrollableCSGFrame container;
 	private String title;
 	private String[] strings;
 	private Color textColor;
 	private Font font;
 	private int x1, y1, x2, y2;
-	private int width, height;
+	private int width, expandedHeight, collapsedHeight;
+	private int toggleButtonX1, toggleButtonY1, toggleButtonX2, toggleButtonY2;
+	private int toggleButtonPos, toggleButtonSize;
 	private boolean expanded;
-	private Image predrawnImage;
+	private Image displayImage;
+	private Image expandedImage;
+	private Image collapsedImage;
 	
-	public CollapsibleStringGroup(String title, String[] strings, Color textColor, int x, int y, int width, Font font, boolean expanded) {
+	public CollapsibleStringGroup(ScrollableCSGFrame container, String title, String[] strings, Color textColor, int x, int y, int width, Font font, boolean expanded) {
+		this.container = container;
 		this.title = title;
 		this.strings = strings;
 		this.textColor = textColor;
 		this.font = font;
-		this.expanded = expanded;
-		setX(x);
-		setY(y);
 		setWidth(width);
-		recalcHeight();
 		try {
 			redraw();
 		}
 		catch (SlickException e) {
 		}
+		setExpanded(expanded);
+		setX(x);
+		setY(y);
 	}
 	
 	@Override
@@ -42,41 +47,67 @@ public class CollapsibleStringGroup implements GUIElement {
 	
 	@Override
 	public void render(Graphics g) {
-		g.drawImage(predrawnImage, x1, y1);
+		g.drawImage(displayImage, x1, y1);
 	}
 	
-	//Draw the predrawn image.
+	//Draw the predrawn images.
 	public void redraw() throws SlickException {
-		//Create the offscreen image to draw to.
-		predrawnImage = Image.createOffscreenImage(width, height);
-		Graphics g = predrawnImage.getGraphics();
+		//Figure out the height.
+		expandedHeight = font.getLineHeight() + font.getLineHeight() * strings.length;
+		collapsedHeight = font.getLineHeight();
 		
-		//Give the image a transparent background.
-		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
-		g.setColor(new Color(0, 0, 0, 0));
-		g.fillRect(0, 0, width, height);
-		g.setDrawMode(Graphics.MODE_NORMAL);
+		//Create the offscreen images to draw to.
+		expandedImage = Image.createOffscreenImage(width, expandedHeight);
+		collapsedImage = Image.createOffscreenImage(width, collapsedHeight);
+		Graphics expandedG = expandedImage.getGraphics();
+		Graphics collapsedG = collapsedImage.getGraphics();
 		
-		//Draw the title.
-		g.setColor(textColor);
-		g.setFont(font);
-		g.drawString(title, 0, 0);
+		//Give the images a transparent background.
+		Color transparency = new Color(0, 0, 0, 0);
+		expandedG.setDrawMode(Graphics.MODE_ALPHA_MAP);
+		expandedG.setColor(transparency);
+		expandedG.fillRect(0, 0, width, expandedHeight);
+		expandedG.setDrawMode(Graphics.MODE_NORMAL);
+		collapsedG.setDrawMode(Graphics.MODE_ALPHA_MAP);
+		collapsedG.setColor(transparency);
+		collapsedG.fillRect(0, 0, width, collapsedHeight);
+		collapsedG.setDrawMode(Graphics.MODE_NORMAL);
 		
-		//If expanded, draw the strings.
-		if (expanded) {
-			for (int i = 0; i < strings.length; i++)
-				g.drawString(strings[i], 0, font.getLineHeight() + font.getLineHeight() * i);
-		}
+		//Figure out the size of the toggle button and draw it.
+		toggleButtonSize = font.getLineHeight() * 2 / 3;
+		int toggleButtonCenter = font.getLineHeight() / 2;
+		toggleButtonPos = font.getLineHeight() / 6;
+		expandedG.setColor(textColor);
+		expandedG.setFont(font);
+		expandedG.drawRect(toggleButtonPos, toggleButtonPos, toggleButtonSize, toggleButtonSize); //Button outline.
+		expandedG.fillRect(toggleButtonPos, toggleButtonCenter - 1, toggleButtonSize, 2); //Horizontal bar.
+		collapsedG.setColor(textColor);
+		collapsedG.setFont(font);
+		collapsedG.drawRect(toggleButtonPos, toggleButtonPos, toggleButtonSize, toggleButtonSize); //Button outline.
+		collapsedG.fillRect(toggleButtonPos, toggleButtonCenter - 1, toggleButtonSize, 2); //Horizontal bar.
+		collapsedG.fillRect(toggleButtonCenter - 1, toggleButtonPos, 2, toggleButtonSize); //Vertical bar.
+		
+		//Draw the title on both.
+		expandedG.drawString(title, font.getLineHeight(), 0);
+		collapsedG.drawString(title, font.getLineHeight(), 0);
+		
+		//Draw the strings on the expanded one.
+		for (int i = 0; i < strings.length; i++)
+			expandedG.drawString(strings[i], font.getLineHeight() + 8, font.getLineHeight() + font.getLineHeight() * i);
 		
 		//Flush the graphics to the image and destroy the graphics context.
-		g.flush();
-		g.destroy();
+		expandedG.flush();
+		expandedG.destroy();
+		collapsedG.flush();
+		collapsedG.destroy();
 	}
 	
 	@Override
 	public void setX(int x) {
 		x1 = x;
 		x2 = x1 + width;
+		toggleButtonX1 = x1 + toggleButtonPos;
+		toggleButtonX2 = toggleButtonX1 + toggleButtonSize;
 	}
 	
 	@Override
@@ -87,7 +118,12 @@ public class CollapsibleStringGroup implements GUIElement {
 	@Override
 	public void setY(int y) {
 		y1 = y;
-		y2 = y1 + height;
+		if (expanded)
+			y2 = y1 + expandedHeight;
+		else
+			y2 = y1 + collapsedHeight;
+		toggleButtonY1 = y1 + toggleButtonPos;
+		toggleButtonY2 = toggleButtonY1 + toggleButtonSize;
 	}
 
 	@Override
@@ -108,25 +144,33 @@ public class CollapsibleStringGroup implements GUIElement {
 	
 	@Override
 	public void setHeight(int h) {
-		height = h;
-		y2 = y1 + height;
 	}
 
 	@Override
 	public int getHeight() {
-		return height;
+		if (expanded)
+			return expandedHeight;
+		return collapsedHeight;
 	}
 	
-	public void recalcHeight() {
-		height = font.getLineHeight();
-		if (expanded)
-			height += font.getLineHeight() * strings.length;
+	public void setExpanded(boolean e) {
+		expanded = e;
+		if (expanded) {
+			y2 = y1 + expandedHeight;
+			displayImage = expandedImage;
+		}
+		else {
+			y2 = y1 + collapsedHeight;
+			displayImage = collapsedImage;
+		}
+		container.realignFromElement(this);
 	}
 
 	@Override
 	public void click(int x, int y, int button) {
 		//Collapse or expand if we click the button.
-		//TODO
+		if (x >= toggleButtonX1 && y >= toggleButtonY1 && x <= toggleButtonX2 && y <= toggleButtonY2)
+			setExpanded(!expanded);
 	}
 	
 	@Override

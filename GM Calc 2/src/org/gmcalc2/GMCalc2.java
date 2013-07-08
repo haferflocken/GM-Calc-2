@@ -14,8 +14,10 @@ import org.haferlib.slick.gui.*;
 
 public class GMCalc2 extends BasicGame {
 	
-	public static Font FONT;
-	public static int FONT_HEIGHT;
+	public static Font HEADERFONT;
+	public static int HEADERFONT_HEIGHT;
+	public static Font BODYFONT;
+	public static int BODYFONT_HEIGHT;
 	
 	private GUIContext ui;
 	
@@ -25,21 +27,23 @@ public class GMCalc2 extends BasicGame {
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
-		//Create the font.
-		FONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 18), false);
-		FONT_HEIGHT = FONT.getLineHeight();
+		//Create the fonts.
+		HEADERFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 18), false);
+		HEADERFONT_HEIGHT = HEADERFONT.getLineHeight();
+		BODYFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14), false);
+		BODYFONT_HEIGHT = BODYFONT.getLineHeight();
 		
 		//Create the ui.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
 		
-		Tab tab = new Tab("Tab Test 1", 0, 0, container.getWidth(), container.getHeight(), 0, 128, FONT);
+		Tab tab = new Tab("Tab Test 1", 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT);
 		tab.disable();
 		ui.addElement(tab);
-		tab = new Tab("Tab Test 2", 0, 0, container.getWidth(), container.getHeight(), 128, 128, FONT);
+		tab = new Tab("Tab Test 2", 0, 0, container.getWidth(), container.getHeight(), 128, 128, HEADERFONT);
 		tab.disable();
 		ui.addElement(tab);
-		ui.addElement(new Tab("Tab Test 3", 0, 0, container.getWidth(), container.getHeight(), 256, 128, FONT));		
+		ui.addElement(new Tab("Tab Test 3", 0, 0, container.getWidth(), container.getHeight(), 256, 128, HEADERFONT));		
 	}
 
 	@Override
@@ -54,6 +58,7 @@ public class GMCalc2 extends BasicGame {
 
 	public static void main(String[] args) throws SlickException {
 		AppGameContainer gc = new AppGameContainer(new GMCalc2(), 1280, 768, false);
+		gc.setShowFPS(false);
 		gc.start();
 	}
 

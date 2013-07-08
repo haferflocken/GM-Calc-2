@@ -9,7 +9,6 @@ import org.newdawn.slick.Font;
 import org.newdawn.slick.geom.Polygon;
 
 import org.haferlib.slick.gui.GUISubcontext;
-import org.haferlib.slick.gui.ScrollableFrame;
 import org.haferlib.slick.gui.GUIElement;
 
 import org.gmcalc2.GMCalc2;
@@ -38,21 +37,33 @@ public class Tab extends GUISubcontext {
 		int columnWidth = width / 3;
 		int columnHeight = height - font.getLineHeight();
 		int inventoryColumnX = x2 - columnWidth;
-		ScrollableFrame inventoryColumn = new ScrollableFrame(inventoryColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
+		ScrollableCSGFrame inventoryColumn = new ScrollableCSGFrame(inventoryColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white, 0);
 		subcontext.addElement(inventoryColumn);
 		int equippedColumnX = inventoryColumnX - columnWidth;
-		ScrollableFrame equippedColumn = new ScrollableFrame(equippedColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
+		ScrollableCSGFrame equippedColumn = new ScrollableCSGFrame(equippedColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white, 0);
 		subcontext.addElement(equippedColumn);
 		int statColumnX = equippedColumnX - columnWidth;
-		ScrollableFrame statColumn = new ScrollableFrame(statColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
+		ScrollableCSGFrame statColumn = new ScrollableCSGFrame(statColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white, 0);
 		subcontext.addElement(statColumn);
 		
 		//Fill the columns up.
 		GUIElement[] statsTest = new GUIElement[15];
 		for (int i = 0; i < statsTest.length; i++) {
-			statsTest[i] = new CollapsibleStringGroup("Group " + i, new String[] {"a", "b", "c"}, Color.white, statColumnX, tabY2 + i * GMCalc2.FONT_HEIGHT * 4, columnWidth, GMCalc2.FONT, true);
+			statsTest[i] = new CollapsibleStringGroup(statColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, statColumnX, tabY2 + i * GMCalc2.BODYFONT_HEIGHT * 4, columnWidth, GMCalc2.BODYFONT, true);
 		}
 		statColumn.addElements(statsTest);
+		
+		statsTest = new GUIElement[1];
+		for (int i = 0; i < statsTest.length; i++) {
+			statsTest[i] = new CollapsibleStringGroup(equippedColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, equippedColumnX, tabY2 + i * GMCalc2.BODYFONT_HEIGHT  * 4, columnWidth, GMCalc2.BODYFONT, true);
+		}
+		equippedColumn.addElements(statsTest);
+		
+		statsTest = new GUIElement[1];
+		for (int i = 0; i < statsTest.length; i++) {
+			statsTest[i] = new CollapsibleStringGroup(inventoryColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, inventoryColumnX, tabY2 + i * GMCalc2.BODYFONT_HEIGHT * 4, columnWidth, GMCalc2.BODYFONT, true);
+		}
+		inventoryColumn.addElements(statsTest);
 	}
 	
 	@Override
@@ -65,7 +76,7 @@ public class Tab extends GUISubcontext {
 		g.fill(tabShape);
 		g.setColor(Color.black);
 		g.setFont(font);
-		g.drawString(tabName, tabShape.getX(), y1);
+		g.drawString(tabName, tabShape.getX() + tabShape.getWidth() / 2 - (font.getWidth(tabName) / 2), y1);
 		
 		//The following is only rendered if the tab is enabled.
 		if (!enabled)
@@ -87,10 +98,10 @@ public class Tab extends GUISubcontext {
 		font = f;
 		tabY2 = y1 + font.getLineHeight();
 		tabShape = new Polygon(new float[] {
-			tX, tabY2, //Bottom left
-			tX + 8, y1, //Top left
-			tX + tW - 8, y1, //Top right
-			tX + tW, tabY2, //Bottom right
+			tX - 4, tabY2, //Bottom left
+			tX + 4, y1, //Top left
+			tX + tW - 4, y1, //Top right
+			tX + tW + 4, tabY2, //Bottom right
 		});
 	}
 	
@@ -141,8 +152,10 @@ public class Tab extends GUISubcontext {
 	public void click(int x, int y, int button) {
 		super.click(x, y, button);
 		if (!enabled) {
-			if (button == Input.MOUSE_LEFT_BUTTON)
+			if (button == Input.MOUSE_LEFT_BUTTON) {
 				enable();
+				depth = 10;
+			}
 		}
 	}
 	
@@ -150,23 +163,29 @@ public class Tab extends GUISubcontext {
 	public void mouseDown(int x, int y, int button) {
 		super.mouseDown(x, y, button);
 		if (!enabled) {
-			if (button == Input.MOUSE_LEFT_BUTTON)
+			if (button == Input.MOUSE_LEFT_BUTTON) {
 				enable();
+				depth = 10;
+			}
 		}
 	}
 	
 	@Override
 	public void clickedElsewhere(int button) {
 		super.clickedElsewhere(button);
-		if (button == Input.MOUSE_LEFT_BUTTON)
+		if (enabled && button == Input.MOUSE_LEFT_BUTTON) {
 			disable();
+			depth = 0;
+		}
 	}
 	
 	@Override
 	public void mouseDownElsewhere(int button) {
 		super.mouseDownElsewhere(button);
-		if (button == Input.MOUSE_LEFT_BUTTON)
+		if (enabled && button == Input.MOUSE_LEFT_BUTTON) {
 			disable();
+			depth = 0;
+		}
 	}
 	
 	@Override
