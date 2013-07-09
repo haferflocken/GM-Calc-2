@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 public class Component {
 
+	private String name;
 	private StatMap statMap;
 	private int rarity;
 	private TreeSet<String> tags;
@@ -16,4 +17,22 @@ public class Component {
 		rarity = 0;
 		tags = new TreeSet<>();
 	}
+	
+	//Accessors.
+	public String getName() {
+		return name;
+	}
+	
+	public StatMap getStatMap() {
+		return statMap;
+	}
+	
+	public int getRarity() {
+		return rarity;
+	}
+	
+	public TreeSet<String> getTags() {
+		return tags;
+	}
+	
 }

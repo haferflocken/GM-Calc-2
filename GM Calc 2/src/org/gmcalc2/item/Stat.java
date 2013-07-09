@@ -39,8 +39,10 @@ public class Stat {
 	//Return a copy of this stat.
 	public Stat copy() {
 		Stat out = new Stat();
-		out.strings = Arrays.copyOf(strings, strings.length);
-		out.range = new Range(range.getMin(), range.getMax());
+		if (out.strings != null)
+			out.strings = Arrays.copyOf(strings, strings.length);
+		if (out.range != null)
+			out.range = new Range(range.getMin(), range.getMax());
 		out.number = number;
 		return out;
 	}
@@ -49,7 +51,8 @@ public class Stat {
 	public void merge(Stat other) {
 		//Merge the strings.
 		if (strings == null) {
-			strings = Arrays.copyOf(other.strings, other.strings.length);
+			if (other.strings != null)
+				strings = Arrays.copyOf(other.strings, other.strings.length);
 		}
 		else {
 			int oldLength = strings.length;

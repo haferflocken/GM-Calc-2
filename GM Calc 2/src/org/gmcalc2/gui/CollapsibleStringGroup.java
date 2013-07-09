@@ -7,10 +7,13 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 
 import org.haferlib.slick.gui.GUIElement;
+import org.haferlib.slick.gui.ScrollableListFrame;
+
+import org.gmcalc2.item.Item;
 
 public class CollapsibleStringGroup implements GUIElement {
 	
-	private ScrollableCSGFrame container;
+	private ScrollableListFrame container;
 	private String title;
 	private String[] strings;
 	private Color textColor;
@@ -24,7 +27,8 @@ public class CollapsibleStringGroup implements GUIElement {
 	private Image expandedImage;
 	private Image collapsedImage;
 	
-	public CollapsibleStringGroup(ScrollableCSGFrame container, String title, String[] strings, Color textColor, int x, int y, int width, Font font, boolean expanded) {
+	//Constructors.
+	public CollapsibleStringGroup(ScrollableListFrame container, String title, String[] strings, Color textColor, int x, int y, int width, Font font, boolean expanded) {
 		this.container = container;
 		this.title = title;
 		this.strings = strings;
@@ -39,6 +43,10 @@ public class CollapsibleStringGroup implements GUIElement {
 		setExpanded(expanded);
 		setX(x);
 		setY(y);
+	}
+	
+	public CollapsibleStringGroup(ScrollableListFrame container, Item item, Color textColor, int x, int y, int width, Font font, boolean expanded) {
+		this(container, item.getName(), item.getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
 	}
 	
 	@Override

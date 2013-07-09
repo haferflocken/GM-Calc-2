@@ -2,6 +2,7 @@
 
 package org.gmcalc2.item;
 
+import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.Map;
 
@@ -12,6 +13,11 @@ public class StatMap {
 	//Constructor.
 	public StatMap() {
 		stats = new TreeMap<>();
+	}
+	
+	//Clear the values from this stat map.
+	public void clear() {
+		stats.clear();
 	}
 	
 	//Put a stat in this, overriding the old value if there is one.
@@ -45,6 +51,17 @@ public class StatMap {
 		for (Map.Entry<String, Stat> otherEntry : other.stats.entrySet()) {
 			addPut(otherEntry.getKey(), otherEntry.getValue());
 		}
+	}
+	
+	//Get the display strings.
+	public String[] toDisplayStrings() {
+		String[] out = new String[stats.size()];
+		int i = 0;
+		for (Map.Entry<String, Stat> entry : stats.entrySet()) {
+			out[i] = entry.getKey() + ": " + Arrays.toString(entry.getValue().toDisplayStrings());
+			i++;
+		}
+		return out;
 	}
 
 }

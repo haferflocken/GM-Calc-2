@@ -10,6 +10,7 @@ import org.newdawn.slick.geom.Polygon;
 
 import org.haferlib.slick.gui.GUISubcontext;
 import org.haferlib.slick.gui.GUIElement;
+import org.haferlib.slick.gui.ScrollableListFrame;
 
 import org.gmcalc2.GMCalc2;
 
@@ -37,13 +38,13 @@ public class Tab extends GUISubcontext {
 		int columnWidth = width / 3;
 		int columnHeight = height - font.getLineHeight();
 		int inventoryColumnX = x2 - columnWidth;
-		ScrollableCSGFrame inventoryColumn = new ScrollableCSGFrame(inventoryColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
+		ScrollableListFrame inventoryColumn = new ScrollableListFrame(inventoryColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
 		subcontext.addElement(inventoryColumn);
 		int equippedColumnX = inventoryColumnX - columnWidth;
-		ScrollableCSGFrame equippedColumn = new ScrollableCSGFrame(equippedColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
+		ScrollableListFrame equippedColumn = new ScrollableListFrame(equippedColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
 		subcontext.addElement(equippedColumn);
 		int statColumnX = equippedColumnX - columnWidth;
-		ScrollableCSGFrame statColumn = new ScrollableCSGFrame(statColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
+		ScrollableListFrame statColumn = new ScrollableListFrame(statColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
 		subcontext.addElement(statColumn);
 		
 		//Fill the columns up.
