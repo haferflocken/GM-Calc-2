@@ -38,12 +38,12 @@ public class GMCalc2 extends BasicGame {
 		container.getInput().addKeyListener(ui);
 		
 		Tab tab = new Tab("Tab Test 1", 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT);
-		tab.disable();
+		//tab.disable();
 		ui.addElement(tab);
-		tab = new Tab("Tab Test 2", 0, 0, container.getWidth(), container.getHeight(), 128, 128, HEADERFONT);
-		tab.disable();
-		ui.addElement(tab);
-		ui.addElement(new Tab("Tab Test 3", 0, 0, container.getWidth(), container.getHeight(), 256, 128, HEADERFONT));		
+		//tab = new Tab("Tab Test 2", 0, 0, container.getWidth(), container.getHeight(), 128, 128, HEADERFONT);
+		//tab.disable();
+		//ui.addElement(tab);
+		//ui.addElement(new Tab("Tab Test 3", 0, 0, container.getWidth(), container.getHeight(), 256, 128, HEADERFONT));		
 	}
 
 	@Override
