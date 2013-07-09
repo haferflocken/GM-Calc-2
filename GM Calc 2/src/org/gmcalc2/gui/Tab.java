@@ -161,28 +161,8 @@ public class Tab extends GUISubcontext {
 	}
 	
 	@Override
-	public void mouseDown(int x, int y, int button) {
-		super.mouseDown(x, y, button);
-		if (!enabled) {
-			if (button == Input.MOUSE_LEFT_BUTTON) {
-				enable();
-				depth = 10;
-			}
-		}
-	}
-	
-	@Override
 	public void clickedElsewhere(int button) {
 		super.clickedElsewhere(button);
-		if (enabled && button == Input.MOUSE_LEFT_BUTTON) {
-			disable();
-			depth = 0;
-		}
-	}
-	
-	@Override
-	public void mouseDownElsewhere(int button) {
-		super.mouseDownElsewhere(button);
 		if (enabled && button == Input.MOUSE_LEFT_BUTTON) {
 			disable();
 			depth = 0;
