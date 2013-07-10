@@ -9,15 +9,15 @@ import java.io.IOException;
 import org.haferlib.util.FileTree;
 import org.haferlib.util.DataReader;
 
-public class ComponentFactory {
+public class ItemBaseFactory {
 	
 	public static final String COMPONENT_FILE_EXTENSION = ".txt";
 	
-	private TreeMap<String, Component> cache;	//The cache maps absolute file paths to components.
+	private TreeMap<String, ItemBase> cache;	//The cache maps absolute file paths to components.
 	private DataReader dataReader;				//Loads files as TreeMaps.
 
 	//Constructor.
-	public ComponentFactory() {
+	public ItemBaseFactory() {
 		cache = new TreeMap<>();
 		dataReader = new DataReader();
 	}
@@ -46,8 +46,8 @@ public class ComponentFactory {
 			//Read the file.
 			TreeMap<String, Object> values = dataReader.readFile(file.toPath());
 			
-			//Make a component out of it.
-			Component component = new Component(values);
+			//Make an ItemBase out of it.
+			ItemBase component = new ItemBase(values);
 			
 			//Add the component to the cache.
 			cache.put(file.getAbsolutePath(), component);
@@ -58,9 +58,9 @@ public class ComponentFactory {
 	}
 	
 	//Get a component.
-	public Component getComponent(String key) {
+	public ItemBase getItemBase(String key) {
 		//Try to find it in the cache.
-		Component out = cache.get(key);
+		ItemBase out = cache.get(key);
 		//If it's not in the cache, see if there is a file that could be loaded.
 		if (out == null) {
 			File file = new File(key);

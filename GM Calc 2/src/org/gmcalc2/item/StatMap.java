@@ -15,6 +15,21 @@ public class StatMap {
 		stats = new TreeMap<>();
 	}
 	
+	public StatMap(Map<Object, Object> rawStats) {
+		this();
+		//Look at the pairs in the map. Those that have a string key and a valid stat value are put into the map of stats.
+		for (Map.Entry<Object, Object> entry : rawStats.entrySet()) {
+			if (entry.getKey() instanceof String && entry.getValue() instanceof Object[]) {
+				//Get the key and value for easy reference.
+				String key = (String)entry.getKey();
+				Object[] val = (Object[])entry.getValue();
+				
+				//Put the stat in the map of stats.
+				stats.put(key, new Stat(val));
+			}
+		}
+	}
+	
 	//Clear the values from this stat map.
 	public void clear() {
 		stats.clear();

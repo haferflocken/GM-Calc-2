@@ -10,30 +10,44 @@ public class Stat {
 	private int number;
 	
 	//Constructors.
-	public Stat() {
-		strings = null;
-		range = null;
-		number = 0;
-	}
-	
-	public Stat(String[] strings) {
-		this();
+	public Stat(String[] strings, Range range, int number) {
 		this.strings = strings;
-	}
-	
-	public Stat(Range range) {
-		this();
 		this.range = range;
-	}
-	
-	public Stat(int min, int max) {
-		this();
-		range = new Range(min, max);
-	}
-	
-	public Stat(int number) {
-		this();
 		this.number = number;
+	}
+	
+	public Stat() {
+		this(null, null, 0);
+	}
+	
+	public Stat(Object[] values) {
+		this();
+		
+		//Counting the number of strings in the array.
+		int numStrings = 0;
+		for (int i = 0; i < values.length; i++) {
+			if (values[i] instanceof String)
+				numStrings++;
+		}
+		
+		//Look through the array and assign the values appropriately.
+		if (numStrings > 0)
+			strings = new String[numStrings];
+		for (int q = 0, i = 0; i < values.length; i++) {
+			if (values[i] instanceof String) {
+				strings[q] = (String)values[i];
+				q++;
+			}
+			else if (values[i] instanceof Object[]) {
+				Object[] rawRange = (Object[])values[i];
+				if (rawRange.length == 2 && rawRange[0] instanceof Integer && rawRange[1] instanceof Integer) {
+					range = new Range((Integer)rawRange[0], (Integer)rawRange[1]);
+				}
+			}
+			else if (values[i] instanceof Integer) {
+				number = (Integer)values[i];
+			}
+		}
 	}
 	
 	//Return a copy of this stat.

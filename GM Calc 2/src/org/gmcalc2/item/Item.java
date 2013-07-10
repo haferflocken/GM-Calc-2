@@ -86,4 +86,5 @@ public class Item {
 	public int getRarity() {
 		return rarity;
 	}
+
 }

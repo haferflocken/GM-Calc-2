@@ -9,20 +9,16 @@ import org.newdawn.slick.Font;
 import org.newdawn.slick.geom.Polygon;
 
 import org.haferlib.slick.gui.GUISubcontext;
-import org.haferlib.slick.gui.GUIElement;
-import org.haferlib.slick.gui.ScrollableListFrame;
-
-import org.gmcalc2.GMCalc2;
 
 public class Tab extends GUISubcontext {
 	
-	private String tabName;
-	private Font font;
-	private Polygon tabShape;
-	private int tabY2;	//The tab shape. No need for tabY1 because it is the same as y1.
-	private int x2, y2, width, height;
-	private int depth;
-	private boolean dead, enabled;
+	protected String tabName;
+	protected Font font;
+	protected Polygon tabShape;
+	protected int tabY2;	//The tab shape. No need for tabY1 because it is the same as y1.
+	protected int x2, y2, width, height;
+	protected int depth;
+	protected boolean dead, enabled;
 	
 	public Tab(String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font) {
 		//Set the parameters.
@@ -33,38 +29,6 @@ public class Tab extends GUISubcontext {
 		setX(x);
 		setY(y);
 		enable();
-		
-		//Add the columns from right to left so the scroll bars line up nicely with the right side.
-		int columnWidth = width / 3;
-		int columnHeight = height - font.getLineHeight();
-		int inventoryColumnX = x2 - columnWidth;
-		ScrollableListFrame inventoryColumn = new ScrollableListFrame(inventoryColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
-		subcontext.addElement(inventoryColumn);
-		int equippedColumnX = inventoryColumnX - columnWidth;
-		ScrollableListFrame equippedColumn = new ScrollableListFrame(equippedColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
-		subcontext.addElement(equippedColumn);
-		int statColumnX = equippedColumnX - columnWidth;
-		ScrollableListFrame statColumn = new ScrollableListFrame(statColumnX, tabY2, columnWidth, columnHeight, 0, 8, Color.white);
-		subcontext.addElement(statColumn);
-		
-		//Fill the columns up.
-		GUIElement[] statsTest = new GUIElement[15];
-		for (int i = 0; i < statsTest.length; i++) {
-			statsTest[i] = new CollapsibleStringGroup(statColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, 0, 0, columnWidth, GMCalc2.BODYFONT, true);
-		}
-		statColumn.addElements(statsTest);
-		
-		statsTest = new GUIElement[1];
-		for (int i = 0; i < statsTest.length; i++) {
-			statsTest[i] = new CollapsibleStringGroup(equippedColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, 0, 0, columnWidth, GMCalc2.BODYFONT, true);
-		}
-		equippedColumn.addElements(statsTest);
-		
-		statsTest = new GUIElement[1];
-		for (int i = 0; i < statsTest.length; i++) {
-			statsTest[i] = new CollapsibleStringGroup(inventoryColumn, "Group " + i, new String[] {"a", "b", "c"}, Color.white, 0, 0, columnWidth, GMCalc2.BODYFONT, true);
-		}
-		inventoryColumn.addElements(statsTest);
 	}
 	
 	@Override
@@ -140,6 +104,10 @@ public class Tab extends GUISubcontext {
 	@Override
 	public int getHeight() {
 		return height;
+	}
+	
+	public Font getFont() {
+		return font;
 	}
 
 	@Override
