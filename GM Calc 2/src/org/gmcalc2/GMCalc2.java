@@ -9,8 +9,12 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
 
 import org.gmcalc2.gui.*;
+import org.gmcalc2.item.Player;
 
 import org.haferlib.slick.gui.*;
+import org.haferlib.util.DataReader;
+
+import java.io.IOException;
 
 public class GMCalc2 extends BasicGame {
 	
@@ -37,13 +41,14 @@ public class GMCalc2 extends BasicGame {
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
 		
-		Tab tab = new Tab("Tab Test 1", 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT);
-		//tab.disable();
-		ui.addElement(tab);
-		//tab = new Tab("Tab Test 2", 0, 0, container.getWidth(), container.getHeight(), 128, 128, HEADERFONT);
-		//tab.disable();
-		//ui.addElement(tab);
-		//ui.addElement(new Tab("Tab Test 3", 0, 0, container.getWidth(), container.getHeight(), 256, 128, HEADERFONT));		
+		try {
+			Player playerTest = new Player(null, new DataReader().readFile("C:\\Users\\John\\Documents\\gmcalc2 worlds\\forgottenrealms\\players\\playerTest.txt"));
+			PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT);
+			ui.addElement(tab);	
+		}
+		catch (IOException e) {
+			System.out.println(e);
+		}
 	}
 
 	@Override
@@ -57,7 +62,7 @@ public class GMCalc2 extends BasicGame {
 	}
 
 	public static void main(String[] args) throws SlickException {
-		AppGameContainer gc = new AppGameContainer(new GMCalc2(), 1280, 768, false);
+		AppGameContainer gc = new AppGameContainer(new GMCalc2(), 1280, 600, false);
 		gc.setShowFPS(false);
 		gc.start();
 	}

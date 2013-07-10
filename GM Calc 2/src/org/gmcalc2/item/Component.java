@@ -74,5 +74,5 @@ public class Component {
 	public TreeSet<String> getTags() {
 		return tags;
 	}
-	
+
 }
