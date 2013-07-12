@@ -29,7 +29,7 @@ public class GMCalc2 extends BasicGame {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		//Create the fonts.
-		HEADERFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 18), false);
+		HEADERFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 16), false);
 		HEADERFONT_HEIGHT = HEADERFONT.getLineHeight();
 		BODYFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14), false);
 		BODYFONT_HEIGHT = BODYFONT.getLineHeight();
@@ -42,6 +42,9 @@ public class GMCalc2 extends BasicGame {
 		World worldTest = new World("E:\\John\\Google Drive\\gmcalc2 worlds\\forgottenrealms\\");
 		Player playerTest = worldTest.getPlayer("playerTest.txt");
 		PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT);
+		ui.addElement(tab);
+		tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), tab.getTabX() + tab.getTabWidth(), 128, HEADERFONT, BODYFONT);
+		tab.disable();
 		ui.addElement(tab);
 	}
 

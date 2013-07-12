@@ -35,11 +35,11 @@ public class Tab extends GUISubcontext {
 	public void render(Graphics g) {
 		//Draw the tab.
 		if (enabled)
-			g.setColor(Color.lightGray);
-		else
 			g.setColor(Color.gray);
+		else
+			g.setColor(Color.darkGray);
 		g.fill(tabShape);
-		g.setColor(Color.black);
+		g.setColor(Color.white);
 		g.setFont(font);
 		g.drawString(tabName, tabShape.getX() + tabShape.getWidth() / 2 - (font.getWidth(tabName) / 2), y1);
 		
@@ -48,15 +48,23 @@ public class Tab extends GUISubcontext {
 			return;
 		
 		//Draw the background.
-		g.setColor(Color.lightGray);
+		g.setColor(Color.gray);
 		g.fillRect(x1, tabY2, width, height);
 		
 		//Render the subcontext.
 		subcontext.render(g, x1, tabY2, x2, y2);
 	}
 	
+	public int getTabX() {
+		return (int)tabShape.getX();
+	}
+	
 	public void setTabX(int x) {
 		tabShape.setX(x);
+	}
+	
+	public int getTabWidth() {
+		return (int)tabShape.getWidth();
 	}
 	
 	public void createTab(int tX, int tW, Font f) {
@@ -123,7 +131,6 @@ public class Tab extends GUISubcontext {
 		if (!enabled) {
 			if (button == Input.MOUSE_LEFT_BUTTON) {
 				enable();
-				depth = 10;
 			}
 		}
 	}
@@ -133,7 +140,6 @@ public class Tab extends GUISubcontext {
 		super.clickedElsewhere(button);
 		if (enabled && button == Input.MOUSE_LEFT_BUTTON) {
 			disable();
-			depth = 0;
 		}
 	}
 	
@@ -144,11 +150,13 @@ public class Tab extends GUISubcontext {
 	
 	public void enable() {
 		enabled = true;
+		depth = 10;
 		subcontext.enable();
 	}
 	
 	public void disable() {
 		enabled = false;
+		depth = 0;
 		subcontext.disable();
 	}
 	
