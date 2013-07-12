@@ -17,9 +17,9 @@ public class ComponentFactory {
 	private DataReader dataReader;				//Loads files as TreeMaps.
 
 	//Constructor.
-	public ComponentFactory() {
+	public ComponentFactory(DataReader dataReader) {
 		cache = new TreeMap<>();
-		dataReader = new DataReader();
+		this.dataReader = dataReader;
 	}
 	
 	//Cache all the components in a directory.
@@ -51,6 +51,7 @@ public class ComponentFactory {
 			
 			//Add the component to the cache.
 			cache.put(file.getAbsolutePath(), component);
+			System.out.println("Cached component " + component.getName() + " from " + file.getAbsolutePath());
 		}
 		catch (IOException e) {
 			System.out.println("Failed to read file " + file.getAbsolutePath());
@@ -63,6 +64,7 @@ public class ComponentFactory {
 		Component out = cache.get(key);
 		//If it's not in the cache, see if there is a file that could be loaded.
 		if (out == null) {
+			System.out.println("Failed to find component: " + key);
 			File file = new File(key);
 			if (file.exists() && file.isFile()) {
 				cacheFile(file);

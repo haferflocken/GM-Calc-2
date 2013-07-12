@@ -17,9 +17,9 @@ public class ItemBaseFactory {
 	private DataReader dataReader;				//Loads files as TreeMaps.
 
 	//Constructor.
-	public ItemBaseFactory() {
+	public ItemBaseFactory(DataReader dataReader) {
 		cache = new TreeMap<>();
-		dataReader = new DataReader();
+		this.dataReader = dataReader;
 	}
 	
 	//Cache all the components in a directory.
@@ -51,6 +51,7 @@ public class ItemBaseFactory {
 			
 			//Add the component to the cache.
 			cache.put(file.getAbsolutePath(), component);
+			System.out.println("Cached itemBase " + component.getName() + " from " + file.getAbsolutePath());
 		}
 		catch (IOException e) {
 			System.out.println("Failed to read file " + file.getAbsolutePath());

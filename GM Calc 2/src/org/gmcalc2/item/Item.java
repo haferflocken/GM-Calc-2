@@ -62,11 +62,11 @@ public class Item {
 			nameBuilder.append(", ");
 		}
 		if (materials.length > 1) {
-			nameBuilder.append(materials[materials.length - 2]);
+			nameBuilder.append(materials[materials.length - 2].getName());
 			nameBuilder.append(" and ");
 		}
 		if (materials.length > 0) {
-			nameBuilder.append(materials[materials.length - 1]);
+			nameBuilder.append(materials[materials.length - 1].getName());
 		}
 		nameBuilder.append(')');
 		

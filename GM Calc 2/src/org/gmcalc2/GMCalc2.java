@@ -12,9 +12,6 @@ import org.gmcalc2.gui.*;
 import org.gmcalc2.item.Player;
 
 import org.haferlib.slick.gui.*;
-import org.haferlib.util.DataReader;
-
-import java.io.IOException;
 
 public class GMCalc2 extends BasicGame {
 	
@@ -40,15 +37,12 @@ public class GMCalc2 extends BasicGame {
 		//Create the ui.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
-		
-		try {
-			Player playerTest = new Player(null, new DataReader().readFile("C:\\Users\\John\\Documents\\gmcalc2 worlds\\forgottenrealms\\players\\playerTest.txt"));
-			PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT);
-			ui.addElement(tab);	
-		}
-		catch (IOException e) {
-			System.out.println(e);
-		}
+	
+		//Create the world.
+		World worldTest = new World("E:\\John\\Google Drive\\gmcalc2 worlds\\forgottenrealms\\");
+		Player playerTest = worldTest.getPlayer("playerTest.txt");
+		PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT);
+		ui.addElement(tab);
 	}
 
 	@Override

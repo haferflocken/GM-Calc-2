@@ -9,7 +9,7 @@ import org.newdawn.slick.Font;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
 
-import org.gmcalc2.item.Item;
+import org.gmcalc2.item.Player;
 
 public class CollapsibleStringGroup implements GUIElement {
 	
@@ -45,8 +45,8 @@ public class CollapsibleStringGroup implements GUIElement {
 		setY(y);
 	}
 	
-	public CollapsibleStringGroup(ScrollableListFrame container, Item item, Color textColor, int x, int y, int width, Font font, boolean expanded) {
-		this(container, item.getName(), item.getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
+	public CollapsibleStringGroup(ScrollableListFrame container, Player.QuantityItem item, Color textColor, int x, int y, int width, Font font, boolean expanded) {
+		this(container, item.getItem().getName() + ((item.getAmount() > 1)? " x" + item.getAmount() : ""), item.getItem().getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
 	}
 	
 	@Override

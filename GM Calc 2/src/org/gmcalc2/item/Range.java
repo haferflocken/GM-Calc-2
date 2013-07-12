@@ -35,7 +35,7 @@ public class Range {
 	}
 	
 	public void updateDisplayString() {
-		displayString = '[' + min + ", " + max + ']';
+		displayString = "[" + min + ", " + max + "]";
 	}
 	
 	public String toString() {

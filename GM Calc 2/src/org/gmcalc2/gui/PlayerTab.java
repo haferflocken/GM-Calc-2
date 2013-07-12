@@ -1,7 +1,6 @@
 package org.gmcalc2.gui;
 
 import org.gmcalc2.item.Player;
-import org.gmcalc2.item.Item;
 
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
@@ -53,12 +52,12 @@ public class PlayerTab extends Tab {
 		statColumn.addElement(statDisplay);
 	}
 	
-	private void fillItemColumn(ScrollableListFrame column, ArrayList<Item> items) {
+	private void fillItemColumn(ScrollableListFrame column, ArrayList<Player.QuantityItem> items) {
 		column.clearElements();
 		
 		GUIElement[] elements = new GUIElement[items.size()];
 		for (int i = 0; i < items.size(); i++) {
-			CollapsibleStringGroup itemDisplay = new CollapsibleStringGroup(column, items.get(i).getName(), items.get(i).getStatMap().toDisplayStrings(), Color.white, 0, 0, column.getWidth(), columnFont, true);
+			CollapsibleStringGroup itemDisplay = new CollapsibleStringGroup(column, items.get(i), player.getWorld().getRarityColor(items.get(i).getItem()), 0, 0, column.getWidth(), columnFont, true);
 			elements[i] = itemDisplay;
 		}
 		column.addElements(elements);

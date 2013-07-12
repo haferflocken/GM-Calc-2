@@ -73,7 +73,11 @@ public class StatMap {
 		String[] out = new String[stats.size()];
 		int i = 0;
 		for (Map.Entry<String, Stat> entry : stats.entrySet()) {
-			out[i] = entry.getKey() + ": " + Arrays.toString(entry.getValue().toDisplayStrings());
+			String[] entryStrings = entry.getValue().toDisplayStrings();
+			if (entryStrings.length == 1)
+				out[i] = entry.getKey() + ": " + entryStrings[0];
+			else
+				out[i] = entry.getKey() + ": " + Arrays.toString(entryStrings);
 			i++;
 		}
 		return out;
