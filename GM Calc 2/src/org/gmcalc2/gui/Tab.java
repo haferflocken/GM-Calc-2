@@ -35,9 +35,9 @@ public class Tab extends GUISubcontext {
 	public void render(Graphics g) {
 		//Draw the tab.
 		if (enabled)
-			g.setColor(Color.gray);
-		else
 			g.setColor(Color.darkGray);
+		else
+			g.setColor(Color.gray);
 		g.fill(tabShape);
 		g.setColor(Color.white);
 		g.setFont(font);
@@ -48,7 +48,7 @@ public class Tab extends GUISubcontext {
 			return;
 		
 		//Draw the background.
-		g.setColor(Color.gray);
+		g.setColor(Color.darkGray);
 		g.fillRect(x1, tabY2, width, height);
 		
 		//Render the subcontext.

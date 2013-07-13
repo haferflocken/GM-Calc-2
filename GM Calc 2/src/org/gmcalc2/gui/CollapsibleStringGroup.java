@@ -5,10 +5,9 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
-
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
-
+import org.haferlib.slick.GraphicsUtils;
 import org.gmcalc2.item.Player;
 
 public class CollapsibleStringGroup implements GUIElement {
@@ -60,9 +59,21 @@ public class CollapsibleStringGroup implements GUIElement {
 	
 	//Draw the predrawn images.
 	public void redraw() throws SlickException {
+		//Make a GraphicsUtil to help out.
+		GraphicsUtils gUtil = new GraphicsUtils();
+		
 		//Figure out the height.
-		expandedHeight = font.getLineHeight() + font.getLineHeight() * strings.length;
-		collapsedHeight = font.getLineHeight();
+		int titleX = font.getLineHeight();
+		int titleWidth = width - titleX;
+		int titleHeight = gUtil.getWrappedStringHeight(font, title, titleWidth);
+		int stringsX = titleX + 8;
+		int stringsWidth = width - stringsX;
+		int stringsHeight = 0;
+		for (String s : strings) {
+			stringsHeight += gUtil.getWrappedStringHeight(font, s, stringsWidth);
+		}
+		expandedHeight = titleHeight + stringsHeight;
+		collapsedHeight = titleHeight;
 		
 		//Create the offscreen images to draw to.
 		expandedImage = Image.createOffscreenImage(width, expandedHeight);
@@ -96,12 +107,12 @@ public class CollapsibleStringGroup implements GUIElement {
 		collapsedG.fillRect(toggleButtonCenter - 1, toggleButtonPos, 2, toggleButtonSize); //Vertical bar.
 		
 		//Draw the title on both.
-		expandedG.drawString(title, font.getLineHeight(), 0);
-		collapsedG.drawString(title, font.getLineHeight(), 0);
+		int stringsY = gUtil.drawStringWrapped(expandedG, title, titleX, 0, titleWidth);
+		gUtil.drawStringWrapped(collapsedG, title, titleX, 0, titleWidth);
 		
 		//Draw the strings on the expanded one.
-		for (int i = 0; i < strings.length; i++)
-			expandedG.drawString(strings[i], font.getLineHeight() + 8, font.getLineHeight() + font.getLineHeight() * i);
+		for (String s : strings)
+			stringsY = gUtil.drawStringWrapped(expandedG, s, stringsX, stringsY, stringsWidth);
 		
 		//Flush the graphics to the image and destroy the graphics context.
 		expandedG.flush();
