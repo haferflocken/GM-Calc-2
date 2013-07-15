@@ -9,6 +9,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 public class PlayerTab extends Tab {
 	
@@ -47,6 +48,10 @@ public class PlayerTab extends Tab {
 	
 	private void fillStatColumn() {
 		statColumn.clearElements();
+		
+		//TODO: Sort the stats into categories.
+		TreeMap<String, String[]> categoryRules = player.getWorld().getPlayerStatCategories();
+		TreeMap<String, String[]> categories = new TreeMap<>();
 		
 		CollapsibleStringGroup statDisplay = new CollapsibleStringGroup(statColumn, "Other", player.getStatMap().toDisplayStrings(), Color.white, 0, 0, statColumn.getWidth(), columnFont, true);
 		statColumn.addElement(statDisplay);

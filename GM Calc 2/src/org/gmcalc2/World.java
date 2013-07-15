@@ -64,6 +64,7 @@ public class World {
 	
 	public static final String NAME_KEY = "name";
 	public static final String RARITYCOLORS_KEY = "rarityColors";
+	public static final String PLAYERSTATCATEGORIES_KEY = "playerStatCategories";
 	
 	private String worldLoc;
 	
@@ -71,6 +72,7 @@ public class World {
 	
 	private String name;
 	private RarityColor[] rarityColors;
+	private TreeMap<String, String[]> playerStatCategories;
 
 	private ComponentFactory prefixFactory;
 	private ComponentFactory materialFactory;
@@ -112,6 +114,7 @@ public class World {
 	public void setRulesToDefault() {
 		name = worldLoc;
 		rarityColors = new RarityColor[] { new RarityColor(Color.white, Integer.MIN_VALUE) };
+		playerStatCategories = new TreeMap<>();
 	}
 	
 	//Set the rules using loaded data.
@@ -150,11 +153,36 @@ public class World {
 				Arrays.sort(rarityColors);
 			}
 		}
+		
+		//Get the player stat categories.
+		val = rawRules.get(PLAYERSTATCATEGORIES_KEY);
+		if (val instanceof Map<?, ?>) {
+			Map<?, ?> catMap = (Map<?, ?>)val;
+			ArrayList<String> catValBuilder = new ArrayList<>();
+			for (Map.Entry<?, ?> entry : catMap.entrySet()) {
+				if (entry.getKey() instanceof String && entry.getValue() instanceof Object[]) {
+					String catKey = (String)entry.getKey();
+					Object[] rawCatVal = (Object[])entry.getValue();
+					for (Object o : rawCatVal) {
+						if (o instanceof String)
+							catValBuilder.add((String)o);
+					}
+					String[] catVal = catValBuilder.toArray(new String[catValBuilder.size()]);
+					catValBuilder.clear();
+					playerStatCategories.put(catKey, catVal);
+				}
+			}
+		}
 	}
 	
 	//Get the name.
 	public String getName() {
 		return name;
+	}
+	
+	//Get the player stat categories.
+	public TreeMap<String, String[]> getPlayerStatCategories() {
+		return playerStatCategories;
 	}
 	
 	//Get a prefix from the factory.
