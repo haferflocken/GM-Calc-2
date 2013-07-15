@@ -114,4 +114,12 @@ public class Stat {
 		//Return that shit.
 		return out;
 	}
+	
+	public String toString() {
+		String[] dispStrings = toDisplayStrings();
+		if (dispStrings.length == 1)
+			return dispStrings[0];
+		else
+			return  Arrays.toString(dispStrings);
+	}
 }

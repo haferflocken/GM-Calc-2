@@ -73,13 +73,22 @@ public class StatMap {
 		String[] out = new String[stats.size()];
 		int i = 0;
 		for (Map.Entry<String, Stat> entry : stats.entrySet()) {
-			String[] entryStrings = entry.getValue().toDisplayStrings();
-			if (entryStrings.length == 1)
-				out[i] = entry.getKey() + ": " + entryStrings[0];
-			else
-				out[i] = entry.getKey() + ": " + Arrays.toString(entryStrings);
+			out[i] = entry.getKey() + ": " + entry.getValue().toString();
 			i++;
 		}
+		return out;
+	}
+	
+	//Get the stat for a key.
+	public Stat get(String key) {
+		return stats.get(key);
+	}
+	
+	//Return a copy of the tree in this StatMap. While changing the stats will affect this StatMap (it isn't a deep copy), changing the returned tree
+	//will not affect this StatMap.
+	public TreeMap<String, Stat> copyTree() {
+		TreeMap<String, Stat> out = new TreeMap<>();
+		out.putAll(stats);
 		return out;
 	}
 

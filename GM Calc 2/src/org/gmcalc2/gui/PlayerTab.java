@@ -1,15 +1,16 @@
 package org.gmcalc2.gui;
 
 import org.gmcalc2.item.Player;
-
+import org.gmcalc2.item.Stat;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TreeMap;
+import java.util.Map;
 
 public class PlayerTab extends Tab {
 	
@@ -49,12 +50,46 @@ public class PlayerTab extends Tab {
 	private void fillStatColumn() {
 		statColumn.clearElements();
 		
-		//TODO: Sort the stats into categories.
-		TreeMap<String, String[]> categoryRules = player.getWorld().getPlayerStatCategories();
-		TreeMap<String, String[]> categories = new TreeMap<>();
+		//Some fields that will help sort the stats.
+		Map<String, String[]> categoryRules = player.getWorld().getPlayerStatCategories();
+		TreeMap<String, Stat> playerStats = player.getStatMap().copyTree();
+		ArrayList<String> categoryNames = new ArrayList<>();
+		ArrayList<String[]> categoryContents = new ArrayList<>();
+
+		//Sort the stats.
+		ArrayList<String> catBuilder = new ArrayList<>();
+		for (Map.Entry<String, String[]> ruleEntry : categoryRules.entrySet()) {
+			String[] ruleKeys = ruleEntry.getValue();
+			for (String s : ruleKeys) {
+				Stat stat = playerStats.remove(s);
+				if (stat != null)
+					catBuilder.add(s + ": " + stat.toString());
+			}
+			if (catBuilder.size() > 0) {
+				String[] catStats = catBuilder.toArray(new String[catBuilder.size()]);
+				catBuilder.clear();
+				categoryNames.add(ruleEntry.getKey());
+				categoryContents.add(catStats);
+			}
+		}
 		
-		CollapsibleStringGroup statDisplay = new CollapsibleStringGroup(statColumn, "Other", player.getStatMap().toDisplayStrings(), Color.white, 0, 0, statColumn.getWidth(), columnFont, true);
-		statColumn.addElement(statDisplay);
+		//Handle the stats that weren't able to be sorted.
+		for (Map.Entry<String, Stat> entry : playerStats.entrySet()) {
+			catBuilder.add(entry.getKey() + ": " + entry.getValue().toString());
+		}
+		if (catBuilder.size() > 0) {
+			String[] catStats = catBuilder.toArray(new String[catBuilder.size()]);
+			catBuilder.clear();
+			categoryNames.add("Other");
+			categoryContents.add(catStats);
+		}
+		
+		//Make the CollapsibleStringGroups from them.
+		GUIElement[] statDisplays = new GUIElement[categoryNames.size()];
+		for (int i = 0; i < statDisplays.length; i++) {
+			statDisplays[i] = new CollapsibleStringGroup(statColumn, categoryNames.get(i), categoryContents.get(i), Color.white, 0, 0, statColumn.getWidth(), columnFont, true);
+		}
+		statColumn.addElements(statDisplays);
 	}
 	
 	private void fillItemColumn(ScrollableListFrame column, ArrayList<Player.QuantityItem> items) {

@@ -8,6 +8,7 @@ package org.gmcalc2;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Arrays;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class World {
 	
 	private String name;
 	private RarityColor[] rarityColors;
-	private TreeMap<String, String[]> playerStatCategories;
+	private Map<String, String[]> playerStatCategories;
 
 	private ComponentFactory prefixFactory;
 	private ComponentFactory materialFactory;
@@ -114,7 +115,7 @@ public class World {
 	public void setRulesToDefault() {
 		name = worldLoc;
 		rarityColors = new RarityColor[] { new RarityColor(Color.white, Integer.MIN_VALUE) };
-		playerStatCategories = new TreeMap<>();
+		playerStatCategories = new LinkedHashMap<>();
 	}
 	
 	//Set the rules using loaded data.
@@ -181,7 +182,7 @@ public class World {
 	}
 	
 	//Get the player stat categories.
-	public TreeMap<String, String[]> getPlayerStatCategories() {
+	public Map<String, String[]> getPlayerStatCategories() {
 		return playerStatCategories;
 	}
 	

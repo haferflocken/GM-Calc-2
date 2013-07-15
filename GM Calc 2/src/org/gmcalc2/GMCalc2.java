@@ -39,7 +39,7 @@ public class GMCalc2 extends BasicGame {
 		container.getInput().addKeyListener(ui);
 	
 		//Create the world.
-		World worldTest = new World("C:\\Users\\John\\Google Drive\\gmcalc2 worlds\\forgottenrealms\\");
+		World worldTest = new World("E:\\John\\Google Drive\\gmcalc2 worlds\\forgottenrealms\\");
 		Player playerTest = worldTest.getPlayer("playerTest.txt");
 		PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT);
 		ui.addElement(tab);
