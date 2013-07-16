@@ -8,6 +8,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 import java.util.ArrayList;
@@ -293,31 +294,39 @@ public class PlayerTab extends Tab {
 	public void click(int x, int y, int button) {
 		super.click(x, y, button);
 		
-		//If the click was within the equipped column, see if there is a new group to select and select it if there is.
-		if (equippedColumn.pointIsWithin(x, y)) {
-			GUIElement e = equippedColumn.getElementAtPoint(x, y);
-			if (!(e instanceof CollapsibleStringGroup))
+		//If the click is the left or right button...
+		if (button == Input.MOUSE_LEFT_BUTTON || button == Input.MOUSE_RIGHT_BUTTON) {
+			//If the click was within the equipped column, see if there is a new group to select and select it if there is.
+			if (equippedColumn.pointIsWithin(x, y)) {
+				GUIElement e = equippedColumn.getElementAtPoint(x, y);
+				if (!(e instanceof ItemDisplay))
+					clearSelectedItemDisplay();
+				else if (selectedItemDisplay == null || !selectedItemDisplay.equals(e)) {
+					clearSelectedItemDisplay();
+					selectItemDisplay((ItemDisplay)e);
+				}
+			}
+			
+			//If the click was within the equipped column, see if there is a new group to select and select it if there is.
+			else if (inventoryColumn.pointIsWithin(x, y)) {
+				GUIElement e = inventoryColumn.getElementAtPoint(x, y);
+				if (!(e instanceof ItemDisplay))
+					clearSelectedItemDisplay();
+				else if (selectedItemDisplay == null || !selectedItemDisplay.equals(e)) {
+					clearSelectedItemDisplay();
+					selectItemDisplay((ItemDisplay)e);
+				}
+			}
+			
+			//If the click was anywhere else, clear the selection.
+			else
 				clearSelectedItemDisplay();
-			else if (selectedItemDisplay == null || !selectedItemDisplay.equals(e)) {
-				clearSelectedItemDisplay();
-				selectItemDisplay((ItemDisplay)e);
+			
+			//If the click was the right mouse button and an item display was selected, open the context menu.
+			if (button == Input.MOUSE_RIGHT_BUTTON && selectedItemDisplay != null) {
+				
 			}
 		}
-		
-		//If the click was within the equipped column, see if there is a new group to select and select it if there is.
-		else if (inventoryColumn.pointIsWithin(x, y)) {
-			GUIElement e = inventoryColumn.getElementAtPoint(x, y);
-			if (!(e instanceof CollapsibleStringGroup))
-				clearSelectedItemDisplay();
-			else if (selectedItemDisplay == null || !selectedItemDisplay.equals(e)) {
-				clearSelectedItemDisplay();
-				selectItemDisplay((ItemDisplay)e);
-			}
-		}
-		
-		//If the click was anywhere else, clear the selection.
-		else
-			clearSelectedItemDisplay();
 	}
 	
 	//Override mouseDown so we can drag collapsible groups in the columns.
@@ -325,8 +334,8 @@ public class PlayerTab extends Tab {
 	public void mouseDown(int x, int y, int button) {
 		super.mouseDown(x, y, button);
 		
-		//Drag if we have a drag image and we are on top of selectedItemDisplay.
-		if (dragImage != null && selectedItemDisplay.pointIsWithin(x, y))
+		//Drag if we are holding the left button, have a drag image and we are on top of selectedItemDisplay.
+		if (button == Input.MOUSE_LEFT_BUTTON && dragImage != null && selectedItemDisplay.pointIsWithin(x, y))
 			dragging = true;
 	}
 	

@@ -1,3 +1,5 @@
+//A collapsible group of strings.
+
 package org.gmcalc2.gui;
 
 import org.newdawn.slick.Graphics;
@@ -18,12 +20,10 @@ public class CollapsibleStringGroup implements GUIElement {
 	private Font font;
 	private int x1, y1, x2, y2;
 	private int width, expandedHeight, collapsedHeight;
-	private int toggleButtonX1, toggleButtonY1, toggleButtonX2, toggleButtonY2;
+	private int toggleButtonX1, toggleButtonY1, toggleButtonX2, toggleButtonY2, toggleButtonCX;
 	private int toggleButtonPos, toggleButtonSize;
 	private boolean expanded;
-	private Image displayImage;
-	private Image expandedImage;
-	private Image collapsedImage;
+	private Image image;
 	
 	//Constructors.
 	public CollapsibleStringGroup(ScrollableListFrame container, String title, String[] strings, Color textColor, int x, int y, int width, Font font, boolean expanded) {
@@ -61,7 +61,7 @@ public class CollapsibleStringGroup implements GUIElement {
 		container = c;
 	}
 	
-	//Draw the predrawn images.
+	//Draw the predrawn image.
 	public void redraw() throws SlickException {
 		//Make a GraphicsUtil to help out.
 		GraphicsUtils gUtil = new GraphicsUtils();
@@ -79,50 +79,36 @@ public class CollapsibleStringGroup implements GUIElement {
 		expandedHeight = titleHeight + stringsHeight;
 		collapsedHeight = titleHeight;
 		
-		//Create the offscreen images to draw to.
-		expandedImage = Image.createOffscreenImage(width, expandedHeight);
-		collapsedImage = Image.createOffscreenImage(width, collapsedHeight);
-		Graphics expandedG = expandedImage.getGraphics();
-		Graphics collapsedG = collapsedImage.getGraphics();
+		//Create the offscreen image to draw to.
+		image = Image.createOffscreenImage(width, expandedHeight);
+		Graphics g = image.getGraphics();
 		
-		//Give the images a transparent background.
+		//Give the image a transparent background.
 		Color transparency = new Color(0, 0, 0, 0);
-		expandedG.setDrawMode(Graphics.MODE_ALPHA_MAP);
-		expandedG.setColor(transparency);
-		expandedG.fillRect(0, 0, width, expandedHeight);
-		expandedG.setDrawMode(Graphics.MODE_NORMAL);
-		collapsedG.setDrawMode(Graphics.MODE_ALPHA_MAP);
-		collapsedG.setColor(transparency);
-		collapsedG.fillRect(0, 0, width, collapsedHeight);
-		collapsedG.setDrawMode(Graphics.MODE_NORMAL);
+		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
+		g.setColor(transparency);
+		g.fillRect(0, 0, width, expandedHeight);
+		g.setDrawMode(Graphics.MODE_NORMAL);
 		
 		//Figure out the size of the toggle button and draw it.
 		toggleButtonSize = font.getLineHeight() * 2 / 3;
 		int toggleButtonCenter = font.getLineHeight() / 2;
 		toggleButtonPos = font.getLineHeight() / 6;
-		expandedG.setColor(textColor);
-		expandedG.setFont(font);
-		expandedG.drawRect(toggleButtonPos, toggleButtonPos, toggleButtonSize, toggleButtonSize); //Button outline.
-		expandedG.fillRect(toggleButtonPos, toggleButtonCenter - 1, toggleButtonSize, 2); //Horizontal bar.
-		collapsedG.setColor(textColor);
-		collapsedG.setFont(font);
-		collapsedG.drawRect(toggleButtonPos, toggleButtonPos, toggleButtonSize, toggleButtonSize); //Button outline.
-		collapsedG.fillRect(toggleButtonPos, toggleButtonCenter - 1, toggleButtonSize, 2); //Horizontal bar.
-		collapsedG.fillRect(toggleButtonCenter - 1, toggleButtonPos, 2, toggleButtonSize); //Vertical bar.
+		g.setColor(textColor);
+		g.setFont(font);
+		g.drawRect(toggleButtonPos, toggleButtonPos, toggleButtonSize, toggleButtonSize); //Button outline.
+		g.fillRect(toggleButtonPos, toggleButtonCenter - 1, toggleButtonSize, 2); //Horizontal bar.
 		
-		//Draw the title on both.
-		int stringsY = gUtil.drawStringWrapped(expandedG, title, titleX, 0, titleWidth);
-		gUtil.drawStringWrapped(collapsedG, title, titleX, 0, titleWidth);
+		//Draw the title.
+		int stringsY = gUtil.drawStringWrapped(g, title, titleX, 0, titleWidth);
 		
-		//Draw the strings on the expanded one.
+		//Draw the strings.
 		for (String s : strings)
-			stringsY = gUtil.drawStringWrapped(expandedG, s, stringsX, stringsY, stringsWidth);
+			stringsY = gUtil.drawStringWrapped(g, s, stringsX, stringsY, stringsWidth);
 		
 		//Flush the graphics to the image and destroy the graphics context.
-		expandedG.flush();
-		expandedG.destroy();
-		collapsedG.flush();
-		collapsedG.destroy();
+		g.flush();
+		g.destroy();
 	}
 	
 	@Override
@@ -131,7 +117,15 @@ public class CollapsibleStringGroup implements GUIElement {
 	
 	@Override
 	public void render(Graphics g) {
-		g.drawImage(displayImage, x1, y1);
+		//If expanded, just draw the whole image.
+		if (expanded)
+			g.drawImage(image, x1, y1);
+		//If collapsed, draw the title of the image as well as a vertical bar to make the minus sign into a plus sign.
+		else {
+			g.drawImage(image, x1, y1, x2, y2, 0, 0, width, collapsedHeight);
+			g.setColor(textColor);
+			g.fillRect(toggleButtonCX, toggleButtonY1, 2, toggleButtonSize);
+		}
 	}
 	
 	@Override
@@ -140,6 +134,7 @@ public class CollapsibleStringGroup implements GUIElement {
 		x2 = x1 + width;
 		toggleButtonX1 = x1 + toggleButtonPos;
 		toggleButtonX2 = toggleButtonX1 + toggleButtonSize;
+		toggleButtonCX = toggleButtonX1 + toggleButtonSize / 2;
 	}
 	
 	@Override
@@ -189,11 +184,9 @@ public class CollapsibleStringGroup implements GUIElement {
 		expanded = e;
 		if (expanded) {
 			y2 = y1 + expandedHeight;
-			displayImage = expandedImage;
 		}
 		else {
 			y2 = y1 + collapsedHeight;
-			displayImage = collapsedImage;
 		}
 		container.realignFromElement(this);
 	}
@@ -250,20 +243,12 @@ public class CollapsibleStringGroup implements GUIElement {
 	
 	@Override
 	public void destroy() {
-		displayImage = null;
 		try {
-			expandedImage.destroy();
+			image.destroy();
 		}
 		catch (SlickException e) {
 			e.printStackTrace();
 		}
-		expandedImage = null;
-		try {
-			collapsedImage.destroy();
-		}
-		catch (SlickException e) {
-			e.printStackTrace();
-		}
-		collapsedImage = null;
+		image = null;
 	}
 }
