@@ -1,8 +1,9 @@
 //A world holds:
 //	component factories for materials, prefixes, and itemBases
-//	a list of players in the world that have been loaded
+//	a map of players in the world that have been loaded
 //	rules for the players in the world
 //	colors to color items based on rarity
+//	rules for sorting the stats of players
 
 package org.gmcalc2;
 
@@ -79,7 +80,7 @@ public class World {
 	private ComponentFactory materialFactory;
 	private ItemBaseFactory itemBaseFactory;
 		
-	private ArrayList<Player> players;
+	private TreeMap<String, Player> players;
 	
 	//Constructor.
 	public World(String worldLoc) {
@@ -107,7 +108,7 @@ public class World {
 		System.out.println("Materials cached.\nCaching itemBases...");
 		itemBaseFactory = new ItemBaseFactory(dataReader);
 		itemBaseFactory.cacheDirectory(worldLoc + "itemBases\\");
-		players = new ArrayList<>();
+		players = new TreeMap<>();
 		System.out.println("ItemBases cached.\n... World created.\n");
 	}
 	
@@ -235,10 +236,16 @@ public class World {
 	
 	//Get a player.
 	public Player getPlayer(String playerFile) {
+		//Return a player if we find one.
+		Player player = players.get(playerFile);
+		if (player != null)
+			return player;
+		
+		//Otherwise, if the path points to a file, load it, place it in the tree, and return it.
 		try {
 			TreeMap<String, Object> playerValues = dataReader.readFile(worldLoc + "players\\" + playerFile);
-			Player player = new Player(this, playerValues);
-			//players.add(player);
+			player = new Player(this, playerValues);
+			players.put(playerFile, player);
 			return player;
 		}
 		catch (IOException e) {

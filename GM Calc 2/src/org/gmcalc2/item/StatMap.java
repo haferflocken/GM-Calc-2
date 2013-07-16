@@ -2,7 +2,6 @@
 
 package org.gmcalc2.item;
 
-import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.Map;
 
