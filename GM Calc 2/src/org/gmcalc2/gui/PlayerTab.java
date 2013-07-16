@@ -73,7 +73,7 @@ public class PlayerTab extends Tab {
 	
 	//Fill the stat column with the sorted stats of the player.
 	private void fillStatColumn() {
-		statColumn.clearElements();
+		statColumn.reinitSubcontext();
 		
 		//Some fields that will help sort the stats.
 		Map<String, String[]> categoryRules = player.getWorld().getPlayerStatCategories();
