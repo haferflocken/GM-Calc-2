@@ -8,7 +8,6 @@ import org.newdawn.slick.Font;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.haferlib.slick.GraphicsUtils;
-import org.gmcalc2.item.Player;
 
 public class CollapsibleStringGroup implements GUIElement {
 	
@@ -44,17 +43,22 @@ public class CollapsibleStringGroup implements GUIElement {
 		setY(y);
 	}
 	
-	public CollapsibleStringGroup(ScrollableListFrame container, Player.QuantityItem item, Color textColor, int x, int y, int width, Font font, boolean expanded) {
-		this(container, item.getItem().getName() + ((item.getAmount() > 1)? " x" + item.getAmount() : ""), item.getItem().getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
+	//Accessors.
+	public String getTitle() {
+		return title;
 	}
 	
-	@Override
-	public void update(int delta) {
+	public String[] getStrings() {
+		return strings;
 	}
 	
-	@Override
-	public void render(Graphics g) {
-		g.drawImage(displayImage, x1, y1);
+	public Color getTextColor() {
+		return textColor;
+	}
+	
+	//Set the container.
+	public void setContainer(ScrollableListFrame c) {
+		container = c;
 	}
 	
 	//Draw the predrawn images.
@@ -119,6 +123,15 @@ public class CollapsibleStringGroup implements GUIElement {
 		expandedG.destroy();
 		collapsedG.flush();
 		collapsedG.destroy();
+	}
+	
+	@Override
+	public void update(int delta) {
+	}
+	
+	@Override
+	public void render(Graphics g) {
+		g.drawImage(displayImage, x1, y1);
 	}
 	
 	@Override
@@ -194,7 +207,6 @@ public class CollapsibleStringGroup implements GUIElement {
 	
 	@Override
 	public void mouseDown(int x, int y, int button) {
-		//TODO: Drag this around.
 	}
 	
 	@Override
@@ -234,5 +246,24 @@ public class CollapsibleStringGroup implements GUIElement {
 	@Override
 	public boolean dead() {
 		return false;
+	}
+	
+	@Override
+	public void destroy() {
+		displayImage = null;
+		try {
+			expandedImage.destroy();
+		}
+		catch (SlickException e) {
+			e.printStackTrace();
+		}
+		expandedImage = null;
+		try {
+			collapsedImage.destroy();
+		}
+		catch (SlickException e) {
+			e.printStackTrace();
+		}
+		collapsedImage = null;
 	}
 }

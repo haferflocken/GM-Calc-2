@@ -56,19 +56,21 @@ public class Item {
 		nameBuilder.append(itemBase.getName());
 		
 		//Add the materials.
-		nameBuilder.append(" (");
-		for (int i = 0; i < materials.length - 2; i++) {
-			nameBuilder.append(materials[i].getName());
-			nameBuilder.append(", ");
-		}
-		if (materials.length > 1) {
-			nameBuilder.append(materials[materials.length - 2].getName());
-			nameBuilder.append(" and ");
-		}
 		if (materials.length > 0) {
-			nameBuilder.append(materials[materials.length - 1].getName());
+			nameBuilder.append(" (");
+			for (int i = 0; i < materials.length - 2; i++) {
+				nameBuilder.append(materials[i].getName());
+				nameBuilder.append(", ");
+			}
+			if (materials.length > 1) {
+				nameBuilder.append(materials[materials.length - 2].getName());
+				nameBuilder.append(" and ");
+			}
+			if (materials.length > 0) {
+				nameBuilder.append(materials[materials.length - 1].getName());
+			}
+			nameBuilder.append(')');
 		}
-		nameBuilder.append(')');
 		
 		//Assign the name.
 		name = nameBuilder.toString();

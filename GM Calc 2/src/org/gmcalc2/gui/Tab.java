@@ -14,15 +14,19 @@ public class Tab extends GUISubcontext {
 	
 	protected String tabName;
 	protected Font font;
+	protected Color tabEnabledColor, tabDisabledColor, tabNameColor;
 	protected Polygon tabShape;
 	protected int tabY2;	//The tab shape. No need for tabY1 because it is the same as y1.
 	protected int x2, y2, width, height;
 	protected int depth;
 	protected boolean dead, enabled;
 	
-	public Tab(String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font) {
+	public Tab(String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor) {
 		//Set the parameters.
 		this.tabName = tabName;
+		this.tabEnabledColor = tabEnabledColor;
+		this.tabDisabledColor = tabDisabledColor;
+		this.tabNameColor = tabNameColor;
 		createTab(tabX, tabWidth, font);
 		setWidth(width);
 		setHeight(height);
@@ -35,22 +39,24 @@ public class Tab extends GUISubcontext {
 	public void render(Graphics g) {
 		//Draw the tab.
 		if (enabled)
-			g.setColor(Color.darkGray);
+			g.setColor(tabEnabledColor);
 		else
-			g.setColor(Color.gray);
+			g.setColor(tabDisabledColor);
 		g.fill(tabShape);
-		g.setColor(Color.white);
+		g.setColor(tabNameColor);
 		g.setFont(font);
 		g.drawString(tabName, tabShape.getX() + tabShape.getWidth() / 2 - (font.getWidth(tabName) / 2), y1);
 		
-		//The following is only rendered if the tab is enabled.
-		if (!enabled)
-			return;
-		
+		//Render the interior if enabled.
+		if (enabled)
+			renderInterior(g);
+	}
+	
+	public void renderInterior(Graphics g) {
 		//Draw the background.
-		g.setColor(Color.darkGray);
+		g.setColor(tabEnabledColor);
 		g.fillRect(x1, tabY2, width, height);
-		
+				
 		//Render the subcontext.
 		subcontext.render(g, x1, tabY2, x2, y2);
 	}

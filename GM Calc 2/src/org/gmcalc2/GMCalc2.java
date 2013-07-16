@@ -1,16 +1,15 @@
 package org.gmcalc2;
 
 import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
-
 import org.gmcalc2.gui.*;
 import org.gmcalc2.item.Player;
-
 import org.haferlib.slick.gui.*;
 
 public class GMCalc2 extends BasicGame {
@@ -19,6 +18,8 @@ public class GMCalc2 extends BasicGame {
 	public static int HEADERFONT_HEIGHT;
 	public static Font BODYFONT;
 	public static int BODYFONT_HEIGHT;
+	
+	public static Color TAB_ENABLED_COLOR, TAB_DISABLED_COLOR, TAB_NAME_COLOR, PLAYERTAB_BACKGROUND_COLOR;
 	
 	private GUIContext ui;
 	
@@ -34,6 +35,12 @@ public class GMCalc2 extends BasicGame {
 		BODYFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14), false);
 		BODYFONT_HEIGHT = BODYFONT.getLineHeight();
 		
+		//Define the colors.
+		TAB_ENABLED_COLOR = Color.gray;
+		TAB_DISABLED_COLOR = Color.darkGray;
+		TAB_NAME_COLOR = Color.white;
+		PLAYERTAB_BACKGROUND_COLOR = Color.darkGray;
+		
 		//Create the ui.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
@@ -41,11 +48,11 @@ public class GMCalc2 extends BasicGame {
 		//Create the world.
 		World worldTest = new World("E:\\John\\Google Drive\\gmcalc2 worlds\\forgottenrealms\\");
 		Player playerTest = worldTest.getPlayer("playerTest.txt");
-		PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT);
+		PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT, TAB_ENABLED_COLOR, TAB_DISABLED_COLOR, TAB_NAME_COLOR, PLAYERTAB_BACKGROUND_COLOR);
 		ui.addElement(tab);
-		tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), tab.getTabX() + tab.getTabWidth(), 128, HEADERFONT, BODYFONT);
-		tab.disable();
-		ui.addElement(tab);
+		//tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), tab.getTabX() + tab.getTabWidth(), 128, HEADERFONT, BODYFONT, TAB_ENABLED_COLOR, TAB_DISABLED_COLOR, TAB_NAME_COLOR, PLAYERTAB_BACKGROUND_COLOR);
+		//tab.disable();
+		//ui.addElement(tab);
 	}
 
 	@Override
