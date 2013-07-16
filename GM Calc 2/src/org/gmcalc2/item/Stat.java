@@ -23,7 +23,7 @@ public class Stat {
 	public Stat(Object[] values) {
 		this();
 		
-		//Counting the number of strings in the array.
+		//Count the number of strings in the array.
 		int numStrings = 0;
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] instanceof String)
@@ -69,11 +69,33 @@ public class Stat {
 				strings = Arrays.copyOf(other.strings, other.strings.length);
 			}
 			else {
-				int oldLength = strings.length;
-				strings = Arrays.copyOf(strings, strings.length + other.strings.length);
-				for (int i = 0; i < other.strings.length; i++) {
-					strings[i + oldLength] = other.strings[i];
+				//Count the number of strings in the incoming array that we don't already have.
+				int numNew = other.strings.length; //Assume we are adding nothing but new strings.
+				for (int q, i = 0; i < other.strings.length; i++) {
+					//Loop through strings to see if we have this or not. If we do, get rid of the assumption.
+					for (q = 0; q < strings.length; q++) {
+						if (strings[q].equals(other.strings[i])) {
+							numNew--;
+							break;
+						}
+					}
 				}
+					
+				//Merge the new strings into the array.
+				String[] newStrings = Arrays.copyOf(strings, strings.length + numNew);
+				for (int n = strings.length, i = 0; i < other.strings.length; i++) {
+					//See if the string is unique.
+					boolean newString = true;
+					for (int q = 0; q < strings.length; q++) {
+						if (strings[q].equals(other.strings[i])) {
+							newString = false;
+							break;
+						}
+					}
+					if (newString)
+						newStrings[n++] = other.strings[i];
+				}
+				strings = newStrings;
 			}
 		}
 		

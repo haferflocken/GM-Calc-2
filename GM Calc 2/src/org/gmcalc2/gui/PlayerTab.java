@@ -2,8 +2,11 @@ package org.gmcalc2.gui;
 
 import org.gmcalc2.item.Player;
 import org.gmcalc2.item.Stat;
+
+import org.haferlib.slick.gui.CollapsibleStringGroup;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;

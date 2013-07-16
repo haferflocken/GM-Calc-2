@@ -9,16 +9,19 @@ import org.gmcalc2.World;
 
 public class Player {
 	
+		//An item with a quantity. Makes duplicate items less messy.
 		public class QuantityItem {
 			
-			private Item item;
-			private int amount;
+			private Item item;	//The item.
+			private int amount;	//The amount.
 			
-			private QuantityItem(Item item, int amount) {
+			//Constructor.
+			public QuantityItem(Item item, int amount) {
 				this.item = item;
 				this.amount = amount;
 			}
 			
+			//Accessors.
 			public Item getItem() {
 				return item;
 			}
@@ -26,13 +29,20 @@ public class Player {
 			public int getAmount() {
 				return amount;
 			}
+			
+			//toString.
+			public String toString() {
+				return item.getName() + ((amount > 1)? " x" + amount : "");
+			}
 		}
 	
+		//Keys for loading.
 		public static final String DEFAULT_NAME = "Unnamed";
 		public static final String NAME_KEY = "name";
 		public static final String EQUIPPED_KEY = "equipped";
 		public static final String INVENTORY_KEY = "inventory";
 
+		//Instance fields.
 		private World world;
 		private String name;
 		private StatMap statMap;
