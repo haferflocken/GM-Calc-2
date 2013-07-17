@@ -5,6 +5,7 @@ package org.gmcalc2.item;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
+import org.gmcalc2.GMCalc2;
 import org.gmcalc2.World;
 
 public class Player {
@@ -80,7 +81,7 @@ public class Player {
 				}
 			}
 			
-			System.out.println("Player " + name + " loaded " + equipped.size() + " equipped items.");
+			GMCalc2.out.println("Player " + name + " loaded " + equipped.size() + " equipped items.");
 			//Get the inventory items.
 			val = values.get(INVENTORY_KEY);
 			if (val instanceof Object[]) {
@@ -93,7 +94,7 @@ public class Player {
 					}
 				}
 			}
-			System.out.println("Player " + name + " loaded " + inventory.size() + " inventory items.");
+			GMCalc2.out.println("Player " + name + " loaded " + inventory.size() + " inventory items.");
 			
 			//Recalculate the stats.
 			recalculateStats();
@@ -135,7 +136,7 @@ public class Player {
 		public QuantityItem makeItemFromData(Object[] data) {
 			//The data should have length 3. The first two elements are arrays and the third element is a string.
 			if (data.length != 4 || ! (data[0] instanceof Integer) || !(data[1] instanceof Object[]) || !(data[2] instanceof Object[]) || !(data[3] instanceof String)) {
-				System.out.println("Invalid item declaration in player " + name);
+				GMCalc2.out.println("Invalid item declaration in player " + name);
 				return null;
 			}
 
@@ -150,7 +151,7 @@ public class Player {
 			//Make the itemBase.
 			ItemBase itemBase = world.getItemBase(rawItemBase);
 			if (itemBase == null) {
-				System.out.println("Could not find itemBase " + rawItemBase + " for player " + name);
+				GMCalc2.out.println("Could not find itemBase " + rawItemBase + " for player " + name);
 				return null;
 			}
 			

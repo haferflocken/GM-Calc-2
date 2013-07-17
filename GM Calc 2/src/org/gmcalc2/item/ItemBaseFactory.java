@@ -2,6 +2,8 @@
 
 package org.gmcalc2.item;
 
+import org.gmcalc2.GMCalc2;
+
 import java.util.TreeMap;
 import java.io.File;
 import java.io.IOException;
@@ -51,10 +53,10 @@ public class ItemBaseFactory {
 			
 			//Add the component to the cache.
 			cache.put(file.getAbsolutePath(), component);
-			System.out.println("Cached itemBase " + component.getName() + " from " + file.getAbsolutePath());
+			GMCalc2.out.println("Cached itemBase " + component.getName() + " from " + file.getAbsolutePath());
 		}
 		catch (IOException e) {
-			System.out.println("Failed to read file " + file.getAbsolutePath());
+			GMCalc2.out.println("Failed to read file " + file.getAbsolutePath());
 		}
 	}
 	

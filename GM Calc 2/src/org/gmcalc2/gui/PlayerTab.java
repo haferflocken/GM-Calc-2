@@ -1,5 +1,6 @@
 package org.gmcalc2.gui;
 
+import org.gmcalc2.GMCalc2;
 import org.gmcalc2.item.Player;
 import org.gmcalc2.item.Stat;
 
@@ -153,7 +154,7 @@ public class PlayerTab extends Tab {
 			g.destroy();
 		}
 		catch (SlickException e) {
-			System.out.println("Failed to draw labels for tab.");
+			GMCalc2.out.println("Failed to draw labels for tab.");
 		}
 	}
 	

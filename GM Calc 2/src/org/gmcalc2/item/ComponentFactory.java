@@ -2,6 +2,8 @@
 
 package org.gmcalc2.item;
 
+import org.gmcalc2.GMCalc2;
+
 import java.util.TreeMap;
 import java.io.File;
 import java.io.IOException;
@@ -51,10 +53,10 @@ public class ComponentFactory {
 			
 			//Add the component to the cache.
 			cache.put(file.getAbsolutePath(), component);
-			System.out.println("Cached component " + component.getName() + " from " + file.getAbsolutePath());
+			GMCalc2.out.println("Cached component " + component.getName() + " from " + file.getAbsolutePath());
 		}
 		catch (IOException e) {
-			System.out.println("Failed to read file " + file.getAbsolutePath());
+			GMCalc2.out.println("Failed to read file " + file.getAbsolutePath());
 		}
 	}
 	
@@ -64,7 +66,7 @@ public class ComponentFactory {
 		Component out = cache.get(key);
 		//If it's not in the cache, see if there is a file that could be loaded.
 		if (out == null) {
-			System.out.println("Failed to find component: " + key);
+			GMCalc2.out.println("Failed to find component: " + key);
 			File file = new File(key);
 			if (file.exists() && file.isFile()) {
 				cacheFile(file);

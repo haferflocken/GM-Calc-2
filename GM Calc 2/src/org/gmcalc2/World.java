@@ -22,7 +22,8 @@ import org.haferlib.util.DataReader;
 
 public class World {
 	
-	public class RarityColor implements Comparable<RarityColor> {
+	//The class for RarityColors.
+	public static class RarityColor implements Comparable<RarityColor> {
 		
 		private Color color;
 		private int rarity;
@@ -64,52 +65,50 @@ public class World {
 		}
 	}
 	
+	//Keys for loading.
 	public static final String NAME_KEY = "name";
 	public static final String RARITYCOLORS_KEY = "rarityColors";
 	public static final String PLAYERSTATCATEGORIES_KEY = "playerStatCategories";
 	
-	private String worldLoc;
-	
-	private DataReader dataReader;
-	
-	private String name;
-	private RarityColor[] rarityColors;
-	private Map<String, String[]> playerStatCategories;
-
-	private ComponentFactory prefixFactory;
-	private ComponentFactory materialFactory;
-	private ItemBaseFactory itemBaseFactory;
-		
-	private TreeMap<String, Player> players;
+	//Instance fields.
+	private String worldLoc;								//The location of the world in the file GMCalc2.
+	private DataReader dataReader;							//The data reader that reads files in the world.
+	private String name;									//The name of the world.
+	private RarityColor[] rarityColors;						//The rarity colors that are displayed in this world.
+	private Map<String, String[]> playerStatCategories;		//The categories stats are sorted into in PlayerTabs.
+	private ComponentFactory prefixFactory;					//The factory that loads prefixes.
+	private ComponentFactory materialFactory;				//The factory that loads materials.
+	private ItemBaseFactory itemBaseFactory;				//The factory that loads item bases.
+	private TreeMap<String, Player> players;				//The map of players.
 	
 	//Constructor.
 	public World(String worldLoc) {
-		System.out.println("\nCreating World: " + worldLoc);
+		GMCalc2.out.println("\nCreating World: " + worldLoc);
 		this.worldLoc = worldLoc;
 		dataReader = new DataReader();
 		
-		System.out.println("Loading rules...");
+		GMCalc2.out.println("Loading rules...");
 		setRulesToDefault();
 		try {
 			TreeMap<String, Object> rawRules = dataReader.readFile(worldLoc + "rules.txt");
 			setRules(rawRules);
-			System.out.println("Loaded rules.");
+			GMCalc2.out.println("Loaded rules.");
 		}
 		catch (IOException e) {
-			System.out.println("Failed to load rules.");
+			GMCalc2.out.println("Failed to load rules.");
 		}
 		
-		System.out.println("Caching prefixes...");
+		GMCalc2.out.println("Caching prefixes...");
 		prefixFactory = new ComponentFactory(dataReader);
 		prefixFactory.cacheDirectory(worldLoc + "prefixes\\");
-		System.out.println("Prefixes cached.\nCaching materials...");
+		GMCalc2.out.println("Prefixes cached.\nCaching materials...");
 		materialFactory = new ComponentFactory(dataReader);
 		materialFactory.cacheDirectory(worldLoc + "materials\\");
-		System.out.println("Materials cached.\nCaching itemBases...");
+		GMCalc2.out.println("Materials cached.\nCaching itemBases...");
 		itemBaseFactory = new ItemBaseFactory(dataReader);
 		itemBaseFactory.cacheDirectory(worldLoc + "itemBases\\");
 		players = new TreeMap<>();
-		System.out.println("ItemBases cached.\n... World created.\n");
+		GMCalc2.out.println("ItemBases cached.\n... World created.\n");
 	}
 	
 	//Set the rules to default values.
