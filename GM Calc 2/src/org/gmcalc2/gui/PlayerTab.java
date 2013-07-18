@@ -3,10 +3,12 @@ package org.gmcalc2.gui;
 import org.gmcalc2.GMCalc2;
 import org.gmcalc2.item.Player;
 import org.gmcalc2.item.Stat;
+import org.gmcalc2.item.Item;
 
 import org.haferlib.slick.gui.CollapsibleStringGroup;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
+import org.haferlib.util.ListBag;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
@@ -15,8 +17,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
-import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class PlayerTab extends Tab {
@@ -124,16 +126,23 @@ public class PlayerTab extends Tab {
 	}
 	
 	//Fill a column with collapsible string groups representing a list of items.
-	private void fillItemColumn(ScrollableListFrame column, ArrayList<Player.QuantityItem> items, boolean expanded) {
+	private void fillItemColumn(ScrollableListFrame column, ListBag<Item> bag, boolean expanded) {
 		column.clearElements();
 		
-		GUIElement[] elements = new GUIElement[items.size()];
-		int groupWidth = column.getWidth() - column.getScrollBarWidth();
-		for (int i = 0; i < items.size(); i++) {
-			ItemDisplay itemDisplay = new ItemDisplay(column, items.get(i), player.getWorld().getRarityColor(items.get(i).getItem()), 0, 0, groupWidth, columnFont, expanded);
+		GUIElement[] elements = new GUIElement[bag.size()];
+		for (int i = 0; i < bag.size(); i++) {
+			Item item = bag.get(i);
+			ItemDisplay itemDisplay = makeItemDisplay(column, item, bag, expanded);
 			elements[i] = itemDisplay;
 		}
 		column.addElements(elements);
+	}
+	
+	//Make an item display.
+	private ItemDisplay makeItemDisplay(ScrollableListFrame column, Item item, ListBag<Item> bag, boolean expanded) {
+		int displayWidth = column.getWidth() - column.getScrollBarWidth();
+		ItemDisplay itemDisplay = new ItemDisplay(column, item, bag, player.getWorld().getRarityColor(item), 0, 0, displayWidth, columnFont, expanded);
+		return itemDisplay;
 	}
 
 	//Redraw the labels that are displayed above the columns.
@@ -247,24 +256,39 @@ public class PlayerTab extends Tab {
 					transferDir = 1;
 			}
 			
-			//Remove the selected item display from its old column.
-			equippedColumn.removeElement(selectedItemDisplay);
-			inventoryColumn.removeElement(selectedItemDisplay);
-			
-			//Otherwise, place it in the column at the appropriate spot.
-			selectedItemDisplay.setContainer(column);
-			column.addElement(selectedItemDisplay, mouseY);
-			
-			//Do the item moving within the player and recalc stats if necessary.
-			if (transferDir == 1) {
-				player.getEquipped().remove(selectedItemDisplay.getItem());
-				player.getInventory().add(selectedItemDisplay.getItem());
-				player.recalculateStats();
-				fillStatColumn();
+			//If we are moving within a column...
+			if (transferDir == 0 || transferDir == 2) {
+				//Place the display in the column at the appropriate spot.
+				column.removeElement(selectedItemDisplay);
+				column.addElement(selectedItemDisplay, mouseY);
 			}
-			else if (transferDir == 3) {
-				player.getInventory().remove(selectedItemDisplay.getItem());
-				player.getEquipped().add(selectedItemDisplay.getItem());
+			//If we are moving column to column...
+			else {
+				ScrollableListFrame otherColumn = (transferDir == 1 ? inventoryColumn : equippedColumn); //Figure out what the other column is.
+
+				selectedItemDisplay.decreaseQuantity(1); //Decrease the quantity of the selected display.
+				Item item = selectedItemDisplay.getItem(); //Get the item. We need it, I promise.
+				//Find an item display in the inventory that has the same item and increase its quantity. If we can't find one, make one.
+				ItemDisplay otherItemDisplay = null;
+				for (GUIElement e : otherColumn.getElements()) {
+					if (e instanceof ItemDisplay) {
+						ItemDisplay i = (ItemDisplay)e;
+						if (i.hasItem(item)) {
+							otherItemDisplay = i;
+							break;
+						}
+					}
+				}
+				if (otherItemDisplay == null) {
+					ListBag<Item> bag = (transferDir == 1 ? player.getInventory() : player.getEquipped());
+					bag.add(item, 1);
+					otherItemDisplay = makeItemDisplay(otherColumn, item, bag, selectedItemDisplay.isExpanded());
+					otherColumn.addElement(otherItemDisplay, mouseY);
+				}
+				else {
+					otherItemDisplay.increaseQuantity(1);
+				}
+				selectItemDisplay(otherItemDisplay);
 				player.recalculateStats();
 				fillStatColumn();
 			}
