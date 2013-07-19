@@ -18,7 +18,7 @@ public class ItemDisplay extends CollapsibleStringGroup {
 
 	// Constructor.
 	public ItemDisplay(ScrollableListFrame container, Item item, ListBag<Item> bag, Color textColor, int x, int y, int width, Font font, boolean expanded) {
-		super(container, item.getName(), item.getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
+		super(container, item.getName() + (bag.getCount(item) > 1 ? " x" + bag.getCount(item) : ""), item.getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
 		this.item = item;
 		this.bag = bag;
 		dead = false;
