@@ -100,7 +100,6 @@ public class WorldFactory implements Factory<World> {
 	// Constructor.
 	public WorldFactory(DataReader dataReader) {
 		this.dataReader = dataReader;
-		cache = new TreeMap<>();
 		worldBuilder = new WorldBuilder();
 	}
 
@@ -128,7 +127,7 @@ public class WorldFactory implements Factory<World> {
 				} );
 		worldIndex = -1;
 		findNextWorld();
-		cache.clear();
+		cache = new TreeMap<>();
 	}
 	
 	// Figure out what the next world to load is.
@@ -158,6 +157,7 @@ public class WorldFactory implements Factory<World> {
 		
 		// If the world is finished loading, move on to the next world.
 		if (worldBuilder.isFinished()) {
+			cache.put(worldDirectories[worldIndex].getName(), worldBuilder.world);
 			findNextWorld();
 		}
 	}

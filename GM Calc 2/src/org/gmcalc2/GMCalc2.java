@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class GMCalc2 extends StateBasedGame {
 	
-	//Static resources.
+	// Static resources.
 	public static Font HEADERFONT;
 	public static int HEADERFONT_HEIGHT;
 	public static Font BODYFONT;
@@ -23,10 +23,10 @@ public class GMCalc2 extends StateBasedGame {
 	
 	private static boolean STATICS_CREATED = false;
 	
-	//Instance fields.
+	// Instance fields.
 	private Map<String, World> worlds;
 	
-	//Constructor.
+	// Constructor.
 	public GMCalc2() {
 		super("GM Calc 2");
 	}
@@ -52,11 +52,11 @@ public class GMCalc2 extends StateBasedGame {
 		}
 		
 		// Make the loading state.
-		LoadingState loadingState = new LoadingState("C:\\Users\\John\\Google Drive\\gmcalc2 worlds\\");
+		LoadingState loadingState = new LoadingState(this, "E:\\John\\Google Drive\\gmcalc2 worlds\\");
 		addState(loadingState);
 		
 		// Make the tab state.
-		addState(new TabState());
+		addState(new TabState(this));
 		
 		//Make a player tab from the forgotten realms world.
 		/*for (World w : worlds) {
@@ -69,7 +69,17 @@ public class GMCalc2 extends StateBasedGame {
 		}*/
 	}
 	
-	//The main method.
+	// Set the worlds.
+	public void setWorlds(Map<String, World> w) {
+		worlds = w;
+	}
+	
+	// Get the worlds.
+	public Map<String, World> getWorlds() {
+		return worlds;
+	}
+	
+	// The main method.
 	public static void main(String[] args) throws SlickException {
 		AppGameContainer gc = new AppGameContainer(new GMCalc2(), 1280, 600, false);
 		gc.setShowFPS(false);

@@ -52,7 +52,7 @@ public class Player {
 			}
 		}
 
-		//out.println("Player " + name + " loaded " + equipped.size() + " equipped items.");
+		System.out.println("Player (" + hashCode() + ") " + name + " in world " + world.getName() + " loaded " + equipped.size() + " equipped items.");
 		// Get the inventory items.
 		val = values.get(INVENTORY_KEY);
 		if (val instanceof Object[]) {
@@ -63,7 +63,7 @@ public class Player {
 				}
 			}
 		}
-		//out.println("Player " + name + " loaded " + inventory.size() + " inventory items.");
+		System.out.println("Player (" + hashCode() + ") " + name + " in world " + world.getName() + " loaded " + inventory.size() + " inventory items.");
 
 		// Recalculate the stats.
 		recalculateStats();
@@ -111,7 +111,7 @@ public class Player {
 				|| !(data[1] instanceof Object[])
 				|| !(data[2] instanceof Object[])
 				|| !(data[3] instanceof String)) {
-			//GMCalc2.out.println("Invalid item declaration in player " + name);
+			System.out.println("Invalid item declaration in player " + name);
 			return;
 		}
 
@@ -126,7 +126,7 @@ public class Player {
 		// Make the itemBase.
 		ItemBase itemBase = world.getItemBase(rawItemBase);
 		if (itemBase == null) {
-			//GMCalc2.out.println("Could not find itemBase " + rawItemBase + " for player " + name);
+			System.out.println("Could not find itemBase " + rawItemBase + " for player " + name);
 			return;
 		}
 

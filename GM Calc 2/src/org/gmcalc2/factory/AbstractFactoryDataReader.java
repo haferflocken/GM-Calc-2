@@ -28,7 +28,6 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 
 	//Constructor.
 	public AbstractFactoryDataReader(DataReader dataReader) {
-		cache = new TreeMap<>();
 		this.dataReader = dataReader;
 	}
 	
@@ -48,7 +47,7 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 		dirTree = new FileTree(dirPath, getFileExtension());
 		dirTreeIterator = dirTree.iterator();
 		doneLoading = false;
-		cache.clear();
+		cache = new TreeMap<>();
 		curDir = null;
 		findNextFile();
 	}
@@ -70,7 +69,6 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 		}
 		//Otherwise, mark this as done.
 		else {
-			System.out.println("facttory finished");
 			doneLoading = true;
 		}
 	}
@@ -93,8 +91,9 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 			E component = makeFromValues(values);
 			
 			//Add the component to the cache.
-			cache.put(file.getAbsolutePath(), component);
-			out.println("Cached object from " + file.getAbsolutePath());
+			String key = file.getAbsolutePath().substring(dirTree.getRootPath().length());
+			cache.put(key, component);
+			out.println("Cached object from " + key);
 		}
 		catch (IOException e) {
 			out.println("Failed to read file " + file.getAbsolutePath());

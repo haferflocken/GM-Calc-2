@@ -22,13 +22,15 @@ public class LoadingState extends BasicGameState {
 	public static final int ID = 0;
 	
 	// Instance fields.
+	private GMCalc2 gmcalc2;
 	private String worldsFolder;
 	private GUIContext ui;
 	private OutputFrame out;
 	private WorldFactory worldFactory;
 	
 	// Constructors.
-	public LoadingState(String worldsFolder) {
+	public LoadingState(GMCalc2 gmcalc2, String worldsFolder) {
+		this.gmcalc2 = gmcalc2;
 		this.worldsFolder = worldsFolder;
 	}
 	
@@ -63,8 +65,10 @@ public class LoadingState extends BasicGameState {
 		if (!worldFactory.isFinished())
 			worldFactory.loadNext();
 		// If we are done loading, tell the game to go to the tab state.
-		else 
+		else {
+			gmcalc2.setWorlds(worldFactory.getLoadedValues());
 			game.enterState(TabState.ID);
+		}
 		
 		// Update the ui.
 		ui.update(container.getInput(), delta);
