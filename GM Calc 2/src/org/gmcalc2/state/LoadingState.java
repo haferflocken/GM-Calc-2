@@ -3,16 +3,17 @@ package org.gmcalc2.state;
 import java.io.IOException;
 
 import org.gmcalc2.GMCalc2;
-import org.gmcalc2.World;
 import org.gmcalc2.factory.WorldFactory;
 
 import org.haferlib.slick.gui.GUIContext;
+import org.haferlib.slick.gui.ImageFrame;
 import org.haferlib.slick.gui.OutputFrame;
 import org.haferlib.util.DataReader;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -44,7 +45,25 @@ public class LoadingState extends BasicGameState {
 		// Initialize the ui.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
-		out = new OutputFrame(0, 0, container.getWidth(), container.getHeight(), Integer.MIN_VALUE, GMCalc2.BODYFONT, Color.white, 10, Color.white);
+		
+		// Make the banner.
+		Image bannerImage = Image.createOffscreenImage(container.getWidth(), GMCalc2.HEADERFONT_HEIGHT * 2);
+		Graphics bannerG = bannerImage.getGraphics();
+		bannerG.setFont(GMCalc2.HEADERFONT);
+		bannerG.setColor(Color.white);
+		String bannerText = "GMCalc2: Loading worlds...";
+		int drawX = container.getWidth() / 2 - GMCalc2.HEADERFONT.getWidth(bannerText) / 2;
+		int drawY = GMCalc2.HEADERFONT_HEIGHT / 2;
+		bannerG.drawString(bannerText, drawX, drawY);
+		bannerG.flush();
+		bannerG.destroy();
+		ImageFrame banner = new ImageFrame(bannerImage, 0, 0, bannerImage.getWidth(), bannerImage.getHeight(), 0);
+		ui.addElement(banner);
+		
+		// Make the output frame.
+		int outY = banner.getHeight();
+		int outHeight = container.getHeight() - outY;
+		out = new OutputFrame(0, outY, container.getWidth(), outHeight, Integer.MIN_VALUE, GMCalc2.BODYFONT, Color.white, 10, Color.white);
 		ui.addElement(out);
 		
 		// Create the world factory.
@@ -57,6 +76,12 @@ public class LoadingState extends BasicGameState {
 			ui.destroy();
 			throw new SlickException("Failed to create world factory.");
 		}
+	}
+	
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) {
+		// Destroy the UI when we leave. We never come back so it isn't really needed.
+		ui.destroy();
 	}
 	
 	@Override
