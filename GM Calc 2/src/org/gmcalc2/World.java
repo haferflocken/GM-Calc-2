@@ -12,13 +12,10 @@ import java.util.TreeMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Arrays;
-import java.io.IOException;
 
 import org.newdawn.slick.Color;
 
 import org.gmcalc2.item.*;
-
-import org.haferlib.util.DataReader;
 
 public class World {
 	
@@ -71,44 +68,24 @@ public class World {
 	public static final String PLAYERSTATCATEGORIES_KEY = "playerStatCategories";
 	
 	//Instance fields.
-	private String worldLoc;								//The location of the world in the file GMCalc2.
-	private DataReader dataReader;							//The data reader that reads files in the world.
-	private String name;									//The name of the world.
-	private RarityColor[] rarityColors;						//The rarity colors that are displayed in this world.
-	private Map<String, String[]> playerStatCategories;		//The categories stats are sorted into in PlayerTabs.
-	private ComponentFactory prefixFactory;					//The factory that loads prefixes.
-	private ComponentFactory materialFactory;				//The factory that loads materials.
-	private ItemBaseFactory itemBaseFactory;				//The factory that loads item bases.
-	private TreeMap<String, Player> players;				//The map of players.
+	private String worldLoc;										//The location of the world in the file GMCalc2.
+	private String name;											//The name of the world.
+	private RarityColor[] rarityColors;								//The rarity colors that are displayed in this world.
+	private LinkedHashMap<String, String[]> playerStatCategories;	//The categories stats are sorted into in PlayerTabs.
+	private Map<String, Component> prefixes;						//The prefixes.
+	private Map<String, Component> materials;						//The materials.
+	private Map<String, ItemBase> itemBases;						//The itemBases.
+	private Map<String, Player> players;							//The players.
 	
 	//Constructor.
-	public World(String worldLoc) {
-		GMCalc2.out.println("\nCreating World: " + worldLoc);
-		this.worldLoc = worldLoc;
-		dataReader = new DataReader();
-		
-		GMCalc2.out.println("Loading rules...");
+	public World(TreeMap<String, Object> ruleValues, Map<String, Component> prefixes,
+			Map<String, Component> materials, Map<String, ItemBase> itemBases) {
 		setRulesToDefault();
-		try {
-			TreeMap<String, Object> rawRules = dataReader.readFile(worldLoc + "rules.txt");
-			setRules(rawRules);
-			GMCalc2.out.println("Loaded rules.");
-		}
-		catch (IOException e) {
-			GMCalc2.out.println("Failed to load rules.");
-		}
-		
-		GMCalc2.out.println("Caching prefixes...");
-		prefixFactory = new ComponentFactory(dataReader);
-		prefixFactory.cacheDirectory(worldLoc + "prefixes\\");
-		GMCalc2.out.println("Prefixes cached.\nCaching materials...");
-		materialFactory = new ComponentFactory(dataReader);
-		materialFactory.cacheDirectory(worldLoc + "materials\\");
-		GMCalc2.out.println("Materials cached.\nCaching itemBases...");
-		itemBaseFactory = new ItemBaseFactory(dataReader);
-		itemBaseFactory.cacheDirectory(worldLoc + "itemBases\\");
-		players = new TreeMap<>();
-		GMCalc2.out.println("ItemBases cached.\n... World created.\n");
+		setRules(ruleValues);
+		this.prefixes = prefixes;
+		this.materials = materials;
+		this.itemBases = itemBases;
+		players = null;
 	}
 	
 	//Set the rules to default values.
@@ -186,19 +163,19 @@ public class World {
 		return playerStatCategories;
 	}
 	
-	//Get a prefix from the factory.
+	//Get a prefix.
 	public Component getPrefix(String prefixName) {
-		return prefixFactory.getComponent(worldLoc + "prefixes\\" + prefixName);
+		return prefixes.get(prefixName);
 	}
 	
-	//Get a material from the factory.
+	//Get a material.
 	public Component getMaterial(String matName) {
-		return materialFactory.getComponent(worldLoc + "materials\\" + matName);
+		return materials.get(matName);
 	}
 	
-	//Get an itemBase from the factory.
+	//Get an itemBase.
 	public ItemBase getItemBase(String itemBaseName) {
-		return itemBaseFactory.getItemBase(worldLoc + "itemBases\\" + itemBaseName);
+		return itemBases.get(itemBaseName);
 	}
 	
 	//Make an item with no prefixes and with default materials.
@@ -213,7 +190,7 @@ public class World {
 		//Otherwise, find the materials and make the item.
 		ArrayList<Component> materialList = new ArrayList<>();
 		for (int i = 0; i < defMatNames.length; i++) {
-			Component mat = materialFactory.getComponent(defMatNames[i]);
+			Component mat = materials.get(defMatNames[i]);
 			if (mat != null)
 				materialList.add(mat);
 		}
@@ -235,23 +212,19 @@ public class World {
 	
 	//Get a player.
 	public Player getPlayer(String playerFile) {
-		//Return a player if we find one.
-		Player player = players.get(playerFile);
-		if (player != null)
-			return player;
-		
-		//Otherwise, if the path points to a file, load it, place it in the tree, and return it.
-		try {
-			TreeMap<String, Object> playerValues = dataReader.readFile(worldLoc + "players\\" + playerFile);
-			player = new Player(this, playerValues);
-			players.put(playerFile, player);
-			return player;
-		}
-		catch (IOException e) {
-		}
-		return null;
+		return players.get(playerFile);
 	}
 
+	//Get the player map.
+	public Map<String, Player> getPlayerMap() {
+		return players;
+	}
+	
+	//Set the player map.
+	public void setPlayerMap(Map<String, Player> p) {
+		players = p;
+	}
+	
 	//Get the rarity color of an item.
 	public Color getRarityColor(Item item) {
 		int rarity = item.getRarity();

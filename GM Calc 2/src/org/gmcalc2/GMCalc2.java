@@ -5,17 +5,13 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
-import org.gmcalc2.gui.*;
-import org.gmcalc2.item.Player;
-import org.haferlib.slick.gui.*;
+import org.newdawn.slick.state.StateBasedGame;
+import org.gmcalc2.state.*;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.util.Map;
 
-public class GMCalc2 extends BasicGame {
+public class GMCalc2 extends StateBasedGame {
 	
 	//Static resources.
 	public static Font HEADERFONT;
@@ -24,13 +20,11 @@ public class GMCalc2 extends BasicGame {
 	public static int BODYFONT_HEIGHT;
 	
 	public static Color TAB_ENABLED_COLOR, TAB_DISABLED_COLOR, TAB_NAME_COLOR, PLAYERTAB_BACKGROUND_COLOR;
-	public static OutputFrame out;
 	
 	private static boolean STATICS_CREATED = false;
 	
 	//Instance fields.
-	private GUIContext ui;
-	private ArrayList<World> worlds;
+	private Map<String, World> worlds;
 	
 	//Constructor.
 	public GMCalc2() {
@@ -38,7 +32,7 @@ public class GMCalc2 extends BasicGame {
 	}
 
 	@Override
-	public void init(GameContainer container) throws SlickException {
+	public void initStatesList(GameContainer container) throws SlickException {
 		//Load statics if necessary.
 		if (!STATICS_CREATED) {
 			//Create the fonts.
@@ -57,56 +51,22 @@ public class GMCalc2 extends BasicGame {
 			STATICS_CREATED = true;
 		}
 		
-		//Create the ui.
-		ui = new GUIContext();
-		container.getInput().addKeyListener(ui);
-		out = new OutputFrame(0, 0, container.getWidth(), container.getHeight(), Integer.MIN_VALUE, BODYFONT, Color.white, 10, Color.white);
-		ui.addElement(out);
+		// Make the loading state.
+		LoadingState loadingState = new LoadingState("C:\\Users\\John\\Google Drive\\gmcalc2 worlds\\");
+		addState(loadingState);
 		
-		//Load all the worlds.
-		loadWorlds("E:\\John\\Google Drive\\gmcalc2 worlds\\");
-
+		// Make the tab state.
+		addState(new TabState());
+		
 		//Make a player tab from the forgotten realms world.
-		for (World w : worlds) {
+		/*for (World w : worlds) {
 			if (w.getName().equals("Forgotten Realms")) {
 				Player playerTest = w.getPlayer("playerTest.txt");
 				PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT, TAB_ENABLED_COLOR, TAB_DISABLED_COLOR, TAB_NAME_COLOR, PLAYERTAB_BACKGROUND_COLOR);
 				ui.addElement(tab);
 				break;
 			}
-		}
-	}
-
-	@Override
-	public void update(GameContainer container, int delta) throws SlickException {
-		ui.update(container.getInput(), delta);
-	}
-	
-	@Override
-	public void render(GameContainer container, Graphics g) throws SlickException {
-		ui.render(g, 0, 0, container.getWidth(), container.getHeight());
-	}
-	
-	//Load the worlds in a directory.
-	private void loadWorlds(String worldDirPath) {
-		worlds = new ArrayList<>(); //Create a new world list.
-		
-		//Make sure the given path is a directory.
-		File worldsFolder = new File(worldDirPath);
-		if (!worldsFolder.isDirectory())
-			return;
-		
-		//Look at the files in the worlds folder and load the ones that are folders as worlds.
-		File[] worldFolders = worldsFolder.listFiles();
-		for (File f : worldFolders) {
-			if (f.isDirectory()) {
-				String worldPath = f.getAbsolutePath();
-				if (worldPath.charAt(worldPath.length() - 1) != '\\')
-					worldPath += '\\';
-				World world = new World(worldPath);
-				worlds.add(world);
-			}
-		}
+		}*/
 	}
 	
 	//The main method.
