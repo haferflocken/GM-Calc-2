@@ -68,7 +68,7 @@ public class Stat {
 			}
 			// If there is a float, just make an expression from it.
 			else if (values[i] instanceof Float) {
-				expression = new ConstantExpression(((Float)values[i]).intValue());
+				expression = new ConstantExpression((Float)values[i]);
 			}
 		}
 	}
@@ -143,7 +143,7 @@ public class Stat {
 	// Return an array of strings that represents the different parts of this stat.
 	public String[] toDisplayStrings() {
 		// Get a number to represent the expression.
-		int expVal = (expression == null)? 0 : expression.getValue();
+		int expVal = (expression == null)? 0 : (int)expression.getValue();
 		
 		// Create the output array.
 		String[] out = new String[((strings == null)? 0 : strings.length) + ((range != null || expVal != 0)? 1 : 0)];
