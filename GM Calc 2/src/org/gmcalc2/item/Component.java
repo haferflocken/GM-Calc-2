@@ -6,6 +6,8 @@ import java.util.TreeMap;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.haferlib.util.expression.ExpressionBuilder;
+
 public class Component {
 	
 	public static final String NAME_KEY = "name";
@@ -31,7 +33,7 @@ public class Component {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Component(TreeMap<String, Object> values) {
+	public Component(TreeMap<String, Object> values, ExpressionBuilder expBuilder) {
 		this();
 		Object val;
 		//Get the name.
@@ -41,7 +43,7 @@ public class Component {
 		//Get the stats.
 		val = values.get(STATMAP_KEY);
 		if (val instanceof Map<?, ?>) 
-			statMap = new StatMap((Map<Object, Object>)val);
+			statMap = new StatMap((Map<Object, Object>)val, expBuilder);
 		//Get the rarity.
 		val = values.get(RARITY_KEY);
 		if (val instanceof Integer)

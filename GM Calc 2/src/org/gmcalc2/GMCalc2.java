@@ -52,21 +52,11 @@ public class GMCalc2 extends StateBasedGame {
 		}
 		
 		// Make the loading state.
-		LoadingState loadingState = new LoadingState(this, "E:\\John\\Google Drive\\gmcalc2 worlds\\");
+		LoadingState loadingState = new LoadingState(this, "C:\\Users\\John\\Google Drive\\gmcalc2 worlds\\");
 		addState(loadingState);
 		
 		// Make the tab state.
 		addState(new TabState(this));
-		
-		//Make a player tab from the forgotten realms world.
-		/*for (World w : worlds) {
-			if (w.getName().equals("Forgotten Realms")) {
-				Player playerTest = w.getPlayer("playerTest.txt");
-				PlayerTab tab = new PlayerTab(playerTest, 0, 0, container.getWidth(), container.getHeight(), 0, 128, HEADERFONT, BODYFONT, TAB_ENABLED_COLOR, TAB_DISABLED_COLOR, TAB_NAME_COLOR, PLAYERTAB_BACKGROUND_COLOR);
-				ui.addElement(tab);
-				break;
-			}
-		}*/
 	}
 	
 	// Set the worlds.

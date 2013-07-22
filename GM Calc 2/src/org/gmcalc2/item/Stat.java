@@ -2,77 +2,101 @@ package org.gmcalc2.item;
 
 import java.util.Arrays;
 
+import org.haferlib.util.expression.ConstantExpression;
+import org.haferlib.util.expression.Expression;
+import org.haferlib.util.expression.ExpressionBuilder;
+
 public class Stat {
+	
+	public static final String EXPRESSION_IDENTIFIER = "#exp"; // If a string starts with this, it is an expression.
 
 	//The different parts of a stat.
 	private String[] strings;
 	private Range range;
-	private int number;
+	private Expression expression;
 	
-	//Constructors.
-	public Stat(String[] strings, Range range, int number) {
+	// Constructors.
+	public Stat(String[] strings, Range range, Expression expression) {
 		this.strings = strings;
 		this.range = range;
-		this.number = number;
+		this.expression = expression;
 	}
 	
 	public Stat() {
-		this(null, null, 0);
+		this(null, null, null);
 	}
 	
-	public Stat(Object[] values) {
+	public Stat(Object[] values, ExpressionBuilder expBuilder) {
 		this();
 		
-		//Count the number of strings in the array.
+		// Count the number of strings in the array.
 		int numStrings = 0;
 		for (int i = 0; i < values.length; i++) {
-			if (values[i] instanceof String)
-				numStrings++;
+			if (values[i] instanceof String) {
+				String string = (String)values[i];
+				if (!string.startsWith(EXPRESSION_IDENTIFIER))
+					numStrings++;
+			}
 		}
 		
-		//Look through the array and assign the values appropriately.
+		// Look through the array and assign the values appropriately.
 		if (numStrings > 0)
 			strings = new String[numStrings];
 		for (int q = 0, i = 0; i < values.length; i++) {
+			// Strings can be either an expression or just a string.
 			if (values[i] instanceof String) {
-				strings[q] = (String)values[i];
+				String string = (String)values[i];
+				// If it's an expression, make an expression.
+				if (string.startsWith(EXPRESSION_IDENTIFIER))
+					expression = expBuilder.makeExpression(string.substring(EXPRESSION_IDENTIFIER.length()));
+				// Otherwise, treat it like a string.
+				else
+					strings[q] = (String)values[i];
 				q++;
 			}
+			// Arrays are possibly ranges.
 			else if (values[i] instanceof Object[]) {
 				Object[] rawRange = (Object[])values[i];
+				// To be a range, the array must be length 2 and have 2 integers in it.
 				if (rawRange.length == 2 && rawRange[0] instanceof Integer && rawRange[1] instanceof Integer) {
 					range = new Range((Integer)rawRange[0], (Integer)rawRange[1]);
 				}
 			}
+			// If there is an integer, just make an expression from it.
 			else if (values[i] instanceof Integer) {
-				number = (Integer)values[i];
+				expression = new ConstantExpression((Integer)values[i]);
+			}
+			// If there is a float, just make an expression from it.
+			else if (values[i] instanceof Float) {
+				expression = new ConstantExpression(((Float)values[i]).intValue());
 			}
 		}
 	}
 	
-	//Return a copy of this stat.
+	// Return a copy of this stat.
 	public Stat copy() {
 		Stat out = new Stat();
 		if (strings != null)
 			out.strings = Arrays.copyOf(strings, strings.length);
 		if (range != null)
 			out.range = new Range(range.getMin(), range.getMax());
-		out.number = number;
+		if (expression != null)
+			out.expression = expression.copy();
 		return out;
 	}
 	
-	//Take a stat and merge its values into this, adding ranges and numbers.
+	// Take a stat and merge its values into this, adding ranges and numbers.
 	public void merge(Stat other) {
-		//Merge the strings.
+		// Merge the strings.
 		if (other.strings != null) {
 			if (strings == null) {
 				strings = Arrays.copyOf(other.strings, other.strings.length);
 			}
 			else {
-				//Count the number of strings in the incoming array that we don't already have.
-				int numNew = other.strings.length; //Assume we are adding nothing but new strings.
+				// Count the number of strings in the incoming array that we don't already have.
+				int numNew = other.strings.length; // Assume we are adding nothing but new strings.
 				for (int q, i = 0; i < other.strings.length; i++) {
-					//Loop through strings to see if we have this or not. If we do, get rid of the assumption.
+					// Loop through strings to see if we have this or not. If we do, get rid of the assumption.
 					for (q = 0; q < strings.length; q++) {
 						if (strings[q].equals(other.strings[i])) {
 							numNew--;
@@ -81,10 +105,10 @@ public class Stat {
 					}
 				}
 					
-				//Merge the new strings into the array.
+				// Merge the new strings into the array.
 				String[] newStrings = Arrays.copyOf(strings, strings.length + numNew);
 				for (int n = strings.length, i = 0; i < other.strings.length; i++) {
-					//See if the string is unique.
+					// See if the string is unique.
 					boolean newString = true;
 					for (int q = 0; q < strings.length; q++) {
 						if (strings[q].equals(other.strings[i])) {
@@ -99,7 +123,7 @@ public class Stat {
 			}
 		}
 		
-		//Add the ranges.
+		// Add the ranges.
 		if (other.range != null) {
 			if (range == null)
 				range = new Range(other.range.getMin(), other.range.getMax());
@@ -107,30 +131,39 @@ public class Stat {
 				range.add(other.range);
 		}
 		
-		//Add the numbers.
-		number += other.number;
+		// Add the expressions.
+		if (other.expression != null) {
+			if (expression == null)
+				expression = other.expression.copy();
+			else
+				expression = expression.addWith(other.expression);
+		}
 	}
 	
-	//Return an array of strings that represents the different parts of this stat.
+	// Return an array of strings that represents the different parts of this stat.
 	public String[] toDisplayStrings() {
-		//Create the output array.
-		String[] out = new String[((strings == null)? 0 : strings.length) + ((range != null || number != 0)? 1 : 0)];
+		// Get a number to represent the expression.
+		int expVal = (expression == null)? 0 : expression.getValue();
 		
-		//Add in the strings if we have any.
+		// Create the output array.
+		String[] out = new String[((strings == null)? 0 : strings.length) + ((range != null || expVal != 0)? 1 : 0)];
+		
+		// Add in the strings if we have any.
 		if (strings != null) {
 			for (int i = 0; i < strings.length; i++) {
 				out[i] = strings[i];
 			}
 		}
 		
-		//The last string in the output is the Range + " +/- " + number.
-		if (range != null || number != 0) {
+		// The last string in the output is the Range + " +/- " + number.
+		if (range != null || expVal != 0) {
 			if (range == null)
-				out[out.length - 1] = "" + number;
-			else if (number == 0)
+				out[out.length - 1] = "" + expVal;
+			else if (expVal == 0)
 				out[out.length - 1] = range.toString();
 			else
-				out[out.length - 1] = range.toString() + ((number < 0)? " - " + (number * -1) : " + " + number);
+				out[out.length - 1] = range.toString() +
+					((expVal < 0)? " - " + (expVal * -1) : " + " + expVal);
 		}
 		
 		//Return that shit.

@@ -2,6 +2,8 @@ package org.gmcalc2.item;
 
 import java.util.TreeMap;
 
+import org.haferlib.util.expression.ExpressionBuilder;
+
 public class ItemBase extends Component {
 	
 	public static final String PREFIXREQS_KEY = "prefixRequirements";
@@ -17,8 +19,8 @@ public class ItemBase extends Component {
 		super();
 	}
 	
-	public ItemBase(TreeMap<String, Object> values) {
-		super(values);
+	public ItemBase(TreeMap<String, Object> values, ExpressionBuilder expBuilder) {
+		super(values, expBuilder);
 		
 		Object val;
 		//Get the prefix tag requirements.

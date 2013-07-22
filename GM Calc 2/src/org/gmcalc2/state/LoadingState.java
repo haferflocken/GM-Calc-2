@@ -4,12 +4,11 @@ import java.io.IOException;
 
 import org.gmcalc2.GMCalc2;
 import org.gmcalc2.factory.WorldFactory;
-
 import org.haferlib.slick.gui.GUIContext;
 import org.haferlib.slick.gui.ImageFrame;
 import org.haferlib.slick.gui.OutputFrame;
 import org.haferlib.util.DataReader;
-
+import org.haferlib.util.expression.ExpressionBuilder;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -68,7 +67,7 @@ public class LoadingState extends BasicGameState {
 		
 		// Create the world factory.
 		try {
-			worldFactory = new WorldFactory(new DataReader());
+			worldFactory = new WorldFactory(new DataReader(), new ExpressionBuilder());
 			worldFactory.setOutputFrame(out);
 			worldFactory.setDirectory(worldsFolder);
 		}

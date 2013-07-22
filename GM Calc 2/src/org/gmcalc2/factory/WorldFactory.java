@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import org.gmcalc2.World;
 import org.haferlib.slick.gui.OutputFrame;
 import org.haferlib.util.DataReader;
+import org.haferlib.util.expression.ExpressionBuilder;
 
 public class WorldFactory implements Factory<World> {
 	
@@ -28,9 +29,9 @@ public class WorldFactory implements Factory<World> {
 		private World world;
 		
 		private WorldBuilder() {
-			prefixFactory = new ComponentFactory(WorldFactory.this.dataReader);
-			materialFactory = new ComponentFactory(WorldFactory.this.dataReader);
-			itemBaseFactory = new ItemBaseFactory(WorldFactory.this.dataReader);
+			prefixFactory = new ComponentFactory(WorldFactory.this.dataReader, WorldFactory.this.expBuilder);
+			materialFactory = new ComponentFactory(WorldFactory.this.dataReader, WorldFactory.this.expBuilder);
+			itemBaseFactory = new ItemBaseFactory(WorldFactory.this.dataReader, WorldFactory.this.expBuilder);
 			playerFactory = new PlayerFactory(WorldFactory.this.dataReader, null);
 		}
 		
@@ -92,14 +93,16 @@ public class WorldFactory implements Factory<World> {
 	
 	private Map<String, World> cache;
 	private DataReader dataReader;
+	private ExpressionBuilder expBuilder;
 	private File[] worldDirectories;
 	private int worldIndex;
 	private WorldBuilder worldBuilder;
 	private OutputFrame out;
 	
 	// Constructor.
-	public WorldFactory(DataReader dataReader) {
+	public WorldFactory(DataReader dataReader, ExpressionBuilder expBuilder) {
 		this.dataReader = dataReader;
+		this.expBuilder = expBuilder;
 		worldBuilder = new WorldBuilder();
 	}
 
