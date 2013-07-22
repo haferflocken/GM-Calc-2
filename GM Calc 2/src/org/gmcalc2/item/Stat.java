@@ -160,27 +160,42 @@ public class Stat {
 		int expVal = (expression == null)? 0 : (int)expression.getValue();
 		
 		// Create the output array.
-		String[] out = new String[((strings == null)? 0 : strings.length) + ((range != null || expVal != 0)? 1 : 0)];
+		String[] out;
+		if (strings == null)
+			out = new String[1];
+		else if (range == null && expVal == 0)
+			out = new String[strings.length];
+		else
+			out = new String[strings.length + 1];
 		
-		// Add in the strings if we have any.
+		// If we have strings...
 		if (strings != null) {
+			// Add the strings in.
 			for (int i = 0; i < strings.length; i++) {
 				out[i] = strings[i];
 			}
+			// Return now if the range and expression don't need to be displayed.
+			if (range == null && expVal == 0)
+				return out;
+			// Otherwise, add the range and val appropriately.
+			if (range == null && expVal != 0)
+				out[strings.length] = "" + expVal;
+			else if (range != null && expVal == 0)
+				out[strings.length] = range.toString();
+			else 
+				out[strings.length] = range.toString() + ((expVal < 0)? " - " + (expVal * -1) : " + " + expVal);
+			// Return.
+			return out;
 		}
 		
-		// The last string in the output is the Range + " +/- " + number.
-		if (range != null || expVal != 0) {
-			if (range == null)
-				out[out.length - 1] = "" + expVal;
-			else if (expVal == 0)
-				out[out.length - 1] = range.toString();
-			else
-				out[out.length - 1] = range.toString() +
-					((expVal < 0)? " - " + (expVal * -1) : " + " + expVal);
-		}
-		
-		//Return that shit.
+		// If there are no strings, the only output is the range and expression.
+		if (range == null)
+			out[0] = "" + expVal;
+		else if (expVal == 0)
+			out[0] = range.toString();
+		else
+			out[0] = range.toString() + ((expVal < 0)? " - " + (expVal * -1) : " + " + expVal);
+		//Return.
 		return out;
 	}
 	
