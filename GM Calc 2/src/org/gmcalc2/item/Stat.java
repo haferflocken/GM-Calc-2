@@ -73,6 +73,20 @@ public class Stat {
 		}
 	}
 	
+	// Accessors.
+	public String[] getStrings() {
+		return strings;
+	}
+	
+	public Range getRange() {
+		return range;
+	}
+	
+	public Expression getExpression() {
+		return expression;
+	}
+
+	
 	// Return a copy of this stat.
 	public Stat copy() {
 		Stat out = new Stat();

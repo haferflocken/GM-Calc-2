@@ -2,12 +2,47 @@
 
 package org.gmcalc2.item;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.Map;
 
+import org.haferlib.util.expression.ConstantExpression;
+import org.haferlib.util.expression.Expression;
 import org.haferlib.util.expression.ExpressionBuilder;
+import org.haferlib.util.expression.VariableExpression;
 
 public class StatMap {
+	
+	// Compares the expressions in stats to figure out what order to evaluate them in.
+	public static class StatEvalOrderComparator implements Comparator<Stat> {
+
+		// 1:  o1 > o2
+		// 0:  o1 == o2;
+		// -1: o1 < o2
+		@Override
+		public int compare(Stat o1, Stat o2) {
+			Expression exp1 = o1.getExpression();
+			Expression exp2 = o2.getExpression();
+			if (exp1 == null) {
+				if (exp2 == null)
+					return 0;
+				return -1;
+			}
+			if (exp2 == null)
+				return 1;
+			if (exp1 instanceof ConstantExpression) {
+				if (exp2 instanceof ConstantExpression)
+					return 0;
+				return -1;
+			}
+			if (exp2 instanceof ConstantExpression)
+				return 1;
+			return 0;
+		}
+		
+	}
 	
 	private TreeMap<String, Stat> stats; //The stats and their names.
 	
@@ -16,10 +51,10 @@ public class StatMap {
 		stats = new TreeMap<>();
 	}
 	
-	public StatMap(Map<Object, Object> rawStats, ExpressionBuilder expBuilder) {
+	public StatMap(Map<?, ?> rawStats, ExpressionBuilder expBuilder) {
 		this();
 		// Look at the pairs in the map. Those that have a string key and a valid stat value are put into the map of stats.
-		for (Map.Entry<Object, Object> entry : rawStats.entrySet()) {
+		for (Map.Entry<?, ?> entry : rawStats.entrySet()) {
 			if (entry.getKey() instanceof String && entry.getValue() instanceof Object[]) {
 				// Get the key and value for easy reference.
 				String key = (String)entry.getKey();
@@ -93,4 +128,28 @@ public class StatMap {
 		return out;
 	}
 
+	// Evaluate the expressions in the stat map.
+	public void evaluateExpressions() {
+		// Sort the stats by their order of operations.
+		Collection<Stat> statCollection = stats.values();
+		Stat[] statVals = statCollection.toArray(new Stat[statCollection.size()]);
+		Arrays.sort(statVals, new StatEvalOrderComparator());
+		
+		// Make a map of the expressions.
+		TreeMap<String, Expression> statExpressions = new TreeMap<>();
+		for (Map.Entry<String, Stat> entry : stats.entrySet()) {
+			Expression exp = entry.getValue().getExpression();
+			if (exp != null)
+				statExpressions.put(entry.getKey(), exp);
+		}
+		
+		// Evaluate all the stats.
+		for (Stat s : statVals) {
+			Expression exp = s.getExpression();
+			if (exp instanceof VariableExpression) {
+				((VariableExpression)exp).evaluate(statExpressions);
+			}
+		}
+	}
+	
 }

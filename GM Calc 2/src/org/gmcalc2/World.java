@@ -1,4 +1,4 @@
-//A world holds:
+// A world holds:
 //	component factories for materials, prefixes, and itemBases
 //	a map of players in the world that have been loaded
 //	rules for the players in the world
@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.Arrays;
 
 import org.newdawn.slick.Color;
-
 import org.gmcalc2.item.*;
+import org.haferlib.util.expression.ExpressionBuilder;
 
 public class World {
 	
-	//The class for RarityColors.
+	// The class for RarityColors.
 	public static class RarityColor implements Comparable<RarityColor> {
 		
 		private Color color;
@@ -31,12 +31,12 @@ public class World {
 		}
 		
 		public int compareTo(RarityColor other) {
-			//First, compare rarity.
+			// First, compare rarity.
 			if (rarity < other.rarity)
 				return -1;
 			if (rarity > other.rarity)
 				return 1;
-			//If rarities are equal, compare color values.
+			// If rarities are equal, compare color values.
 			if (color.getRed() < other.color.getRed()) 
 				return -1;
 			if (color.getRed() > other.color.getRed())
@@ -62,55 +62,58 @@ public class World {
 		}
 	}
 	
-	//Keys for loading.
+	// Keys for loading.
 	public static final String NAME_KEY = "name";
 	public static final String RARITYCOLORS_KEY = "rarityColors";
 	public static final String PLAYERSTATCATEGORIES_KEY = "playerStatCategories";
+	public static final String PLAYERBASESTATS_KEY = "playerBase";
 	
-	//Instance fields.
-	private String worldLoc;										//The location of the world in the file GMCalc2.
-	private String name;											//The name of the world.
-	private RarityColor[] rarityColors;								//The rarity colors that are displayed in this world.
-	private LinkedHashMap<String, String[]> playerStatCategories;	//The categories stats are sorted into in PlayerTabs.
-	private Map<String, Component> prefixes;						//The prefixes.
-	private Map<String, Component> materials;						//The materials.
-	private Map<String, ItemBase> itemBases;						//The itemBases.
-	private Map<String, Player> players;							//The players.
+	// Instance fields.
+	private String worldLoc;										// The location of the world in the file GMCalc2.
+	private String name;											// The name of the world.
+	private RarityColor[] rarityColors;								// The rarity colors that are displayed in this world.
+	private LinkedHashMap<String, String[]> playerStatCategories;	// The categories stats are sorted into in PlayerTabs.
+	private StatMap playerBaseStats;								// The player's base stats.
+	private Map<String, Component> prefixes;						// The prefixes.
+	private Map<String, Component> materials;						// The materials.
+	private Map<String, ItemBase> itemBases;						// The itemBases.
+	private Map<String, Player> players;							// The players.
 	
-	//Constructor.
-	public World(TreeMap<String, Object> ruleValues, Map<String, Component> prefixes,
+	// Constructor.
+	public World(TreeMap<String, Object> ruleValues, ExpressionBuilder expBuilder, Map<String, Component> prefixes,
 			Map<String, Component> materials, Map<String, ItemBase> itemBases) {
 		setRulesToDefault();
-		setRules(ruleValues);
+		setRules(ruleValues, expBuilder);
 		this.prefixes = prefixes;
 		this.materials = materials;
 		this.itemBases = itemBases;
 		players = null;
 	}
 	
-	//Set the rules to default values.
+	// Set the rules to default values.
 	public void setRulesToDefault() {
 		name = worldLoc;
 		rarityColors = new RarityColor[] { new RarityColor(Color.white, Integer.MIN_VALUE) };
 		playerStatCategories = new LinkedHashMap<>();
+		playerBaseStats = null;
 	}
 	
-	//Set the rules using loaded data.
-	public void setRules(TreeMap<String, Object> rawRules) {
+	// Set the rules using loaded data.
+	public void setRules(TreeMap<String, Object> rawRules, ExpressionBuilder expBuilder) {
 		Object val;
-		//Get the name.
+		// Get the name.
 		val = rawRules.get(NAME_KEY);
 		if (val instanceof String)
 			name = (String)val;
 		
-		//Get the rarity colors.
+		// Get the rarity colors.
 		val = rawRules.get(RARITYCOLORS_KEY);
 		if (val instanceof Map<?, ?>) {
 			//Get the map and make an ArrayList to put the parsed colors into.
 			Map<?, ?> rarityMap = (Map<?, ?>)val;
 			ArrayList<RarityColor> rarityColorList = new ArrayList<>();
 			
-			//Look through the map, parsing out rarity colors.
+			// Look through the map, parsing out rarity colors.
 			for (Map.Entry<?, ?> entry : rarityMap.entrySet()) {
 				if (entry.getKey() instanceof Integer && entry.getValue() instanceof Object[]) {
 					Integer rarityVal = (Integer)entry.getKey();
@@ -125,14 +128,14 @@ public class World {
 				}
 			}
 			
-			//If we successfully parsed any, set rarityColors to the contents of rarityColorList and then sort.
+			// If we successfully parsed any, set rarityColors to the contents of rarityColorList and then sort.
 			if (rarityColorList.size() > 0) {
 				rarityColors = rarityColorList.toArray(new RarityColor[rarityColorList.size()]);
 				Arrays.sort(rarityColors);
 			}
 		}
 		
-		//Get the player stat categories.
+		// Get the player stat categories.
 		val = rawRules.get(PLAYERSTATCATEGORIES_KEY);
 		if (val instanceof Map<?, ?>) {
 			Map<?, ?> catMap = (Map<?, ?>)val;
@@ -151,24 +154,35 @@ public class World {
 				}
 			}
 		}
+		
+		// Get the player base stats.
+		val = rawRules.get(PLAYERBASESTATS_KEY);
+		if (val instanceof Map<?, ?>) {
+			playerBaseStats = new StatMap((Map<?, ?>)val, expBuilder);
+		}
 	}
 	
-	//Get the name.
+	// Get the name.
 	public String getName() {
 		return name;
 	}
 	
-	//Get the player stat categories.
+	// Get the player stat categories.
 	public Map<String, String[]> getPlayerStatCategories() {
 		return playerStatCategories;
 	}
 	
-	//Get a prefix.
+	// Get the player base stats.
+	public StatMap getPlayerBaseStats() {
+		return playerBaseStats;
+	}
+	
+	// Get a prefix.
 	public Component getPrefix(String prefixName) {
 		return prefixes.get(prefixName);
 	}
 	
-	//Get a material.
+	// Get a material.
 	public Component getMaterial(String matName) {
 		return materials.get(matName);
 	}
@@ -178,16 +192,16 @@ public class World {
 		return itemBases.get(itemBaseName);
 	}
 	
-	//Make an item with no prefixes and with default materials.
+	// Make an item with no prefixes and with default materials.
 	public Item makeItem(ItemBase itemBase) {
-		//Get the default materials.
+		// Get the default materials.
 		String[] defMatNames = itemBase.getDefaultMaterials();
 		
-		//If there are no default materials, make a materialless item.
+		// If there are no default materials, make a materialless item.
 		if (defMatNames == null)
 			return makeItem(new Component[0], itemBase);
 		
-		//Otherwise, find the materials and make the item.
+		// Otherwise, find the materials and make the item.
 		ArrayList<Component> materialList = new ArrayList<>();
 		for (int i = 0; i < defMatNames.length; i++) {
 			Component mat = materials.get(defMatNames[i]);
@@ -195,37 +209,37 @@ public class World {
 				materialList.add(mat);
 		}
 		
-		//Make and return the item.
+		// Make and return the item.
 		Component[] materials = materialList.toArray(new Component[materialList.size()]);
 		return makeItem(materials, itemBase);
 	}
 	
-	//Make an item with no prefixes and some materials.
+	// Make an item with no prefixes and some materials.
 	public Item makeItem(Component[] materials, ItemBase itemBase) {
 		return makeItem(new Component[0], materials, itemBase);
 	}
 	
-	//Make an item with some prefixes and some materials.
+	// Make an item with some prefixes and some materials.
 	public Item makeItem(Component[] prefixes, Component[] materials, ItemBase itemBase) {
 		return new Item(prefixes, materials, itemBase);
 	}
 	
-	//Get a player.
+	// Get a player.
 	public Player getPlayer(String playerFile) {
 		return players.get(playerFile);
 	}
 
-	//Get the player map.
+	// Get the player map.
 	public Map<String, Player> getPlayerMap() {
 		return players;
 	}
 	
-	//Set the player map.
+	// Set the player map.
 	public void setPlayerMap(Map<String, Player> p) {
 		players = p;
 	}
 	
-	//Get the rarity color of an item.
+	// Get the rarity color of an item.
 	public Color getRarityColor(Item item) {
 		int rarity = item.getRarity();
 		for (int i = rarityColors.length - 1; i > -1; i--) {

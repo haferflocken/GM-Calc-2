@@ -74,7 +74,7 @@ public class WorldFactory implements Factory<World> {
 			else if (ruleValues == null)
 				loadRules();
 			else if (world == null) {
-				world = new World(ruleValues, prefixFactory.getLoadedValues(),
+				world = new World(ruleValues, expBuilder, prefixFactory.getLoadedValues(),
 						materialFactory.getLoadedValues(), itemBaseFactory.getLoadedValues());
 				playerFactory.setWorld(world);
 			}

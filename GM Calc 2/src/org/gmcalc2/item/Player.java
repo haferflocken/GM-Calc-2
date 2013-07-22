@@ -93,7 +93,13 @@ public class Player {
 	// Recalculate the stats.
 	public void recalculateStats() {
 		statMap.clear();
+		
+		// If a player base is defined in the world, merge it into the stats.
+		StatMap baseStats = world.getPlayerBaseStats();
+		if (baseStats != null)
+			statMap.mergeMap(baseStats);
 
+		// Merge the equipped item stats into the stats.
 		for (int q, i = 0; i < equipped.size(); i++) {
 			Item item = equipped.get(i);
 			int amount = equipped.getCount(i);
@@ -101,6 +107,9 @@ public class Player {
 				statMap.mergeMap(item.getStatMap());
 			}
 		}
+
+		// Evaluate the expressions in the stats.
+		statMap.evaluateExpressions();
 	}
 
 	// Turn an array of objects into an item and add it to the given bag.
