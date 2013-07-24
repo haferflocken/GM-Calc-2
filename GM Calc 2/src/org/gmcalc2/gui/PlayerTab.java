@@ -32,7 +32,7 @@ public class PlayerTab extends Tab {
 	private boolean dragging;
 	private int dragImageXOffset, dragImageYOffset;
 
-	//Constructor.
+	// Constructor.
 	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Font columnFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor) {
 		super(player.getName(), x, y, width, height, tabX, tabWidth, font, tabEnabledColor, tabDisabledColor, tabNameColor);
 		this.columnFont = columnFont;
@@ -41,12 +41,12 @@ public class PlayerTab extends Tab {
 		redrawLabels();
 	}
 	
-	//Set the player and recreate the columns.
+	// Set the player and recreate the columns.
 	public void setPlayer(Player p) {
-		//Set the player.
+		// Set the player.
 		player = p;
 		
-		//Get rid of the old columns (if they exist).
+		// Get rid of the old columns (if they exist).
 		if (statColumn != null)
 			subcontext.removeElement(statColumn);
 		if (equippedColumn != null)
@@ -54,10 +54,10 @@ public class PlayerTab extends Tab {
 		if (inventoryColumn != null)
 			subcontext.removeElement(inventoryColumn);
 		
-		//Clear the selection.
+		// Clear the selection.
 		clearSelectedItemDisplay();
 		
-		//Add the new columns from right to left so the scroll bars line up nicely with the right side.
+		// Add the new columns from right to left so the scroll bars line up nicely with the right side.
 		int columnY = tabY2 + font.getLineHeight();
 		int columnWidth = width / 3;
 		int columnHeight = y2 - columnY;
@@ -71,23 +71,23 @@ public class PlayerTab extends Tab {
 		statColumn = new ScrollableListFrame(statColumnX, columnY, columnWidth, columnHeight, 0, 8, Color.white);
 		subcontext.addElement(statColumn);
 		
-		//Fill up the columns.
+		// Fill up the columns.
 		fillStatColumn();
 		fillItemColumn(equippedColumn, player.getEquipped(), true);
 		fillItemColumn(inventoryColumn, player.getInventory(), false);
 	}
 	
-	//Fill the stat column with the sorted stats of the player.
+	// Fill the stat column with the sorted stats of the player.
 	private void fillStatColumn() {
 		statColumn.reinitSubcontext();
 		
-		//Some fields that will help sort the stats.
+		// Some fields that will help sort the stats.
 		Map<String, String[]> categoryRules = player.getWorld().getPlayerStatCategories();
 		TreeMap<String, Stat> playerStats = player.getStatMap().copyTree();
 		ArrayList<String> categoryNames = new ArrayList<>();
 		ArrayList<String[]> categoryContents = new ArrayList<>();
 
-		//Sort the stats.
+		// Sort the stats.
 		ArrayList<String> catBuilder = new ArrayList<>();
 		for (Map.Entry<String, String[]> ruleEntry : categoryRules.entrySet()) {
 			String[] ruleKeys = ruleEntry.getValue();
@@ -104,7 +104,7 @@ public class PlayerTab extends Tab {
 			}
 		}
 		
-		//Handle the stats that weren't able to be sorted.
+		// Handle the stats that weren't able to be sorted.
 		for (Map.Entry<String, Stat> entry : playerStats.entrySet()) {
 			catBuilder.add(entry.getKey() + ": " + entry.getValue().toString());
 		}
@@ -115,36 +115,36 @@ public class PlayerTab extends Tab {
 			categoryContents.add(catStats);
 		}
 		
-		//Make the ItemDisplays from them.
+		// Make the ItemDisplays from them.
 		GUIElement[] statDisplays = new GUIElement[categoryNames.size()];
 		int groupWidth = statColumn.getWidth() - statColumn.getScrollBarWidth();
 		for (int i = 0; i < statDisplays.length; i++) {
-			statDisplays[i] = new CollapsibleStringGroup(statColumn, categoryNames.get(i), categoryContents.get(i), Color.white, 0, 0, groupWidth, columnFont, true);
+			statDisplays[i] = new CollapsibleStringGroup(categoryNames.get(i), categoryContents.get(i), Color.white, 0, 0, groupWidth, columnFont, true);
 		}
 		statColumn.addElements(statDisplays);
 	}
 	
-	//Fill a column with collapsible string groups representing a list of items.
+	// Fill a column with collapsible string groups representing a list of items.
 	private void fillItemColumn(ScrollableListFrame column, ListBag<Item> bag, boolean expanded) {
 		column.clearElements();
 		
+		int displayWidth = column.getWidth() - column.getScrollBarWidth();
 		GUIElement[] elements = new GUIElement[bag.size()];
 		for (int i = 0; i < bag.size(); i++) {
 			Item item = bag.get(i);
-			ItemDisplay itemDisplay = makeItemDisplay(column, item, bag, expanded);
+			ItemDisplay itemDisplay = makeItemDisplay(item, bag, displayWidth, expanded);
 			elements[i] = itemDisplay;
 		}
 		column.addElements(elements);
 	}
 	
-	//Make an item display.
-	private ItemDisplay makeItemDisplay(ScrollableListFrame column, Item item, ListBag<Item> bag, boolean expanded) {
-		int displayWidth = column.getWidth() - column.getScrollBarWidth();
-		ItemDisplay itemDisplay = new ItemDisplay(column, item, bag, player.getWorld().getRarityColor(item), 0, 0, displayWidth, columnFont, expanded);
+	// Make an item display.
+	private ItemDisplay makeItemDisplay(Item item, ListBag<Item> bag, int displayWidth, boolean expanded) {
+		ItemDisplay itemDisplay = new ItemDisplay(item, bag, player.getWorld().getRarityColor(item), 0, 0, displayWidth, columnFont, expanded);
 		return itemDisplay;
 	}
 
-	//Redraw the labels that are displayed above the columns.
+	// Redraw the labels that are displayed above the columns.
 	private void redrawLabels() {
 		try {
 			labelsImage = Image.createOffscreenImage(width, font.getLineHeight());
@@ -166,33 +166,33 @@ public class PlayerTab extends Tab {
 		}
 	}
 	
-	//Select an item display.
-	//REQUIRES: group is not null
+	// Select an item display.
+	// REQUIRES: group is not null
 	private void selectItemDisplay(ItemDisplay group) {
 		selectedItemDisplay = group;
 		int dragImageWidth = columnFont.getWidth(selectedItemDisplay.getTitle());
 		int dragImageHeight = columnFont.getLineHeight();
 		dragImageXOffset = -dragImageWidth / 2;
 		dragImageYOffset = -dragImageHeight / 2;
-		//Draw the new drag image.
+		// Draw the new drag image.
 		try {
-			//Create the drag image and a graphics to draw to it.
+			// Create the drag image and a graphics to draw to it.
 			dragImage = Image.createOffscreenImage(dragImageWidth, dragImageHeight);
 			Graphics g = dragImage.getGraphics();
 			
-			//Fill the background with transparency.
+			// Fill the background with transparency.
 			Color transparency = new Color(0, 0, 0, 0);
 			g.setDrawMode(Graphics.MODE_ALPHA_MAP);
 			g.setColor(transparency);
 			g.fillRect(0, 0, dragImageWidth, dragImageHeight);
 			g.setDrawMode(Graphics.MODE_NORMAL);
 			
-			//Draw the string.
+			// Draw the string.
 			g.setFont(columnFont);
 			g.setColor(selectedItemDisplay.getTextColor());
 			g.drawString(selectedItemDisplay.getTitle(), 0, 0);
 			
-			//Flush the graphics and destroy it.
+			// Flush the graphics and destroy it.
 			g.flush();
 			g.destroy();
 		}
@@ -203,10 +203,10 @@ public class PlayerTab extends Tab {
 		}
 	}
 	
-	//Clear the selected item display.
+	// Clear the selected item display.
 	private void clearSelectedItemDisplay() {
 		selectedItemDisplay = null;
-		//Destroy the old drag image.
+		// Destroy the old drag image.
 		if (dragImage != null) {
 			try {
 				dragImage.destroy();
@@ -218,15 +218,15 @@ public class PlayerTab extends Tab {
 		}
 	}
 	
-	//Stop dragging the selected item display and, if needed, move it to its new position.
-	//REQUIRES: An item display is selected.
+	// Stop dragging the selected item display and, if needed, move it to its new position.
+	// REQUIRES: An item display is selected.
 	private void dropSelectedItemDisplay() {
-		//Stop dragging.
+		// Stop dragging.
 		dragging = false;
 		
-		//See if it needs a new position. First check is that we aren't just placing it where it already is.
+		// See if it needs a new position. First check is that we aren't just placing it where it already is.
 		if (!selectedItemDisplay.pointIsWithin(mouseX, mouseY)) {
-			//It can be placed in either the equipped column or the inventory column.
+			// It can be placed in either the equipped column or the inventory column.
 			ScrollableListFrame column = null;
 			if (equippedColumn.pointIsWithin(mouseX, mouseY)) {
 				column = equippedColumn;
@@ -235,12 +235,12 @@ public class PlayerTab extends Tab {
 				column = inventoryColumn;
 			}
 			
-			//If it's not being placed in either column, return.
+			// If it's not being placed in either column, return.
 			if (column == null)
 				return;
 			
-			//Determine the direction of the move.
-			//0 = equipped to equipped, 1 = equipped to inventory, 2 = inventory to inventory, 3 = inventory to equipped.
+			// Determine the direction of the move.
+			// 0 = equipped to equipped, 1 = equipped to inventory, 2 = inventory to inventory, 3 = inventory to equipped.
 			byte transferDir;
 			if (column == equippedColumn) {
 				if (equippedColumn.contains(selectedItemDisplay))
@@ -255,19 +255,19 @@ public class PlayerTab extends Tab {
 					transferDir = 1;
 			}
 			
-			//If we are moving within a column...
+			// If we are moving within a column...
 			if (transferDir == 0 || transferDir == 2) {
 				//Place the display in the column at the appropriate spot.
 				column.removeElement(selectedItemDisplay);
 				column.addElement(selectedItemDisplay, mouseY);
 			}
-			//If we are moving column to column...
+			// If we are moving column to column...
 			else {
 				ScrollableListFrame otherColumn = (transferDir == 1 ? inventoryColumn : equippedColumn); //Figure out what the other column is.
 
-				selectedItemDisplay.decreaseQuantity(1); //Decrease the quantity of the selected display.
-				Item item = selectedItemDisplay.getItem(); //Get the item. We need it, I promise.
-				//Find an item display in the inventory that has the same item and increase its quantity. If we can't find one, make one.
+				selectedItemDisplay.decreaseQuantity(1); // Decrease the quantity of the selected display.
+				Item item = selectedItemDisplay.getItem(); // Get the item. We need it, I promise.
+				// Find an item display in the inventory that has the same item and increase its quantity. If we can't find one, make one.
 				ItemDisplay otherItemDisplay = null;
 				for (GUIElement e : otherColumn.getElements()) {
 					if (e instanceof ItemDisplay) {
@@ -281,7 +281,8 @@ public class PlayerTab extends Tab {
 				if (otherItemDisplay == null) {
 					ListBag<Item> bag = (transferDir == 1 ? player.getInventory() : player.getEquipped());
 					bag.add(item, 1);
-					otherItemDisplay = makeItemDisplay(otherColumn, item, bag, selectedItemDisplay.isExpanded());
+					int displayWidth = otherColumn.getWidth() - otherColumn.getScrollBarWidth();
+					otherItemDisplay = makeItemDisplay(item, bag, displayWidth, selectedItemDisplay.isExpanded());
 					otherColumn.addElement(otherItemDisplay, mouseY);
 				}
 				else {
@@ -296,34 +297,34 @@ public class PlayerTab extends Tab {
 	
 	@Override
 	public void renderInterior(Graphics g) {
-		//Draw the top labels.
+		// Draw the top labels.
 		g.drawImage(labelsImage, x1, tabY2);
 		
-		//Draw the subcontext and its background.
+		// Draw the subcontext and its background.
 		g.setColor(backgroundColor);
 		g.fillRect(x1, statColumn.getY(), width, statColumn.getHeight());
-		subcontext.render(g, x1, statColumn.getX(), width, statColumn.getHeight());
+		renderSubcontext(g, x1, statColumn.getX(), width, statColumn.getHeight());
 		
-		//Draw the selection box.
+		// Draw the selection box.
 		if (selectedItemDisplay != null) {
 			g.setColor(Color.red);
 			g.drawRect(selectedItemDisplay.getX(), selectedItemDisplay.getY(), selectedItemDisplay.getWidth(), selectedItemDisplay.getHeight());
 		}
 		
-		//Draw the dragImage if we are dragging and the mouse isn't inside of the selected item display.
+		// Draw the dragImage if we are dragging and the mouse isn't inside of the selected item display.
 		if (dragging && !selectedItemDisplay.pointIsWithin(mouseX, mouseY)) {
 			g.drawImage(dragImage, mouseX + dragImageXOffset, mouseY + dragImageYOffset);
 		}
 	}
 
-	//Override click so that we can select collapsible groups in the columns.
+	// Override click so that we can select collapsible groups in the columns.
 	@Override
 	public void click(int x, int y, int button) {
 		super.click(x, y, button);
 		
-		//If the click is the left or right button...
+		// If the click is the left or right button...
 		if (button == Input.MOUSE_LEFT_BUTTON || button == Input.MOUSE_RIGHT_BUTTON) {
-			//If the click was within the equipped column, see if there is a new group to select and select it if there is.
+			// If the click was within the equipped column, see if there is a new group to select and select it if there is.
 			if (equippedColumn.pointIsWithin(x, y)) {
 				GUIElement e = equippedColumn.getElementAtPoint(x, y);
 				if (!(e instanceof ItemDisplay))
@@ -334,7 +335,7 @@ public class PlayerTab extends Tab {
 				}
 			}
 			
-			//If the click was within the equipped column, see if there is a new group to select and select it if there is.
+			// If the click was within the equipped column, see if there is a new group to select and select it if there is.
 			else if (inventoryColumn.pointIsWithin(x, y)) {
 				GUIElement e = inventoryColumn.getElementAtPoint(x, y);
 				if (!(e instanceof ItemDisplay))
@@ -345,55 +346,55 @@ public class PlayerTab extends Tab {
 				}
 			}
 			
-			//If the click was anywhere else, clear the selection.
+			// If the click was anywhere else, clear the selection.
 			else
 				clearSelectedItemDisplay();
 			
-			//If the click was the right mouse button and an item display was selected, open the context menu.
+			// If the click was the right mouse button and an item display was selected, open the context menu.
 			if (button == Input.MOUSE_RIGHT_BUTTON && selectedItemDisplay != null) {
-				
+				// TODO
 			}
 		}
 	}
 	
-	//Override mouseDown so we can drag collapsible groups in the columns.
+	// Override mouseDown so we can drag collapsible groups in the columns.
 	@Override
 	public void mouseDown(int x, int y, int button) {
 		super.mouseDown(x, y, button);
 		
-		//Drag if we are holding the left button, have a drag image and we are on top of selectedItemDisplay.
+		// Drag if we are holding the left button, have a drag image and we are on top of selectedItemDisplay.
 		if (button == Input.MOUSE_LEFT_BUTTON && dragImage != null && selectedItemDisplay.pointIsWithin(x, y))
 			dragging = true;
 	}
 	
-	//Override hover so we can stop dragging collapsible groups in the columns.
+	// Override hover so we can stop dragging collapsible groups in the columns.
 	@Override
 	public void hover(int x, int y) {
 		super.hover(x, y);
 		
-		//If we are dragging and suddenly we go to hover, we damn well better relocate the selected item display.
+		// If we are dragging and suddenly we go to hover, we damn well better relocate the selected item display.
 		if (dragging)
 			dropSelectedItemDisplay();
 	}
 	
-	//Override clickedElsewhere so we can stop dragging collapsible groups in the columns.
+	// Override clickedElsewhere so we can stop dragging collapsible groups in the columns.
 	@Override
 	public void clickedElsewhere(int button) {
 		super.clickedElsewhere(button);
 		
-		//Don't drag if we're doing stuff elsewhere.
+		// Don't drag if we're doing stuff elsewhere.
 		if (dragImage != null) {
 			dragging = false;
 			clearSelectedItemDisplay();
 		}
 	}
 	
-	//Override mouseDownElsewhere so we can stop dragging collapsible groups in the columns.
+	// Override mouseDownElsewhere so we can stop dragging collapsible groups in the columns.
 	@Override
 	public void mouseDownElsewhere(int button) {
 		super.mouseDownElsewhere(button);
 		
-		//Don't drag if we're doing stuff elsewhere.
+		// Don't drag if we're doing stuff elsewhere.
 		if (dragImage != null) {
 			dragging = false;
 			clearSelectedItemDisplay();

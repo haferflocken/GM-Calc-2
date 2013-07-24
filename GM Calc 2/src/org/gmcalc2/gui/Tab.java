@@ -17,7 +17,7 @@ public class Tab extends GUISubcontext {
 	protected Color tabEnabledColor, tabDisabledColor, tabNameColor;
 	protected Polygon tabShape;
 	protected int tabY2;	//The tab shape. No need for tabY1 because it is the same as y1.
-	protected int x2, y2, width, height;
+	protected int x2, y2, width, height, interiorHeight;
 	protected int depth;
 	protected boolean dead, enabled;
 	
@@ -55,10 +55,10 @@ public class Tab extends GUISubcontext {
 	public void renderInterior(Graphics g) {
 		//Draw the background.
 		g.setColor(tabEnabledColor);
-		g.fillRect(x1, tabY2, width, height);
+		g.fillRect(x1, tabY2, width, interiorHeight);
 				
 		//Render the subcontext.
-		subcontext.render(g, x1, tabY2, x2, y2);
+		renderSubcontext(g, x1, tabY2, x2, y2);
 	}
 	
 	public int getTabX() {
@@ -113,6 +113,7 @@ public class Tab extends GUISubcontext {
 	public void setHeight(int h) {
 		height = h;
 		y2 = y1 + height;
+		interiorHeight = height - font.getLineHeight();
 	}
 
 	@Override

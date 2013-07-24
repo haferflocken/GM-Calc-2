@@ -182,15 +182,31 @@ public class World {
 		return prefixes.get(prefixName);
 	}
 	
+	// Get the prefix map.
+	public Map<String, Component> getPrefixMap() {
+		return prefixes;
+	}
+	
 	// Get a material.
 	public Component getMaterial(String matName) {
 		return materials.get(matName);
 	}
 	
-	//Get an itemBase.
+	// Get the material map.
+	public Map<String, Component> getMaterialMap() {
+		return materials;
+	}
+	
+	// Get an itemBase.
 	public ItemBase getItemBase(String itemBaseName) {
 		return itemBases.get(itemBaseName);
 	}
+	
+	// Get the item base map.
+	public Map<String, ItemBase> getItemBaseMap() {
+		return itemBases;
+	}
+	
 	
 	// Make an item with no prefixes and with default materials.
 	public Item makeItem(ItemBase itemBase) {

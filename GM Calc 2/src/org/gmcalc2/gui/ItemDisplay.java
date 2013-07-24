@@ -17,8 +17,8 @@ public class ItemDisplay extends CollapsibleStringGroup {
 	private boolean dead; //Is this dead?
 
 	// Constructor.
-	public ItemDisplay(ScrollableListFrame container, Item item, ListBag<Item> bag, Color textColor, int x, int y, int width, Font font, boolean expanded) {
-		super(container, item.getName() + (bag.getCount(item) > 1 ? " x" + bag.getCount(item) : ""), item.getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
+	public ItemDisplay(Item item, ListBag<Item> bag, Color textColor, int x, int y, int width, Font font, boolean expanded) {
+		super(item.getName() + (bag.getCount(item) > 1 ? " x" + bag.getCount(item) : ""), item.getStatMap().toDisplayStrings(), textColor, x, y, width, font, expanded);
 		this.item = item;
 		this.bag = bag;
 		dead = false;
