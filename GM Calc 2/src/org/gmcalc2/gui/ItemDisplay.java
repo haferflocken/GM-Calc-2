@@ -3,7 +3,6 @@ package org.gmcalc2.gui;
 import org.gmcalc2.item.Item;
 
 import org.haferlib.slick.gui.CollapsibleStringGroup;
-import org.haferlib.slick.gui.ScrollableListFrame;
 import org.haferlib.util.ListBag;
 
 import org.newdawn.slick.Color;

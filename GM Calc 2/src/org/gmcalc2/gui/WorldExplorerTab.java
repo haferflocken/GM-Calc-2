@@ -5,81 +5,89 @@ package org.gmcalc2.gui;
 import java.util.Map;
 
 import org.gmcalc2.World;
+import org.gmcalc2.item.Component;
+import org.gmcalc2.item.ItemBase;
+import org.gmcalc2.item.Player;
+import org.gmcalc2.state.TabState;
 import org.haferlib.slick.gui.Button;
 import org.haferlib.slick.gui.CollapsibleFrame;
+import org.haferlib.slick.gui.CollapsibleListFrame;
 import org.haferlib.slick.gui.GUIElement;
+import org.haferlib.slick.gui.GUIEvent;
+import org.haferlib.slick.gui.GUIEventListener;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 
-public class WorldExplorerTab extends Tab {
+public class WorldExplorerTab extends Tab implements GUIEventListener {
 	
 	private static final int BORDER_THICKNESS = 8;
 
+	private TabState tabState;
 	private Map<String, World> worlds;
 	private Color backgroundColor;
+	private Color bodyColor;
 	private Font bodyFont;
+	private Color buttonHighlightColor;
 	private int vBorderX, vBorderY, vBorderHeight;
 	private ScrollableListFrame worldExplorer;
 	private GUIElement editor;
 	
 	// Constructor.
-	public WorldExplorerTab(String tabName, Map<String, World> worlds, int x, int y, int width, int height, int tabX, int tabWidth,
-			Font font, Font bodyFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor) {
-		super(tabName, x, y, width, height, tabX, tabWidth, font, tabEnabledColor, tabDisabledColor, tabNameColor);
+	public WorldExplorerTab(String tabName, int x, int y, int width, int height, int tabX, int tabWidth,
+			Font tabFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor,
+			TabState tabState, Map<String, World> worlds, Color backgroundColor, Color bodyColor, Font bodyFont, Color buttonHighlightColor) {
+		super(tabName, x, y, width, height, tabX, tabWidth, tabFont, tabEnabledColor, tabDisabledColor, tabNameColor);
 		
-		this.worlds = worlds; // Assign the worlds.
-		this.bodyFont = bodyFont; // Assign the body font.
-		this.backgroundColor = backgroundColor; // Assign the background color.
+		// Assign fields.
+		this.tabState = tabState;
+		this.worlds = worlds;
+		this.backgroundColor = backgroundColor;
+		this.bodyColor = bodyColor;
+		this.bodyFont = bodyFont;
+		this.buttonHighlightColor = buttonHighlightColor;
 		
 		initWorldExplorer(); // Create the world explorer.
 	}
 	
 	// Make a frame of a world for the world explorer.
-	private CollapsibleFrame makeWorldFrame(World world, int x, int y, int w) {
-		// Make the frames that will go into the world frame.
-		CollapsibleFrame playersFrame, prefixesFrame, materialsFrame, itemBasesFrame;
-		int subFrameX = x + bodyFont.getLineHeight();
-		int subFrameY = y + bodyFont.getLineHeight();
-		int subFrameWidth = x + w - subFrameX;
-		playersFrame = makeMapFrame("Players", world.getPlayerMap(), subFrameX, subFrameY, subFrameWidth);
-		subFrameY += playersFrame.getHeight();
-		prefixesFrame = makeMapFrame("Prefixes", world.getPrefixMap(), subFrameX, subFrameY, subFrameWidth);
-		subFrameY += prefixesFrame.getHeight();
-		materialsFrame = makeMapFrame("Materials", world.getMaterialMap(), subFrameX, subFrameY, subFrameWidth);
-		subFrameY += materialsFrame.getHeight();
-		itemBasesFrame = makeMapFrame("Item Bases", world.getItemBaseMap(), subFrameX, subFrameY, subFrameWidth);
-		subFrameY += itemBasesFrame.getHeight();
-		
+	private CollapsibleListFrame makeWorldFrame(World world, int x, int y, int w) {
 		// Make the world frame.
-		int frameHeight = subFrameY - y;
-		CollapsibleFrame worldFrame = new CollapsibleFrame(world.getName(), tabNameColor, bodyFont, x, y, w, frameHeight, true);
-		worldFrame.addElement(playersFrame);
-		worldFrame.addElement(prefixesFrame);
-		worldFrame.addElement(materialsFrame);
-		worldFrame.addElement(itemBasesFrame);
+		CollapsibleListFrame worldFrame = new CollapsibleListFrame(world.getName(), bodyColor, bodyFont, x, y, w, true);
 		
+		// Add frames to the world frame.
+		CollapsibleListFrame playersFrame, prefixesFrame, materialsFrame, itemBasesFrame;
+		int subFrameWidth = worldFrame.getListWidth();
+		playersFrame = makeMapFrame("Players", world.getPlayerMap(), 0, 0, subFrameWidth);
+		prefixesFrame = makeMapFrame("Prefixes", world.getPrefixMap(), 0, 0, subFrameWidth);
+		materialsFrame = makeMapFrame("Materials", world.getMaterialMap(), 0, 0, subFrameWidth);
+		itemBasesFrame = makeMapFrame("Item Bases", world.getItemBaseMap(), 0, 0, subFrameWidth);
+		
+		worldFrame.addElements(new GUIElement[] { playersFrame, prefixesFrame, materialsFrame, itemBasesFrame });
+		
+		// Return.
 		return worldFrame;
 	}
 	
 	// Make a frame from a map.
-	private CollapsibleFrame makeMapFrame(String frameTitle, Map<String, ?> map, int x, int y, int w) {
-		// Make the buttons to go in the frame.
+	private CollapsibleListFrame makeMapFrame(String frameTitle, Map<String, ?> map, int x, int y, int w) {
+		// Make the frame.
+		CollapsibleListFrame out = new CollapsibleListFrame(frameTitle, bodyColor, bodyFont, x, y, w, true);
+		
+		// Add buttons to the frame.
 		GUIElement[] buttons = new GUIElement[map.size()];
 		int i = 0;
-		int buttonX = x, buttonY = y + bodyFont.getLineHeight();
-		int buttonWidth = w, buttonHeight = bodyFont.getLineHeight();
+		int buttonWidth = out.getListWidth(), buttonHeight = bodyFont.getLineHeight();
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
-			buttons[i++] = new Button<Object>(entry.getKey(), tabNameColor, bodyFont, Button.LEFT, 0, buttonX, buttonY, buttonWidth, buttonHeight, 0, backgroundColor, tabNameColor, Input.KEY_ENTER);
-			buttonY += buttonHeight;
+			Button<Object> b = new Button<Object>(entry.getKey(), entry.getValue(), bodyColor, bodyFont, Button.LEFT, 0, 0, 0, buttonWidth, buttonHeight, 0, null, buttonHighlightColor, Input.KEY_ENTER);
+			b.addListener(this);
+			buttons[i++] = b;
 		}
-		
-		// Make the frame.
-		int frameHeight = bodyFont.getLineHeight() + buttons.length * buttonHeight;
-		CollapsibleFrame out = new CollapsibleFrame(frameTitle, tabNameColor, bodyFont, x, y, w, frameHeight, true);
 		out.addElements(buttons);
+		
+		// Return.
 		return out;
 	}
 	
@@ -125,6 +133,36 @@ public class WorldExplorerTab extends Tab {
 						
 		// Render the subcontext.
 		renderSubcontext(g, x1, tabY2, x2, y2);
+	}
+
+	@Override
+	// This will get button presses. It needs to switch to a player tab if clicking a player,
+	// a component editor if clicking a prefix or material, an item base editor if clicking
+	// an item base, and a rule editor if clicking a world.
+	public void guiEvent(GUIEvent<?> event) {
+		Object eventData = event.getData();
+		
+		// Clicking a player.
+		if (eventData instanceof Player) {
+			Player p = (Player)eventData;
+			if (!tabState.setEnabledTabByName(p.getName()))
+				tabState.setEnabledTab(this);
+		}
+		
+		// Clicking an item base.
+		else if (eventData instanceof ItemBase) {
+			System.out.println("Clicked item base!");
+		}
+		
+		// Clicking a material or prefix.
+		else if (eventData instanceof Component) {
+			System.out.println("Clicked prefix or material!");
+		}
+		
+		// Clicking a world.
+		else if (eventData instanceof World) {
+			System.out.println("Clicked world!");
+		}
 	}
 
 }

@@ -33,26 +33,26 @@ public class GMCalc2 extends StateBasedGame {
 
 	@Override
 	public void initStatesList(GameContainer container) throws SlickException {
-		//Load statics if necessary.
+		// Load statics if necessary.
 		if (!STATICS_CREATED) {
-			//Create the fonts.
+			// Create the fonts.
 			HEADERFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 16), false);
 			HEADERFONT_HEIGHT = HEADERFONT.getLineHeight();
 			BODYFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14), false);
 			BODYFONT_HEIGHT = BODYFONT.getLineHeight();
 			
-			//Define the colors.
+			// Define the colors.
 			TAB_ENABLED_COLOR = Color.gray;
 			TAB_DISABLED_COLOR = Color.darkGray;
 			TAB_NAME_COLOR = Color.white;
 			PLAYERTAB_BACKGROUND_COLOR = Color.darkGray;
 			
-			//Mark the statics as created.
+			// Mark the statics as created.
 			STATICS_CREATED = true;
 		}
 		
 		// Make the loading state.
-		LoadingState loadingState = new LoadingState(this, "E:\\John\\Google Drive\\gmcalc2 worlds\\");
+		LoadingState loadingState = new LoadingState(this, "C:\\Users\\John\\Google Drive\\gmcalc2 worlds\\");
 		addState(loadingState);
 		
 		// Make the tab state.

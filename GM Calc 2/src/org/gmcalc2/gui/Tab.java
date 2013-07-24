@@ -61,6 +61,10 @@ public class Tab extends GUISubcontext {
 		renderSubcontext(g, x1, tabY2, x2, y2);
 	}
 	
+	public String getTabName() {
+		return tabName;
+	}
+	
 	public int getTabX() {
 		return (int)tabShape.getX();
 	}
