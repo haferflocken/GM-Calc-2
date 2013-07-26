@@ -7,7 +7,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.geom.Polygon;
-
+import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.GUISubcontext;
 
 public class Tab extends GUISubcontext {
@@ -19,14 +19,15 @@ public class Tab extends GUISubcontext {
 	protected int tabY2;	//The tab shape. No need for tabY1 because it is the same as y1.
 	protected int x2, y2, width, height, interiorHeight;
 	protected int depth;
-	protected boolean dead, enabled;
+	protected boolean dead, enabled, frozen;
 	
 	public Tab(String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor) {
-		//Set the parameters.
+		// Set the parameters.
 		this.tabName = tabName;
 		this.tabEnabledColor = tabEnabledColor;
 		this.tabDisabledColor = tabDisabledColor;
 		this.tabNameColor = tabNameColor;
+		frozen = false;
 		createTab(tabX, tabWidth, font);
 		setWidth(width);
 		setHeight(height);
@@ -35,29 +36,32 @@ public class Tab extends GUISubcontext {
 		enable();
 	}
 	
-	@Override
-	public void render(Graphics g) {
-		//Draw the tab.
-		if (enabled)
-			g.setColor(tabEnabledColor);
-		else
-			g.setColor(tabDisabledColor);
-		g.fill(tabShape);
-		g.setColor(tabNameColor);
-		g.setFont(font);
-		g.drawString(tabName, tabShape.getX() + tabShape.getWidth() / 2 - (font.getWidth(tabName) / 2), y1);
-		
-		//Render the interior if enabled.
-		if (enabled)
-			renderInterior(g);
+	public void enable() {
+		if (!frozen) {
+			enabled = true;
+			depth = 10;
+			subcontext.enable();
+		}
+	}
+	
+	public void disable() {
+		if (!frozen) {
+			enabled = false;
+			depth = 0;
+			subcontext.disable();
+		}
+	}
+	
+	public void setFrozen(boolean f) {
+		frozen = f;
 	}
 	
 	public void renderInterior(Graphics g) {
-		//Draw the background.
+		// Draw the background.
 		g.setColor(tabEnabledColor);
 		g.fillRect(x1, tabY2, width, interiorHeight);
 				
-		//Render the subcontext.
+		// Render the subcontext.
 		renderSubcontext(g, x1, tabY2, x2, y2);
 	}
 	
@@ -81,13 +85,39 @@ public class Tab extends GUISubcontext {
 		font = f;
 		tabY2 = y1 + font.getLineHeight();
 		tabShape = new Polygon(new float[] {
-			tX - 4, tabY2, //Bottom left
-			tX + 4, y1, //Top left
-			tX + tW - 4, y1, //Top right
-			tX + tW + 4, tabY2, //Bottom right
+			tX - 4, tabY2, // Bottom left
+			tX + 4, y1, // Top left
+			tX + tW - 4, y1, // Top right
+			tX + tW + 4, tabY2, // Bottom right
 		});
 	}
 	
+	public boolean pointIsWithinTab(int x, int y) {
+		return tabShape.contains(x, y);
+	}
+	
+	public Font getFont() {
+		return font;
+	}
+	
+	@Override
+	public void render(Graphics g) {
+		// Draw the tab.
+		if (enabled)
+			g.setColor(tabEnabledColor);
+		else
+			g.setColor(tabDisabledColor);
+		g.fill(tabShape);
+		g.setColor(tabNameColor);
+		g.setFont(font);
+		g.drawString(tabName, tabShape.getX() + tabShape.getWidth() / 2 - (font.getWidth(tabName) / 2), y1);
+		
+		// Render the interior if enabled.
+		if (enabled)
+			renderInterior(g);
+	}
+	
+	@Override
 	public void setX(int x) {
 		int dX = x - x1;
 		super.setX(x);
@@ -95,6 +125,7 @@ public class Tab extends GUISubcontext {
 		setTabX((int)tabShape.getX() + dX);
 	}
 	
+	@Override
 	public void setY(int y) {
 		super.setY(y);
 		y2 = y1 + height;
@@ -124,10 +155,6 @@ public class Tab extends GUISubcontext {
 	public int getHeight() {
 		return height;
 	}
-	
-	public Font getFont() {
-		return font;
-	}
 
 	@Override
 	public boolean pointIsWithin(int x, int y) {
@@ -147,28 +174,21 @@ public class Tab extends GUISubcontext {
 	}
 	
 	@Override
-	public void clickedElsewhere(int button) {
-		super.clickedElsewhere(button);
-		if (enabled && button == Input.MOUSE_LEFT_BUTTON) {
+	public void clickedElsewhere(GUIElement target, int button) {
+		super.clickedElsewhere(target, button);
+		if (enabled && button == Input.MOUSE_LEFT_BUTTON && target instanceof Tab) {
 			disable();
 		}
 	}
 	
 	@Override
+	public void setDepth(int d) {
+		depth = d;
+	}
+	
+	@Override
 	public int getDepth() {
 		return depth;
-	}
-	
-	public void enable() {
-		enabled = true;
-		depth = 10;
-		subcontext.enable();
-	}
-	
-	public void disable() {
-		enabled = false;
-		depth = 0;
-		subcontext.disable();
 	}
 	
 	@Override

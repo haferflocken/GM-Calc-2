@@ -119,7 +119,7 @@ public class PlayerTab extends Tab {
 		GUIElement[] statDisplays = new GUIElement[categoryNames.size()];
 		int groupWidth = statColumn.getWidth() - statColumn.getScrollBarWidth();
 		for (int i = 0; i < statDisplays.length; i++) {
-			statDisplays[i] = new CollapsibleStringGroup(categoryNames.get(i), categoryContents.get(i), Color.white, 0, 0, groupWidth, columnFont, true);
+			statDisplays[i] = new CollapsibleStringGroup(categoryNames.get(i), categoryContents.get(i), Color.white, 0, 0, groupWidth, 0, columnFont, true);
 		}
 		statColumn.addElements(statDisplays);
 	}
@@ -140,7 +140,7 @@ public class PlayerTab extends Tab {
 	
 	// Make an item display.
 	private ItemDisplay makeItemDisplay(Item item, ListBag<Item> bag, int displayWidth, boolean expanded) {
-		ItemDisplay itemDisplay = new ItemDisplay(item, bag, player.getWorld().getRarityColor(item), 0, 0, displayWidth, columnFont, expanded);
+		ItemDisplay itemDisplay = new ItemDisplay(item, bag, player.getWorld().getRarityColor(item), 0, 0, displayWidth, 0, columnFont, expanded);
 		return itemDisplay;
 	}
 
@@ -379,8 +379,8 @@ public class PlayerTab extends Tab {
 	
 	// Override clickedElsewhere so we can stop dragging collapsible groups in the columns.
 	@Override
-	public void clickedElsewhere(int button) {
-		super.clickedElsewhere(button);
+	public void clickedElsewhere(GUIElement target, int button) {
+		super.clickedElsewhere(target, button);
 		
 		// Don't drag if we're doing stuff elsewhere.
 		if (dragImage != null) {
@@ -391,8 +391,8 @@ public class PlayerTab extends Tab {
 	
 	// Override mouseDownElsewhere so we can stop dragging collapsible groups in the columns.
 	@Override
-	public void mouseDownElsewhere(int button) {
-		super.mouseDownElsewhere(button);
+	public void mouseDownElsewhere(GUIElement target, int button) {
+		super.mouseDownElsewhere(target, button);
 		
 		// Don't drag if we're doing stuff elsewhere.
 		if (dragImage != null) {

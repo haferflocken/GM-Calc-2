@@ -43,7 +43,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 		setY(y);
 		setWidth(width);
 		setHeight(height);
-		this.depth = depth;
+		setDepth(depth);
 		
 		this.tabState = tabState;
 		this.worlds = worlds;
@@ -58,7 +58,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	// Make a frame of a world for the world explorer.
 	private CollapsibleListFrame makeWorldFrame(World world, int x, int y, int w) {
 		// Make the world frame.
-		CollapsibleListFrame worldFrame = new CollapsibleListFrame(world.getName(), bodyColor, bodyFont, x, y, w, true);
+		CollapsibleListFrame worldFrame = new CollapsibleListFrame(world.getName(), bodyColor, bodyFont, x, y, w, 0, true);
 		
 		// Add frames to the world frame.
 		CollapsibleListFrame playersFrame, prefixesFrame, materialsFrame, itemBasesFrame;
@@ -77,7 +77,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	// Make a frame from a map.
 	private CollapsibleListFrame makeMapFrame(String frameTitle, Map<String, ?> map, int x, int y, int w) {
 		// Make the frame.
-		CollapsibleListFrame out = new CollapsibleListFrame(frameTitle, bodyColor, bodyFont, x, y, w, true);
+		CollapsibleListFrame out = new CollapsibleListFrame(frameTitle, bodyColor, bodyFont, x, y, w, 0, true);
 		
 		// Add buttons to the frame.
 		GUIElement[] buttons = new GUIElement[map.size()];
@@ -166,6 +166,11 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	@Override
 	public boolean pointIsWithin(int x, int y) {
 		return (x >= x1 && y >= y1 && x <= x2 && y <= y2);
+	}
+	
+	@Override
+	public void setDepth(int d) {
+		depth = d;
 	}
 
 	@Override
