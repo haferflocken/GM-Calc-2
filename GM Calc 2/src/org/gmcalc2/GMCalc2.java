@@ -52,7 +52,7 @@ public class GMCalc2 extends StateBasedGame {
 		}
 		
 		// Make the loading state.
-		LoadingState loadingState = new LoadingState(this, "C:\\Users\\John\\Google Drive\\gmcalc2 worlds\\");
+		LoadingState loadingState = new LoadingState(this, "E:\\John\\Google Drive\\gmcalc2 worlds\\");
 		addState(loadingState);
 		
 		// Make the tab state.

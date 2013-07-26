@@ -1,4 +1,4 @@
-// The tab of things you can do.
+// A sidebar that lets the client open files and such.
 
 package org.gmcalc2.gui;
 
@@ -10,38 +10,41 @@ import org.gmcalc2.item.ItemBase;
 import org.gmcalc2.item.Player;
 import org.gmcalc2.state.TabState;
 import org.haferlib.slick.gui.Button;
-import org.haferlib.slick.gui.CollapsibleFrame;
 import org.haferlib.slick.gui.CollapsibleListFrame;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.GUIEvent;
 import org.haferlib.slick.gui.GUIEventListener;
+import org.haferlib.slick.gui.GUISubcontext;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 
-public class WorldExplorerTab extends Tab implements GUIEventListener {
-	
-	private static final int BORDER_THICKNESS = 8;
+public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 
+	private int x2, y2;
+	private int width, height;
+	private int depth;
 	private TabState tabState;
 	private Map<String, World> worlds;
 	private Color backgroundColor;
 	private Color bodyColor;
 	private Font bodyFont;
 	private Color buttonHighlightColor;
-	private int vBorderX, vBorderY, vBorderHeight;
-	private ScrollableListFrame worldExplorer;
-	private GUIElement editor;
+	private ScrollableListFrame worldFrame;
 	
 	// Constructor.
-	public WorldExplorerTab(String tabName, int x, int y, int width, int height, int tabX, int tabWidth,
-			Font tabFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor,
+	public WorldExplorer(int x, int y, int width, int height, int depth,
 			TabState tabState, Map<String, World> worlds, Color backgroundColor, Color bodyColor, Font bodyFont, Color buttonHighlightColor) {
-		super(tabName, x, y, width, height, tabX, tabWidth, tabFont, tabEnabledColor, tabDisabledColor, tabNameColor);
+		super(x, y);
 		
-		// Assign fields.
+		setX(x);
+		setY(y);
+		setWidth(width);
+		setHeight(height);
+		this.depth = depth;
+		
 		this.tabState = tabState;
 		this.worlds = worlds;
 		this.backgroundColor = backgroundColor;
@@ -49,7 +52,7 @@ public class WorldExplorerTab extends Tab implements GUIEventListener {
 		this.bodyFont = bodyFont;
 		this.buttonHighlightColor = buttonHighlightColor;
 		
-		initWorldExplorer(); // Create the world explorer.
+		initWorldFrame(); // Create the world explorer.
 	}
 	
 	// Make a frame of a world for the world explorer.
@@ -91,12 +94,13 @@ public class WorldExplorerTab extends Tab implements GUIEventListener {
 		return out;
 	}
 	
-	// Create the world explorer.
-	private void initWorldExplorer() {
+	// Create the world frame.
+	private void initWorldFrame() {
 		// Get some shape data.
 		int frameX = x1;
-		int frameY = tabY2 + BORDER_THICKNESS;
-		int frameWidth = width / 4;
+		int frameY = y1;
+		int frameWidth = width;
+		int frameHeight = height;
 		int frameScrollBarWidth = 10;
 		
 		// Create the elements that hold the worlds.
@@ -110,31 +114,70 @@ public class WorldExplorerTab extends Tab implements GUIEventListener {
 			i++;
 		}
 		
-		// Create the world explorer.
-		worldExplorer = new ScrollableListFrame(explorerElements, frameX, frameY, frameWidth, interiorHeight - BORDER_THICKNESS, 0, frameScrollBarWidth, Color.white);
-		subcontext.addElement(worldExplorer);
+		// Create the world frame.
+		worldFrame = new ScrollableListFrame(explorerElements, frameX, frameY, frameWidth, frameHeight, 0, frameScrollBarWidth, Color.white);
+		subcontext.addElement(worldFrame);
+	}
+
+	@Override
+	public void render(Graphics g) {
+		// Draw the background.
+		g.setColor(backgroundColor);
+		g.fillRect(x1, y1, width, height);
 		
-		// Set the vertical border fields appropriately.
-		vBorderX = worldExplorer.getX() + worldExplorer.getWidth();
-		vBorderY = worldExplorer.getY();
-		vBorderHeight = worldExplorer.getHeight();
+		// Draw the subcontext.
+		renderSubcontext(g, x1, y1, x2, y2);
 	}
 	
 	@Override
-	public void renderInterior(Graphics g) {
-		// Draw the background.
-		g.setColor(backgroundColor);
-		g.fillRect(x1, tabY2, width, interiorHeight);
-		
-		// Draw the area borders.
-		g.setColor(tabEnabledColor);
-		g.fillRect(x1, tabY2, width, BORDER_THICKNESS);
-		g.fillRect(vBorderX, vBorderY, BORDER_THICKNESS, vBorderHeight);
-						
-		// Render the subcontext.
-		renderSubcontext(g, x1, tabY2, x2, y2);
+	public void setX(int x) {
+		super.setX(x);
+		x2 = x1 + width;
+	}
+	
+	@Override
+	public void setY(int y) {
+		super.setY(y);
+		y2 = y1 + height;
+	}
+	
+	@Override
+	public void setWidth(int w) {
+		width = w;
+		x2 = x1 + width;
+	}
+	
+	@Override
+	public int getWidth() {
+		return width;
+	}
+	
+	@Override
+	public void setHeight(int h) {
+		height = h;
+		y2 = y1 + height;
+	}
+	
+	@Override
+	public int getHeight() {
+		return height;
+	}
+	
+	@Override
+	public boolean pointIsWithin(int x, int y) {
+		return (x >= x1 && y >= y1 && x <= x2 && y <= y2);
 	}
 
+	@Override
+	public int getDepth() {
+		return depth;
+	}
+
+	@Override
+	public boolean dead() {
+		return false;
+	}
+	
 	@Override
 	// This will get button presses. It needs to switch to a player tab if clicking a player,
 	// a component editor if clicking a prefix or material, an item base editor if clicking
@@ -145,8 +188,7 @@ public class WorldExplorerTab extends Tab implements GUIEventListener {
 		// Clicking a player.
 		if (eventData instanceof Player) {
 			Player p = (Player)eventData;
-			if (!tabState.setEnabledTabByName(p.getName()))
-				tabState.setEnabledTab(this);
+			tabState.setEnabledTabByName(p.getName());
 		}
 		
 		// Clicking an item base.
