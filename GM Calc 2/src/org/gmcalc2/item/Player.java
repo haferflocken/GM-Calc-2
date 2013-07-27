@@ -18,22 +18,22 @@ public class Player {
 
 	// Instance fields.
 	private World world;
-	private String name;
+	private String id, name;
 	private StatMap statMap;
-	private ListBag<Item> equipped;
-	private ListBag<Item> inventory;
+	private ListBag<Item> equipped, inventory;
 
 	// Constructors.
-	public Player(World world) {
+	public Player(World world, String id) {
 		this.world = world;
+		this.id = id;
 		name = DEFAULT_NAME;
 		statMap = new StatMap();
 		equipped = new ListBag<>();
 		inventory = new ListBag<>();
 	}
 
-	public Player(World world, TreeMap<String, Object> values) {
-		this(world);
+	public Player(World world, String id, TreeMap<String, Object> values) {
+		this(world, id);
 
 		Object val;
 		// Get the name.
@@ -72,6 +72,10 @@ public class Player {
 	// Accessors.
 	public World getWorld() {
 		return world;
+	}
+	
+	public String getId() {
+		return id;
 	}
 
 	public String getName() {

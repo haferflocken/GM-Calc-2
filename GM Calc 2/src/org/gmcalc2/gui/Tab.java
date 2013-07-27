@@ -12,22 +12,22 @@ import org.haferlib.slick.gui.GUISubcontext;
 
 public class Tab extends GUISubcontext {
 	
-	protected String tabName;
+	protected String id, tabName;
 	protected Font font;
 	protected Color tabEnabledColor, tabDisabledColor, tabNameColor;
 	protected Polygon tabShape;
 	protected int tabY2;	//The tab shape. No need for tabY1 because it is the same as y1.
 	protected int x2, y2, width, height, interiorHeight;
 	protected int depth;
-	protected boolean dead, enabled, frozen;
+	protected boolean dead, enabled;
 	
-	public Tab(String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor) {
+	public Tab(String id, String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor) {
 		// Set the parameters.
+		this.id = id;
 		this.tabName = tabName;
 		this.tabEnabledColor = tabEnabledColor;
 		this.tabDisabledColor = tabDisabledColor;
 		this.tabNameColor = tabNameColor;
-		frozen = false;
 		createTab(tabX, tabWidth, font);
 		setWidth(width);
 		setHeight(height);
@@ -37,23 +37,15 @@ public class Tab extends GUISubcontext {
 	}
 	
 	public void enable() {
-		if (!frozen) {
-			enabled = true;
-			depth = 10;
-			subcontext.enable();
-		}
+		enabled = true;
+		depth = 10;
+		subcontext.enable();
 	}
 	
 	public void disable() {
-		if (!frozen) {
-			enabled = false;
-			depth = 0;
-			subcontext.disable();
-		}
-	}
-	
-	public void setFrozen(boolean f) {
-		frozen = f;
+		enabled = false;
+		depth = 0;
+		subcontext.disable();
 	}
 	
 	public void renderInterior(Graphics g) {
@@ -63,6 +55,10 @@ public class Tab extends GUISubcontext {
 				
 		// Render the subcontext.
 		renderSubcontext(g, x1, tabY2, x2, y2);
+	}
+	
+	public String getId() {
+		return id;
 	}
 	
 	public String getTabName() {
@@ -176,7 +172,7 @@ public class Tab extends GUISubcontext {
 	@Override
 	public void clickedElsewhere(GUIElement target, int button) {
 		super.clickedElsewhere(target, button);
-		if (enabled && button == Input.MOUSE_LEFT_BUTTON && target instanceof Tab) {
+		if (enabled && (button == Input.MOUSE_LEFT_BUTTON) && (target instanceof Tab)) {
 			disable();
 		}
 	}

@@ -22,7 +22,7 @@ public class ComponentFactory extends AbstractFactoryDataReader<Component> {
 	}
 	
 	// Make the component.
-	public Component makeFromValues(TreeMap<String, Object> values) {
+	public Component makeFromValues(String absolutePath, String relativePath, TreeMap<String, Object> values) {
 		return new Component(values, expBuilder);
 	}
 

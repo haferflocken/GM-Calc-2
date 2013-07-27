@@ -193,7 +193,13 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 		// Clicking a player.
 		if (eventData instanceof Player) {
 			Player p = (Player)eventData;
-			tabState.setEnabledTabByName(p.getName());
+			// See if there already is a tab.
+			boolean success = tabState.setEnabledTabById(p.getId());
+			// If there isn't, add a new tab.
+			if (!success) {
+				// TODO
+				// PlayerTab tab = new PlayerTab();
+			}
 		}
 		
 		// Clicking an item base.

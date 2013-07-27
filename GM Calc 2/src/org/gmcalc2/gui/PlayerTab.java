@@ -34,7 +34,7 @@ public class PlayerTab extends Tab {
 
 	// Constructor.
 	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Font columnFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor) {
-		super(player.getName(), x, y, width, height, tabX, tabWidth, font, tabEnabledColor, tabDisabledColor, tabNameColor);
+		super(player.getId(), player.getName(), x, y, width, height, tabX, tabWidth, font, tabEnabledColor, tabDisabledColor, tabNameColor);
 		this.columnFont = columnFont;
 		this.backgroundColor = backgroundColor;
 		setPlayer(player);

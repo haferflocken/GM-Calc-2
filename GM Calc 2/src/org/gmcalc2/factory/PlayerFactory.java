@@ -24,8 +24,8 @@ public class PlayerFactory extends AbstractFactoryDataReader<Player> {
 	}
 	
 	// Make the component.
-	public Player makeFromValues(TreeMap<String, Object> values) {
-		return new Player(world, values);
+	public Player makeFromValues(String absolutePath, String relativePath, TreeMap<String, Object> values) {
+		return new Player(world, absolutePath, values);
 	}
 	
 	// Get the file extension.

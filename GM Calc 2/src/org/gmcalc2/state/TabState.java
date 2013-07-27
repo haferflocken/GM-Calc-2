@@ -1,6 +1,5 @@
 package org.gmcalc2.state;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -12,11 +11,9 @@ import org.gmcalc2.item.Player;
 import org.gmcalc2.World;
 import org.haferlib.slick.gui.Button;
 import org.haferlib.slick.gui.GUIContext;
-import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.GUIEvent;
 import org.haferlib.slick.gui.GUIEventListener;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -30,7 +27,6 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	
 	private GMCalc2 gmcalc2;
 	private GUIContext ui; // The UI.
-	private Button<?> behindTabButton; // The button that detects off-tab clicks.
 	private WorldExplorer worldExplorer; // The world explorer.
 	private LinkedHashSet<Tab> tabs; // The tabs in this state.
 	
@@ -41,12 +37,12 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	
 	// EFFECTS:  Sets the currently enabled tab by name.
 	//			 Returns true if successful, false if not.
-	public boolean setEnabledTabByName(String tabName) {
+	public boolean setEnabledTabById(String tabId) {
 		boolean result = false; // Did we find and enable a tab?
 		
 		// Loop through the tabs, looking for one with the given name.
 		for (Tab t : tabs) {
-			if (t.getTabName().equals(tabName)) {
+			if (t.getId().equals(tabId)) {
 				t.enable();
 				result = true;
 			}
@@ -117,11 +113,6 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		container.getInput().addKeyListener(ui);
 		tabs = new LinkedHashSet<>();
 		
-		// Create the hidden button that opens the world explorer.
-		behindTabButton = new Button<Object>("", Color.black, GMCalc2.BODYFONT, 0, 0, container.getWidth(), container.getHeight(), Integer.MIN_VALUE, Color.black, Color.black, Input.KEY_ESCAPE);
-		behindTabButton.addListener(this);
-		ui.addElement(behindTabButton);
-		
 		// Create the world explorer. 
 		worldExplorer = new WorldExplorer(0, 0, 256, container.getHeight(), Integer.MAX_VALUE,
 				this, gmcalc2.getWorlds(), Color.darkGray, Color.white, GMCalc2.BODYFONT, Color.gray);
@@ -134,7 +125,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		for (Map.Entry<String, Player> entry : players.entrySet()) {
 			Player player = entry.getValue();
 			PlayerTab tab = new PlayerTab(player, 0, 0, container.getWidth(), container.getHeight(), 0, 128, GMCalc2.HEADERFONT, GMCalc2.BODYFONT, Color.gray, Color.darkGray, Color.white, Color.darkGray);
-			//tab.disable();
+			tab.disable();
 			addTab(tab);
 		}
 	}
@@ -156,10 +147,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 
 	@Override
 	public void guiEvent(GUIEvent<?> event) {
-		// If the behind tab button was clicked, just reactivate the last enabled tab.
-		if (event.getGenerator().equals(behindTabButton)) {
-			// TODO
-		}
+		// TODO Do I need this?
 	}
 
 }

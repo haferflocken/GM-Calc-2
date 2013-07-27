@@ -87,13 +87,16 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 			//Read the file.
 			TreeMap<String, Object> values = dataReader.readFile(file.toPath());
 			
+			// Get both the full and relative file paths.
+			String absolutePath = file.getAbsolutePath();
+			String relativePath = absolutePath.substring(dirTree.getRootPath().length());
+			
 			//Make a component out of it.
-			E component = makeFromValues(values);
+			E component = makeFromValues(absolutePath, relativePath, values);
 			
 			//Add the component to the cache.
-			String key = file.getAbsolutePath().substring(dirTree.getRootPath().length());
-			cache.put(key, component);
-			out.println("Cached object from " + key);
+			cache.put(relativePath, component);
+			out.println("Cached object from " + relativePath);
 		}
 		catch (IOException e) {
 			out.println("Failed to read file " + file.getAbsolutePath());
@@ -104,7 +107,7 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 	}
 	
 	// Make an object from given values.
-	public abstract E makeFromValues(TreeMap<String, Object> values);
+	public abstract E makeFromValues(String absolutePath, String relativePath, TreeMap<String, Object> values);
 	
 	// Get the file extension to look for.
 	public abstract String getFileExtension();

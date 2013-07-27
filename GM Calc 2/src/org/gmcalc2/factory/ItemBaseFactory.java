@@ -22,7 +22,7 @@ public class ItemBaseFactory extends AbstractFactoryDataReader<ItemBase> {
 	}
 	
 	// Make the component.
-	public ItemBase makeFromValues(TreeMap<String, Object> values) {
+	public ItemBase makeFromValues(String absolutePath, String relativePath, TreeMap<String, Object> values) {
 		return new ItemBase(values, expBuilder);
 	}
 	
