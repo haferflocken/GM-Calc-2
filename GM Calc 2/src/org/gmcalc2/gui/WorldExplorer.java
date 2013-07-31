@@ -16,29 +16,36 @@ import org.haferlib.slick.gui.GUIEvent;
 import org.haferlib.slick.gui.GUIEventListener;
 import org.haferlib.slick.gui.GUISubcontext;
 import org.haferlib.slick.gui.ScrollableListFrame;
+import org.haferlib.slick.gui.TextButton;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 
 public class WorldExplorer extends GUISubcontext implements GUIEventListener {
+	
+	public static final String TITLE = "World Explorer";
 
 	private int x2, y2;
 	private int width, height;
 	private int depth;
+	private int titleY2, bodyHeight;
 	private TabState tabState;
 	private Map<String, World> worlds;
-	private Color backgroundColor;
-	private Color bodyColor;
-	private Font bodyFont;
+	private Color textColor, titleBackgroundColor, bodyBackgroundColor;
+	private Font titleFont, bodyFont;
 	private Color buttonHighlightColor;
 	private ScrollableListFrame worldFrame;
 	
 	// Constructor.
 	public WorldExplorer(int x, int y, int width, int height, int depth,
-			TabState tabState, Map<String, World> worlds, Color backgroundColor, Color bodyColor, Font bodyFont, Color buttonHighlightColor) {
+			TabState tabState, Map<String, World> worlds,
+			Color textColor, Color titleBackgroundColor, Color bodyBackgroundColor,
+			Font titleFont, Font bodyFont, Color buttonHighlightColor) {
 		super(x, y);
 		
+		setTitleFont(titleFont);
+		setBodyFont(bodyFont);
 		setX(x);
 		setY(y);
 		setWidth(width);
@@ -47,9 +54,9 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 		
 		this.tabState = tabState;
 		this.worlds = worlds;
-		this.backgroundColor = backgroundColor;
-		this.bodyColor = bodyColor;
-		this.bodyFont = bodyFont;
+		this.textColor = textColor;
+		this.titleBackgroundColor = titleBackgroundColor;
+		this.bodyBackgroundColor = bodyBackgroundColor;
 		this.buttonHighlightColor = buttonHighlightColor;
 		
 		initWorldFrame(); // Create the world explorer.
@@ -58,7 +65,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	// Make a frame of a world for the world explorer.
 	private CollapsibleListFrame makeWorldFrame(World world, int x, int y, int w) {
 		// Make the world frame.
-		CollapsibleListFrame worldFrame = new CollapsibleListFrame(world.getName(), bodyColor, bodyFont, x, y, w, 0, true);
+		CollapsibleListFrame worldFrame = new CollapsibleListFrame(world.getName(), textColor, bodyFont, x, y, w, 0, true);
 		
 		// Add frames to the world frame.
 		CollapsibleListFrame playersFrame, prefixesFrame, materialsFrame, itemBasesFrame;
@@ -77,14 +84,16 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	// Make a frame from a map.
 	private CollapsibleListFrame makeMapFrame(String frameTitle, Map<String, ?> map, int x, int y, int w) {
 		// Make the frame.
-		CollapsibleListFrame out = new CollapsibleListFrame(frameTitle, bodyColor, bodyFont, x, y, w, 0, true);
+		CollapsibleListFrame out = new CollapsibleListFrame(frameTitle, textColor, bodyFont, x, y, w, 0, true);
 		
 		// Add buttons to the frame.
 		GUIElement[] buttons = new GUIElement[map.size()];
 		int i = 0;
 		int buttonWidth = out.getListWidth(), buttonHeight = bodyFont.getLineHeight();
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
-			Button<Object> b = new Button<Object>(entry.getKey(), entry.getValue(), bodyColor, bodyFont, Button.LEFT, 0, 0, 0, buttonWidth, buttonHeight, 0, null, buttonHighlightColor, Input.KEY_ENTER);
+			Button<Object> b = new TextButton<Object>(entry.getValue(), 0, 0, buttonWidth, buttonHeight,
+					0, null, buttonHighlightColor, Input.KEY_ENTER,
+					entry.getKey(), textColor, bodyFont, Button.LEFT, 0);
 			b.addListener(this);
 			buttons[i++] = b;
 		}
@@ -98,7 +107,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	private void initWorldFrame() {
 		// Get some shape data.
 		int frameX = x1;
-		int frameY = y1;
+		int frameY = titleY2;
 		int frameWidth = width;
 		int frameHeight = height;
 		int frameScrollBarWidth = 10;
@@ -118,12 +127,30 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 		worldFrame = new ScrollableListFrame(explorerElements, frameX, frameY, frameWidth, frameHeight, 0, frameScrollBarWidth, Color.white);
 		subcontext.addElement(worldFrame);
 	}
+	
+	// Set the title font.
+	public void setTitleFont(Font f) {
+		titleFont = f;
+		titleY2 = y1 + titleFont.getLineHeight();
+		bodyHeight = height - titleFont.getLineHeight();
+	}
+	
+	// Set the body font.
+	public void setBodyFont(Font f) {
+		bodyFont = f;
+	}
 
 	@Override
 	public void render(Graphics g) {
 		// Draw the background.
-		g.setColor(backgroundColor);
-		g.fillRect(x1, y1, width, height);
+		g.setColor(titleBackgroundColor);
+		g.fillRect(x1, y1, width, titleFont.getLineHeight());
+		g.setColor(bodyBackgroundColor);
+		g.fillRect(x1, titleY2, width, bodyHeight);
+		
+		// Draw the title.
+		g.setColor(textColor);
+		g.drawString(TITLE, x1 + 4, y1);
 		
 		// Draw the subcontext.
 		renderSubcontext(g, x1, y1, x2, y2);
@@ -139,6 +166,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	public void setY(int y) {
 		super.setY(y);
 		y2 = y1 + height;
+		titleY2 = y1 + titleFont.getLineHeight();
 	}
 	
 	@Override
@@ -156,6 +184,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	public void setHeight(int h) {
 		height = h;
 		y2 = y1 + height;
+		bodyHeight = height - titleFont.getLineHeight();
 	}
 	
 	@Override

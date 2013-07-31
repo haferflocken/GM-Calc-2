@@ -13,10 +13,12 @@ import org.haferlib.slick.gui.Button;
 import org.haferlib.slick.gui.GUIContext;
 import org.haferlib.slick.gui.GUIEvent;
 import org.haferlib.slick.gui.GUIEventListener;
+import org.haferlib.slick.gui.ImageButton;
 import org.haferlib.slick.gui.ListFrame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
@@ -34,8 +36,8 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	private Button<WorldExplorer> worldExplorerButton;	// The button in the toolbar that opens the world explorer.
 	private WorldExplorer worldExplorer;				// The world explorer.
 	private LinkedHashSet<Tab> tabs;					// The tabs in this state.
-	private int tabAreaLeftX;							// The left X of the tab area.
-	private int borderedHeight;							// The height of the window minus BORDER_THICKNESS * 2.
+	private int workbenchX, workbenchY;					// The position of the workbench.
+	private int workbenchWidth, workbenchHeight;		// The size of the workbench.
 	
 	// Color scheme.
 	private Color elementTextColor, elementHighlightColor, elementBackgroundColor;
@@ -49,6 +51,9 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	//			 Returns true if successful, false if not.
 	public boolean setEnabledTabById(String tabId) {
 		boolean result = false; // Did we find and enable a tab?
+		
+		// Disable the world explorer.
+		ui.removeElement(worldExplorer);
 		
 		// Loop through the tabs, looking for one with the given name.
 		for (Tab t : tabs) {
@@ -72,6 +77,9 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		// Can't enable a null tab.
 		if (tab == null)
 			return false;
+		
+		// Disable the world explorer.
+		ui.removeElement(worldExplorer);
 		
 		// Disable all tabs besides the given one.
 		for (Tab t : tabs) {
@@ -100,7 +108,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 			return false;
 		
 		// Otherwise, add the tab and set its tabX appropriately.
-		int newTabX = tabAreaLeftX;
+		int newTabX = workbenchX;
 		for (Tab t : tabs) {
 			int tabX2 = t.getTabX() + t.getTabWidth();
 			if (tabX2 > newTabX)
@@ -122,24 +130,35 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	}
 	
 	@Override
-	public void enter(GameContainer container, StateBasedGame game) {		
+	public void enter(GameContainer container, StateBasedGame game) throws SlickException {		
 		// Create the UI.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
 		tabs = new LinkedHashSet<>();
-		borderedHeight = container.getHeight() - BORDER_THICKNESS * 2;
 		
-		// Create the world explorer. 
-		worldExplorer = new WorldExplorer(0, 0, 256, container.getHeight(), Integer.MAX_VALUE,
-				this, gmcalc2.getWorlds(), elementBackgroundColor, elementTextColor, GMCalc2.BODYFONT, elementHighlightColor);
-		
-		// Create the toolbar.
+		// Find some dimensions.
 		int toolbarX = BORDER_THICKNESS;
 		int toolbarY = BORDER_THICKNESS;
-		int toolbarWidth = 24;
-		toolbar = new ListFrame(toolbarX, toolbarY, toolbarWidth, 100);
-		Button<WorldExplorer> worldExplorerButton = new Button<>("WE", worldExplorer, elementTextColor, GMCalc2.BODYFONT, Button.CENTER, 0, toolbarX, toolbarY, toolbarWidth, toolbarWidth,
-				0, null, elementHighlightColor, Input.KEY_ENTER);
+		int toolbarWidth = 32;
+		int toolbarButtonBorder = 2;
+		int toolbarButtonSize = toolbarWidth - toolbarButtonBorder * 2;
+		workbenchX = toolbarX + toolbarWidth + BORDER_THICKNESS;
+		workbenchY = BORDER_THICKNESS;
+		workbenchWidth = container.getWidth() - workbenchX - BORDER_THICKNESS;
+		workbenchHeight = container.getHeight() - BORDER_THICKNESS * 2;
+		
+		// Create the world explorer. 
+		worldExplorer = new WorldExplorer(workbenchX, workbenchY, workbenchWidth, workbenchHeight, Integer.MAX_VALUE,
+				this, gmcalc2.getWorlds(),
+				elementTextColor, elementHighlightColor, elementBackgroundColor,
+				GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor);
+		
+		// Create the toolbar.
+		toolbar = new ListFrame(toolbarX, toolbarY, toolbarWidth, 100, ListFrame.XALIGN_CENTER, 0, toolbarButtonBorder);
+		Image wEButtonImage = new Image("resources\\worldExplorerIcon.png");
+		worldExplorerButton = new ImageButton<>(worldExplorer, 0, 0, toolbarButtonSize, toolbarButtonSize,
+				0, null, elementHighlightColor, Input.KEY_ENTER,
+				wEButtonImage, Button.CENTER, 0);
 		worldExplorerButton.addListener(this);
 		toolbar.addElement(worldExplorerButton);
 		ui.addElement(toolbar);
@@ -148,12 +167,9 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		// For now, just add players from forgotten realms.
 		World world = gmcalc2.getWorlds().get("forgottenrealms");
 		Map<String, Player> players = world.getPlayerMap();
-		tabAreaLeftX = toolbarX + toolbarWidth + BORDER_THICKNESS;
-		int tabY = BORDER_THICKNESS;
-		int tabWidth = container.getWidth() - tabAreaLeftX - BORDER_THICKNESS;
 		for (Map.Entry<String, Player> entry : players.entrySet()) {
 			Player player = entry.getValue();
-			PlayerTab tab = new PlayerTab(player, tabAreaLeftX, tabY, tabWidth, borderedHeight, 0, 128,
+			PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, 128,
 					GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor, elementBackgroundColor, elementTextColor, elementBackgroundColor);
 			tab.disable();
 			addTab(tab);
@@ -169,7 +185,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// Draw the toolbar background.
 		g.setColor(elementBackgroundColor);
-		g.fillRect(toolbar.getX(), toolbar.getY(), toolbar.getWidth(), borderedHeight);
+		g.fillRect(toolbar.getX(), toolbar.getY(), toolbar.getWidth(), workbenchHeight);
 		
 		// Draw the ui.
 		ui.render(g, 0, 0, container.getWidth(), container.getHeight());
@@ -182,12 +198,19 @@ public class TabState extends BasicGameState implements GUIEventListener {
 
 	@Override
 	public void guiEvent(GUIEvent<?> event) {
+		System.out.println("Received GUIEvent!");
+		System.out.println("\tGenerator: " + System.identityHashCode(event.getGenerator()));
+		System.out.println("\tData: " + System.identityHashCode(event.getData()));
 		// If the world explorer button was pushed, toggle the world explorer.
 		if (event.getGenerator() == worldExplorerButton) {
-			if (ui.contains(worldExplorer))
+			if (ui.contains(worldExplorer)) {
 				ui.removeElement(worldExplorer);
-			else
+				System.out.println("Removed world explorer");
+			}
+			else {
 				ui.addElement(worldExplorer);
+				System.out.println("Added world explorer");
+			}
 		}
 	}
 

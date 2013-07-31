@@ -259,7 +259,7 @@ public class PlayerTab extends Tab {
 			
 			// If we are moving within a column...
 			if (transferDir == 0 || transferDir == 2) {
-				//Place the display in the column at the appropriate spot.
+				// Place the display in the column at the appropriate spot.
 				column.removeElement(selectedItemDisplay);
 				column.addElement(selectedItemDisplay, mouseY);
 			}
