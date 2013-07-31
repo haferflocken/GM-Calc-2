@@ -81,10 +81,10 @@ public class Tab extends GUISubcontext {
 		font = f;
 		tabY2 = y1 + font.getLineHeight();
 		tabShape = new Polygon(new float[] {
-			tX - 4, tabY2, // Bottom left
-			tX + 4, y1, // Top left
-			tX + tW - 4, y1, // Top right
-			tX + tW + 4, tabY2, // Bottom right
+			tX, tabY2, // Bottom left
+			tX, y1, // Top left
+			tX + tW, y1, // Top right
+			tX + tW, tabY2, // Bottom right
 		});
 	}
 	
@@ -144,7 +144,7 @@ public class Tab extends GUISubcontext {
 	public void setHeight(int h) {
 		height = h;
 		y2 = y1 + height;
-		interiorHeight = height - font.getLineHeight();
+		interiorHeight = y2 - tabY2;
 	}
 
 	@Override

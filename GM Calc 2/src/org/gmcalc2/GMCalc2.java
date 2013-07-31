@@ -1,7 +1,6 @@
 package org.gmcalc2;
 
 import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -18,8 +17,6 @@ public class GMCalc2 extends StateBasedGame {
 	public static int HEADERFONT_HEIGHT;
 	public static Font BODYFONT;
 	public static int BODYFONT_HEIGHT;
-	
-	public static Color TAB_ENABLED_COLOR, TAB_DISABLED_COLOR, TAB_NAME_COLOR, PLAYERTAB_BACKGROUND_COLOR;
 	
 	private static boolean STATICS_CREATED = false;
 	
@@ -41,18 +38,12 @@ public class GMCalc2 extends StateBasedGame {
 			BODYFONT = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14), false);
 			BODYFONT_HEIGHT = BODYFONT.getLineHeight();
 			
-			// Define the colors.
-			TAB_ENABLED_COLOR = Color.gray;
-			TAB_DISABLED_COLOR = Color.darkGray;
-			TAB_NAME_COLOR = Color.white;
-			PLAYERTAB_BACKGROUND_COLOR = Color.darkGray;
-			
 			// Mark the statics as created.
 			STATICS_CREATED = true;
 		}
 		
 		// Make the loading state.
-		LoadingState loadingState = new LoadingState(this, "C:\\Users\\John\\Google Drive\\gmcalc2 worlds\\");
+		LoadingState loadingState = new LoadingState(this, "E:\\John\\Google Drive\\gmcalc2 worlds\\");
 		addState(loadingState);
 		
 		// Make the tab state.

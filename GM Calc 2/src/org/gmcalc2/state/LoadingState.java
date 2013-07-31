@@ -40,11 +40,15 @@ public class LoadingState extends BasicGameState {
 	}
 
 	@Override
-	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+	public void init(GameContainer container, StateBasedGame game) throws SlickException {		
+	}
+	
+	@Override
+	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		// Initialize the ui.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
-		
+				
 		// Make the banner.
 		Image bannerImage = Image.createOffscreenImage(container.getWidth(), GMCalc2.HEADERFONT_HEIGHT * 2);
 		Graphics bannerG = bannerImage.getGraphics();
@@ -58,20 +62,20 @@ public class LoadingState extends BasicGameState {
 		bannerG.destroy();
 		ImageFrame banner = new ImageFrame(bannerImage, 0, 0, bannerImage.getWidth(), bannerImage.getHeight(), 0);
 		ui.addElement(banner);
-		
+
 		// Make the output frame.
 		int outY = banner.getHeight();
 		int outHeight = container.getHeight() - outY;
-		out = new OutputFrame(0, outY, container.getWidth(), outHeight, Integer.MIN_VALUE, GMCalc2.BODYFONT, Color.white, 10, Color.white);
+		out = new OutputFrame(0, outY, container.getWidth(), outHeight, Integer.MIN_VALUE, GMCalc2.BODYFONT,
+				Color.white, 10, Color.white);
 		ui.addElement(out);
-		
+
 		// Create the world factory.
 		try {
 			worldFactory = new WorldFactory(new DataReader(), new ExpressionBuilder());
 			worldFactory.setOutputFrame(out);
 			worldFactory.setDirectory(worldsFolder);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			ui.destroy();
 			throw new SlickException("Failed to create world factory.");
 		}

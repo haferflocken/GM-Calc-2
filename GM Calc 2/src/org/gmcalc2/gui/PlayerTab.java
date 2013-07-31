@@ -126,7 +126,7 @@ public class PlayerTab extends Tab {
 	
 	// Fill a column with collapsible string groups representing a list of items.
 	private void fillItemColumn(ScrollableListFrame column, ListBag<Item> bag, boolean expanded) {
-		column.clearElements();
+		column.reinitSubcontext();
 		
 		int displayWidth = column.getWidth() - column.getScrollBarWidth();
 		GUIElement[] elements = new GUIElement[bag.size()];
@@ -169,6 +169,8 @@ public class PlayerTab extends Tab {
 	// Select an item display.
 	// REQUIRES: group is not null
 	private void selectItemDisplay(ItemDisplay group) {
+		System.out.println("Selecting an item display.");
+		
 		selectedItemDisplay = group;
 		int dragImageWidth = columnFont.getWidth(selectedItemDisplay.getTitle());
 		int dragImageHeight = columnFont.getLineHeight();
@@ -303,7 +305,7 @@ public class PlayerTab extends Tab {
 		// Draw the subcontext and its background.
 		g.setColor(backgroundColor);
 		g.fillRect(x1, statColumn.getY(), width, statColumn.getHeight());
-		renderSubcontext(g, x1, statColumn.getX(), width, statColumn.getHeight());
+		renderSubcontext(g, x1, tabY2, x2, y2);
 		
 		// Draw the selection box.
 		if (selectedItemDisplay != null) {
@@ -326,9 +328,12 @@ public class PlayerTab extends Tab {
 		if (button == Input.MOUSE_LEFT_BUTTON || button == Input.MOUSE_RIGHT_BUTTON) {
 			// If the click was within the equipped column, see if there is a new group to select and select it if there is.
 			if (equippedColumn.pointIsWithin(x, y)) {
+				System.out.println("Clicked equipped column");
 				GUIElement e = equippedColumn.getElementAtPoint(x, y);
-				if (!(e instanceof ItemDisplay))
+				if (!(e instanceof ItemDisplay)) {
+					System.out.println("Null? " + e);
 					clearSelectedItemDisplay();
+				}
 				else if (selectedItemDisplay == null || !selectedItemDisplay.equals(e)) {
 					clearSelectedItemDisplay();
 					selectItemDisplay((ItemDisplay)e);
@@ -337,6 +342,7 @@ public class PlayerTab extends Tab {
 			
 			// If the click was within the equipped column, see if there is a new group to select and select it if there is.
 			else if (inventoryColumn.pointIsWithin(x, y)) {
+				System.out.println("Clicked inventory column");
 				GUIElement e = inventoryColumn.getElementAtPoint(x, y);
 				if (!(e instanceof ItemDisplay))
 					clearSelectedItemDisplay();

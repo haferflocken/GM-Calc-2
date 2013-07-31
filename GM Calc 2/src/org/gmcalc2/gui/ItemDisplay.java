@@ -1,10 +1,8 @@
 package org.gmcalc2.gui;
 
 import org.gmcalc2.item.Item;
-
 import org.haferlib.slick.gui.CollapsibleStringGroup;
 import org.haferlib.util.ListBag;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.SlickException;
