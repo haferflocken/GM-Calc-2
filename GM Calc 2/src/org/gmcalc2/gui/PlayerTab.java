@@ -228,72 +228,49 @@ public class PlayerTab extends Tab {
 		
 		// See if it needs a new position. First check is that we aren't just placing it where it already is.
 		if (!selectedItemDisplay.pointIsWithin(mouseX, mouseY)) {
-			// It can be placed in either the equipped column or the inventory column.
-			ScrollableListFrame column = null;
-			if (equippedColumn.pointIsWithin(mouseX, mouseY)) {
-				column = equippedColumn;
-			}
-			else if (inventoryColumn.pointIsWithin(mouseX, mouseY)) {
-				column = inventoryColumn;
-			}
-			
-			// If it's not being placed in either column, return.
-			if (column == null)
+			// See which one we're moving it from.
+			ScrollableListFrame fromColumn;
+			if (equippedColumn.contains(selectedItemDisplay))
+				fromColumn = equippedColumn;
+			else if (inventoryColumn.contains(selectedItemDisplay))
+				fromColumn = inventoryColumn;
+			else
 				return;
 			
-			// Determine the direction of the move.
-			// 0 = equipped to equipped, 1 = equipped to inventory, 2 = inventory to inventory, 3 = inventory to equipped.
-			byte transferDir;
-			if (column == equippedColumn) {
-				if (equippedColumn.contains(selectedItemDisplay))
-					transferDir = 0;
-				else
-					transferDir = 3;
-			}
-			else {
-				if (inventoryColumn.contains(selectedItemDisplay)) 
-					transferDir = 2;
-				else
-					transferDir = 1;
-			}
+			// See where it is being placed.
+			ScrollableListFrame toColumn;
+			if (equippedColumn.pointIsWithin(mouseX, mouseY))
+				toColumn = equippedColumn;
+			else if (inventoryColumn.pointIsWithin(mouseX, mouseY))
+				toColumn = inventoryColumn;
+			else
+				return;
 			
-			// If we are moving within a column...
-			if (transferDir == 0 || transferDir == 2) {
-				// Place the display in the column at the appropriate spot.
-				column.removeElement(selectedItemDisplay);
-				column.addElement(selectedItemDisplay, mouseY);
-			}
-			// If we are moving column to column...
-			else {
-				ScrollableListFrame otherColumn = (transferDir == 1 ? inventoryColumn : equippedColumn); //Figure out what the other column is.
+			// Otherwise, move the item display.
+			moveItemDisplay(fromColumn, toColumn, selectedItemDisplay, mouseY);
+		}
+	}
+	
+	// Move an item display from one column to another.
+	private void moveItemDisplay(ScrollableListFrame fromColumn, ScrollableListFrame toColumn,
+			ItemDisplay itemDisplay, int placeAtY) {
+		System.out.println("FROM COLUMN: " + System.identityHashCode(fromColumn));
+		System.out.println("TO COLUMN: " + System.identityHashCode(toColumn));
+		
+		// If we are moving within a column, just use the column's moveElement method.
+		if (fromColumn.equals(toColumn)) {
+			System.out.println("\n\nWITHIN COLUMN\n\n");
+			fromColumn.moveElement(itemDisplay, placeAtY);
+		}
 
-				selectedItemDisplay.decreaseQuantity(1); // Decrease the quantity of the selected display.
-				Item item = selectedItemDisplay.getItem(); // Get the item. We need it, I promise.
-				// Find an item display in the inventory that has the same item and increase its quantity. If we can't find one, make one.
-				ItemDisplay otherItemDisplay = null;
-				for (GUIElement e : otherColumn.getElements()) {
-					if (e instanceof ItemDisplay) {
-						ItemDisplay i = (ItemDisplay)e;
-						if (i.hasItem(item)) {
-							otherItemDisplay = i;
-							break;
-						}
-					}
-				}
-				if (otherItemDisplay == null) {
-					ListBag<Item> bag = (transferDir == 1 ? player.getInventory() : player.getEquipped());
-					bag.add(item, 1);
-					int displayWidth = otherColumn.getWidth() - otherColumn.getScrollBarWidth();
-					otherItemDisplay = makeItemDisplay(item, bag, displayWidth, selectedItemDisplay.isExpanded());
-					otherColumn.addElement(otherItemDisplay, mouseY);
-				}
-				else {
-					otherItemDisplay.increaseQuantity(1);
-				}
-				selectItemDisplay(otherItemDisplay);
-				player.recalculateStats();
-				fillStatColumn();
-			}
+		// If we are moving column to column, remove the item from one and add it to the other.
+		else {
+			System.out.println("\n\nCOLUMN TO COLUMN\n\n");
+			// Remove from the from column.
+			fromColumn.removeElement(itemDisplay);
+				
+			// Add the item display to the to column at the given y.
+			toColumn.addElement(itemDisplay, placeAtY);
 		}
 	}
 	
