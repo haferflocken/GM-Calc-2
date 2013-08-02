@@ -230,47 +230,74 @@ public class PlayerTab extends Tab {
 		if (!selectedItemDisplay.pointIsWithin(mouseX, mouseY)) {
 			// See which one we're moving it from.
 			ScrollableListFrame fromColumn;
-			if (equippedColumn.contains(selectedItemDisplay))
+			ListBag<Item> fromBag;
+			if (equippedColumn.contains(selectedItemDisplay)) {
 				fromColumn = equippedColumn;
-			else if (inventoryColumn.contains(selectedItemDisplay))
+				fromBag = player.getEquipped();
+			}
+			else if (inventoryColumn.contains(selectedItemDisplay)) {
 				fromColumn = inventoryColumn;
+				fromBag = player.getInventory();
+			}
 			else
 				return;
 			
 			// See where it is being placed.
 			ScrollableListFrame toColumn;
-			if (equippedColumn.pointIsWithin(mouseX, mouseY))
+			ListBag<Item> toBag;
+			if (equippedColumn.pointIsWithin(mouseX, mouseY)) {
 				toColumn = equippedColumn;
-			else if (inventoryColumn.pointIsWithin(mouseX, mouseY))
+				toBag = player.getEquipped();
+			}
+			else if (inventoryColumn.pointIsWithin(mouseX, mouseY)) {
 				toColumn = inventoryColumn;
+				toBag = player.getInventory();
+			}
 			else
 				return;
 			
 			// Otherwise, move the item display.
-			moveItemDisplay(fromColumn, toColumn, selectedItemDisplay, mouseY);
+			moveItemDisplay(fromColumn, toColumn, fromBag, toBag, selectedItemDisplay, mouseY, 1);
 		}
 	}
 	
 	// Move an item display from one column to another.
 	private void moveItemDisplay(ScrollableListFrame fromColumn, ScrollableListFrame toColumn,
-			ItemDisplay itemDisplay, int placeAtY) {
-		System.out.println("FROM COLUMN: " + System.identityHashCode(fromColumn));
-		System.out.println("TO COLUMN: " + System.identityHashCode(toColumn));
-		
+			ListBag<Item> fromBag, ListBag<Item> toBag,
+			ItemDisplay itemDisplay, int placeAtY, int quantity) {
+
 		// If we are moving within a column, just use the column's moveElement method.
 		if (fromColumn.equals(toColumn)) {
-			System.out.println("\n\nWITHIN COLUMN\n\n");
 			fromColumn.moveElement(itemDisplay, placeAtY);
 		}
 
-		// If we are moving column to column, remove the item from one and add it to the other.
+		// If we are moving column to column, remove the item from one and add it to the other
+		// and then fill the stat column up again.
 		else {
-			System.out.println("\n\nCOLUMN TO COLUMN\n\n");
-			// Remove from the from column.
-			fromColumn.removeElement(itemDisplay);
-				
-			// Add the item display to the to column at the given y.
-			toColumn.addElement(itemDisplay, placeAtY);
+			Item item = itemDisplay.getItem(); // Get the item.
+			itemDisplay.decreaseQuantity(quantity); // Decrease the quantity of the item display.
+			
+			// See if the item is already in the to column. If so, increase its quantity.
+			ItemDisplay toDisplay = null;
+			for (GUIElement e : toColumn.getElements()) {
+				if (e instanceof ItemDisplay) {
+					ItemDisplay eD = (ItemDisplay)e;
+					if (eD.getItem().equals(item)) {
+						toDisplay = eD;
+						toDisplay.increaseQuantity(quantity);
+						break;
+					}
+				}
+			}
+			// If not, make a display.
+			if (toDisplay == null) {
+				toBag.add(itemDisplay.getItem(), quantity); // Add to the quantity in the to bag.
+				toDisplay = makeItemDisplay(item, toBag, toColumn.getWidth() - toColumn.getScrollBarWidth(), true);
+				toColumn.addElement(toDisplay, placeAtY); // Add to the to column at the given y.
+			}
+			
+			player.recalculateStats(); // Recalc the stats.
+			fillStatColumn(); // Update the stat display.
 		}
 	}
 	
