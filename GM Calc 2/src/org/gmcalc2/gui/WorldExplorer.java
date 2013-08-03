@@ -109,7 +109,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 		int frameX = x1;
 		int frameY = titleY2;
 		int frameWidth = width;
-		int frameHeight = height;
+		int frameHeight = bodyHeight;
 		int frameScrollBarWidth = 10;
 		
 		// Create the elements that hold the worlds.
@@ -226,8 +226,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 			boolean success = tabState.setEnabledTabById(p.getId());
 			// If there isn't, add a new tab.
 			if (!success) {
-				// TODO
-				// PlayerTab tab = new PlayerTab();
+				tabState.addTabForPlayer(p);
 			}
 		}
 		

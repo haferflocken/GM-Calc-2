@@ -7,6 +7,8 @@ import org.gmcalc2.GMCalc2;
 import org.gmcalc2.gui.PlayerTab;
 import org.gmcalc2.gui.Tab;
 import org.gmcalc2.gui.WorldExplorer;
+import org.gmcalc2.item.Component;
+import org.gmcalc2.item.ItemBase;
 import org.gmcalc2.item.Player;
 import org.gmcalc2.World;
 import org.haferlib.slick.gui.Button;
@@ -120,6 +122,24 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		ui.addElement(tab);
 		return true;
 	}
+	
+	// Make and add a player tab.
+	public void addTabForPlayer(Player player) {
+		PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, 128,
+				GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor, elementBackgroundColor, elementTextColor, elementBackgroundColor);
+		tab.disable();
+		addTab(tab);
+	}
+	
+	// Make and add a component tab.
+	public void addTabForComponent(Component component) {
+		
+	}
+	
+	// Make and add a item base tab.
+	public void addTabForItemBase(ItemBase itemBase) {
+		
+	}
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -169,10 +189,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		Map<String, Player> players = world.getPlayerMap();
 		for (Map.Entry<String, Player> entry : players.entrySet()) {
 			Player player = entry.getValue();
-			PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, 128,
-					GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor, elementBackgroundColor, elementTextColor, elementBackgroundColor);
-			tab.disable();
-			addTab(tab);
+			addTabForPlayer(player);
 		}
 	}
 
