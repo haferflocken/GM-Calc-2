@@ -30,4 +30,8 @@ public interface Factory<E> {
 	// EFFECTS: return a map of the loaded objects to their filepath relative to the dirPath.
 	Map<String, E> getLoadedValues();
 	
+	// REQUIRES: setDirectory has been called
+	// EFFECTS:  Gets the number of files in the directory that will be loaded.
+	int getDirSize();
+	
 }

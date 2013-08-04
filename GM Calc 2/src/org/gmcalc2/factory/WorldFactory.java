@@ -27,12 +27,14 @@ public class WorldFactory implements Factory<World> {
 		private PlayerFactory playerFactory;
 		private TreeMap<String, Object> ruleValues;
 		private World world;
+		private int totalSize; // The total number of times loadNext can be called before failing.
 		
 		private WorldBuilder() {
 			prefixFactory = new ComponentFactory(WorldFactory.this.dataReader, WorldFactory.this.expBuilder);
 			materialFactory = new ComponentFactory(WorldFactory.this.dataReader, WorldFactory.this.expBuilder);
 			itemBaseFactory = new ItemBaseFactory(WorldFactory.this.dataReader, WorldFactory.this.expBuilder);
 			playerFactory = new PlayerFactory(WorldFactory.this.dataReader, null);
+			totalSize = 0;
 		}
 		
 		private void setOutputFrame() {
@@ -53,6 +55,14 @@ public class WorldFactory implements Factory<World> {
 			ruleValues = null;
 			
 			world = null;
+			
+			totalSize = prefixFactory.getDirSize() +
+					materialFactory.getDirSize() +
+					itemBaseFactory.getDirSize() +
+					1 +	// Rules
+					1 + // Construct world
+					playerFactory.getDirSize() +
+					1; // Set the world's player map
 		}
 		
 		private void loadRules() {
@@ -89,30 +99,39 @@ public class WorldFactory implements Factory<World> {
 		private boolean isFinished() {
 			return world != null && world.getPlayerMap() != null;
 		}
+		
+		private int getTotalSize() {
+			return totalSize;
+		}
 	}
 	
 	private Map<String, World> cache;
 	private DataReader dataReader;
 	private ExpressionBuilder expBuilder;
 	private File[] worldDirectories;
+	private WorldBuilder[] worldBuilders;
 	private int worldIndex;
-	private WorldBuilder worldBuilder;
 	private OutputFrame out;
+	private int totalSize;
 	
 	// Constructor.
 	public WorldFactory(DataReader dataReader, ExpressionBuilder expBuilder) {
 		this.dataReader = dataReader;
 		this.expBuilder = expBuilder;
-		worldBuilder = new WorldBuilder();
 	}
 
 	// Set the output frame.
+	@Override
 	public void setOutputFrame(OutputFrame frame) {
 		out = frame;
-		worldBuilder.setOutputFrame();
+		if (worldBuilders != null) {
+			for (WorldBuilder wB : worldBuilders)
+				wB.setOutputFrame();
+		}
 	}
 
 	// Set the directory.
+	@Override
 	public void setDirectory(String dirPath) throws IOException {
 		// Validate the file.
 		if (dirPath == null)
@@ -128,51 +147,74 @@ public class WorldFactory implements Factory<World> {
 						return file.isDirectory();
 					}
 				} );
-		worldIndex = -1;
-		findNextWorld();
+		worldIndex = 0;
+		makeWorldBuilders();
 		cache = new TreeMap<>();
 	}
 	
-	// Figure out what the next world to load is.
-	private void findNextWorld() {
-		worldIndex++;
-		if (worldIndex < worldDirectories.length) {
+	// Make the world builders this will use. Called by setDirectory.
+	private void makeWorldBuilders() {
+		// Reset the total size because we're recalculating it.
+		totalSize = 0;
+		
+		// Make a world builder for each world folder.
+		worldBuilders = new WorldBuilder[worldDirectories.length];
+		for (int i = 0; i < worldBuilders.length; i++) {
 			try {
-				String worldPath = worldDirectories[worldIndex].getAbsolutePath();
+				// Make the directory path for the builder.
+				String worldPath = worldDirectories[i].getAbsolutePath();
 				if (worldPath.charAt(worldPath.length() - 1) != '\\')
 					worldPath += '\\';
-				worldBuilder.setDirectory(worldPath);
+				
+				// Make the builder and set its directory.
+				worldBuilders[i] = new WorldBuilder();
+				worldBuilders[i].setOutputFrame();
+				worldBuilders[i].setDirectory(worldPath);
+				
+				
+				// Add the builder's size to this one.
+				totalSize += worldBuilders[i].getTotalSize();
 			}
 			catch (IOException e) {
-				worldIndex = worldDirectories.length;
+				// For whatever reason, the world builder couldn't be made, so set it to null.
+				worldBuilders[i] = null;
 			}
 		}
 	}
 
 	// Load the next thing.
+	@Override
 	public void loadNext() {
 		// Make sure we have an element to look at.
 		if (worldIndex >= worldDirectories.length) 
 			throw new NoSuchElementException();
 		
 		// Tell the world builder to load the next thing.
-		worldBuilder.loadNext();
+		worldBuilders[worldIndex].loadNext();
 		
 		// If the world is finished loading, move on to the next world.
-		if (worldBuilder.isFinished()) {
-			cache.put(worldDirectories[worldIndex].getName(), worldBuilder.world);
-			findNextWorld();
+		if (worldBuilders[worldIndex].isFinished()) {
+			cache.put(worldDirectories[worldIndex].getName(), worldBuilders[worldIndex].world);
+			worldIndex++;
 		}
 	}
 
 	// Are we done loading?
+	@Override
 	public boolean isFinished() {
 		return worldIndex >= worldDirectories.length;
 	}
 
 	// Get the world.
+	@Override
 	public Map<String, World> getLoadedValues() {
 		return cache;
+	}
+	
+	// Get the number of files that will be loaded.
+	@Override
+	public int getDirSize() {
+		return totalSize;
 	}
 
 }

@@ -21,12 +21,24 @@ public class LoadingState extends BasicGameState {
 	
 	public static final int ID = 0;
 	
+	private static final int BORDER_THICKNESS = 6; // The thickness of the border around elements.
+	
 	// Instance fields.
-	private GMCalc2 gmcalc2;
-	private String worldsFolder;
-	private GUIContext ui;
-	private OutputFrame out;
-	private WorldFactory worldFactory;
+	private GMCalc2 gmcalc2;					// The main app, kept track of to tell it to switch states.
+	private String worldsFolder;				// Where the worlds are kept.
+	private GUIContext ui;						// The UI.
+	private OutputFrame out;					// The output frame.
+	private WorldFactory worldFactory;			// The factory that makes the worlds.
+	private int loadCount;						// The number of times loadNext() has been called.
+	private double loadProgress;				// The progress of loading as a percentage.
+	private int loadBarX, loadBarY;				// The position of the load bar.
+	private int loadBarMaxWidth, loadBarHeight;	// The dimensions of the load bar.
+	private int loadBarProgressWidth;			// The width of the load bar's progress.
+	private int loadBarPendingX;				// The x of the pending part of the load bar.
+	private int loadBarPendingWidth;			// The width of the pending part of the load bar.
+	
+	// Color scheme.
+	private Color elementTextColor, elementBackgroundColor, loadBarColor;
 	
 	// Constructors.
 	public LoadingState(GMCalc2 gmcalc2, String worldsFolder) {
@@ -40,7 +52,10 @@ public class LoadingState extends BasicGameState {
 	}
 
 	@Override
-	public void init(GameContainer container, StateBasedGame game) throws SlickException {		
+	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		elementTextColor = Color.white;
+		elementBackgroundColor = Color.darkGray;
+		loadBarColor = Color.cyan;
 	}
 	
 	@Override
@@ -48,29 +63,53 @@ public class LoadingState extends BasicGameState {
 		// Initialize the ui.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
+		
+		// Calculate a width with borders.
+		int borderedWidth = container.getWidth() - BORDER_THICKNESS * 2;
 				
-		// Make the banner.
-		Image bannerImage = Image.createOffscreenImage(container.getWidth(), GMCalc2.HEADERFONT_HEIGHT * 2);
+		// Make the banner image and get its graphics.
+		Image bannerImage = Image.createOffscreenImage(borderedWidth, GMCalc2.HEADERFONT_HEIGHT * 2);
 		Graphics bannerG = bannerImage.getGraphics();
+		
+		// Fill the banner's background with elementBackgroundColor.
+		//bannerG.setColor(elementBackgroundColor);
+		//bannerG.fillRect(0, 0, bannerImage.getWidth(), bannerImage.getHeight());
+		
+		// Draw the banner's text.
 		bannerG.setFont(GMCalc2.HEADERFONT);
-		bannerG.setColor(Color.white);
+		bannerG.setColor(elementTextColor);
 		String bannerText = "GMCalc2: Loading worlds...";
-		int drawX = container.getWidth() / 2 - GMCalc2.HEADERFONT.getWidth(bannerText) / 2;
-		int drawY = GMCalc2.HEADERFONT_HEIGHT / 2;
+		int drawX = bannerImage.getWidth() / 2 - GMCalc2.HEADERFONT.getWidth(bannerText) / 2;
+		int drawY = bannerImage.getHeight() / 4;
 		bannerG.drawString(bannerText, drawX, drawY);
 		bannerG.flush();
 		bannerG.destroy();
-		ImageFrame banner = new ImageFrame(bannerImage, 0, 0, bannerImage.getWidth(), bannerImage.getHeight(), 0);
+		
+		// Make the ImageFrame for the banner.
+		int bannerX = BORDER_THICKNESS;
+		int bannerY = 0;
+		int bannerWidth = borderedWidth;
+		int bannerHeight = bannerImage.getHeight();
+		ImageFrame banner = new ImageFrame(bannerImage, bannerX, bannerY, bannerWidth, bannerHeight, 0);
 		ui.addElement(banner);
 
+		// Make the load bar.
+		loadBarX = BORDER_THICKNESS;
+		loadBarY = banner.getY() + banner.getHeight();
+		loadBarMaxWidth = borderedWidth;
+		loadBarHeight = 12;
+		
 		// Make the output frame.
-		int outY = banner.getHeight();
-		int outHeight = container.getHeight() - outY;
-		out = new OutputFrame(0, outY, container.getWidth(), outHeight, Integer.MIN_VALUE, GMCalc2.BODYFONT,
-				Color.white, 10, Color.white);
+		int outX = BORDER_THICKNESS;
+		int outY = loadBarY + loadBarHeight + BORDER_THICKNESS;
+		int outWidth = borderedWidth;
+		int outHeight = container.getHeight() - outY - BORDER_THICKNESS;
+		out = new OutputFrame(outX, outY, outWidth, outHeight, Integer.MIN_VALUE, GMCalc2.BODYFONT,
+				elementTextColor, 10, elementTextColor);
 		ui.addElement(out);
 
 		// Create the world factory.
+		loadCount = 0;
 		try {
 			worldFactory = new WorldFactory(new DataReader(), new ExpressionBuilder());
 			worldFactory.setOutputFrame(out);
@@ -90,8 +129,15 @@ public class LoadingState extends BasicGameState {
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) {
 		// Load the next thing.
-		if (!worldFactory.isFinished())
+		if (!worldFactory.isFinished()) {
 			worldFactory.loadNext();
+			loadCount++;
+			loadProgress = ((double)loadCount) / ((double)worldFactory.getDirSize());
+			loadBarProgressWidth = (int)(loadProgress * loadBarMaxWidth);
+			loadBarPendingX = loadBarX + loadBarProgressWidth;
+			loadBarPendingWidth = loadBarMaxWidth - loadBarProgressWidth;
+		}
+		
 		// If we are done loading, tell the game to go to the tab state.
 		else {
 			gmcalc2.setWorlds(worldFactory.getLoadedValues());
@@ -104,8 +150,18 @@ public class LoadingState extends BasicGameState {
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) {
+		// Draw the background of the output frame.
+		g.setColor(elementBackgroundColor);
+		g.fillRect(out.getX(), out.getY(), out.getWidth(), out.getHeight());
+		
 		// Render the ui.
 		ui.render(g, 0, 0, container.getWidth(), container.getHeight());
+		
+		// Render the loading progress bar.
+		g.setColor(elementBackgroundColor);
+		g.fillRect(loadBarPendingX, loadBarY, loadBarPendingWidth, loadBarHeight);
+		g.setColor(loadBarColor);
+		g.fillRect(loadBarX, loadBarY, loadBarProgressWidth, loadBarHeight);
 	}
 
 	@Override

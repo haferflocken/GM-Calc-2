@@ -130,4 +130,10 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 		return cache;
 	}
 	
+	// Get the number of files that will be loaded.
+	@Override
+	public int getDirSize() {
+		return dirTree.getNumFiles();
+	}
+	
 }
