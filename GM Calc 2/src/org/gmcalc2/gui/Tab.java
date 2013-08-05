@@ -106,7 +106,7 @@ public class Tab extends GUISubcontext {
 		g.fill(tabShape);
 		g.setColor(tabNameColor);
 		g.setFont(font);
-		g.drawString(tabName, tabShape.getX() + tabShape.getWidth() / 2 - (font.getWidth(tabName) / 2), y1);
+		g.drawString(tabName, (int)(tabShape.getX() + tabShape.getWidth() / 2 - (font.getWidth(tabName) / 2)), y1);
 		
 		// Render the interior if enabled.
 		if (enabled)

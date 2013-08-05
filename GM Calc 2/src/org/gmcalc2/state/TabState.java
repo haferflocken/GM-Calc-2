@@ -1,7 +1,6 @@
 package org.gmcalc2.state;
 
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 import org.gmcalc2.GMCalc2;
 import org.gmcalc2.gui.PlayerTab;
@@ -10,7 +9,6 @@ import org.gmcalc2.gui.WorldExplorer;
 import org.gmcalc2.item.Component;
 import org.gmcalc2.item.ItemBase;
 import org.gmcalc2.item.Player;
-import org.gmcalc2.World;
 import org.haferlib.slick.gui.Button;
 import org.haferlib.slick.gui.GUIContext;
 import org.haferlib.slick.gui.GUIEvent;
@@ -125,7 +123,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	
 	// Make and add a player tab.
 	public void addTabForPlayer(Player player) {
-		PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, 128,
+		PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0,
 				GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor, elementBackgroundColor, elementTextColor, elementBackgroundColor);
 		tab.disable();
 		addTab(tab);
@@ -172,6 +170,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 				this, gmcalc2.getWorlds(),
 				elementTextColor, elementHighlightColor, elementBackgroundColor,
 				GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor);
+		ui.addElement(worldExplorer);
 		
 		// Create the toolbar.
 		toolbar = new ListFrame(toolbarX, toolbarY, toolbarWidth, 100, ListFrame.XALIGN_CENTER, 0, toolbarButtonBorder);
@@ -182,15 +181,6 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		worldExplorerButton.addListener(this);
 		toolbar.addElement(worldExplorerButton);
 		ui.addElement(toolbar);
-		
-		// Fill the UI with player tabs!
-		// For now, just add players from forgotten realms.
-		World world = gmcalc2.getWorlds().get("forgottenrealms");
-		Map<String, Player> players = world.getPlayerMap();
-		for (Map.Entry<String, Player> entry : players.entrySet()) {
-			Player player = entry.getValue();
-			addTabForPlayer(player);
-		}
 	}
 
 	@Override

@@ -33,8 +33,8 @@ public class PlayerTab extends Tab {
 	private int dragImageXOffset, dragImageYOffset;
 
 	// Constructor.
-	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Font columnFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor) {
-		super(player.getId(), player.getName(), x, y, width, height, tabX, tabWidth, font, tabEnabledColor, tabDisabledColor, tabNameColor);
+	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, Font font, Font columnFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor) {
+		super(player.getId(), player.getName(), x, y, width, height, tabX, font.getWidth(player.getName()) * 10 / 9, font, tabEnabledColor, tabDisabledColor, tabNameColor);
 		this.columnFont = columnFont;
 		this.backgroundColor = backgroundColor;
 		setPlayer(player);

@@ -84,7 +84,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 	// Make a frame from a map.
 	private CollapsibleListFrame makeMapFrame(String frameTitle, Map<String, ?> map, int x, int y, int w) {
 		// Make the frame.
-		CollapsibleListFrame out = new CollapsibleListFrame(frameTitle, textColor, bodyFont, x, y, w, 0, true);
+		CollapsibleListFrame out = new CollapsibleListFrame(frameTitle, textColor, bodyFont, x, y, w, 0, false);
 		
 		// Add buttons to the frame.
 		GUIElement[] buttons = new GUIElement[map.size()];
@@ -150,6 +150,7 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 		
 		// Draw the title.
 		g.setColor(textColor);
+		g.setFont(titleFont);
 		g.drawString(TITLE, x1 + 4, y1);
 		
 		// Draw the subcontext.
@@ -228,6 +229,8 @@ public class WorldExplorer extends GUISubcontext implements GUIEventListener {
 			if (!success) {
 				tabState.addTabForPlayer(p);
 			}
+			// Enable the tab!
+			tabState.setEnabledTabById(p.getId());
 		}
 		
 		// Clicking an item base.
