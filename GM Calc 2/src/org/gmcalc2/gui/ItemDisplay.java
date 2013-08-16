@@ -1,27 +1,25 @@
 package org.gmcalc2.gui;
 
 import org.gmcalc2.item.Item;
-import org.haferlib.slick.gui.CollapsibleStringGroup;
+import org.gmcalc2.item.StatMap;
+import org.haferlib.slick.gui.CollapsibleListFrame;
+import org.haferlib.slick.gui.TextDisplay;
 import org.haferlib.util.ListBag;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
-import org.newdawn.slick.SlickException;
 
-public class ItemDisplay extends CollapsibleStringGroup {
+public class ItemDisplay extends CollapsibleListFrame {
 
-	private Item item; // The item.
-	private ListBag<Item> bag; // The bag the item is in.
-	private boolean dead; //Is this dead?
+	private Item item;					// The item.
+	private ListBag<Item> bag;			// The bag the item is in.
 
 	// Constructor.
 	public ItemDisplay(Item item, ListBag<Item> bag, Color textColor,
 			int x, int y, int width, int depth, Font font, boolean expanded) {
-		super(item.getName() + (bag.getCount(item) > 1 ? " x" + bag.getCount(item) : ""),
-				item.getStatMap().toDisplayStrings(), textColor, x, y, width, depth, font, expanded);
-		this.item = item;
-		this.bag = bag;
+		super("", textColor, font,
+				x, y, width, depth, expanded);
 		dead = false;
-		recalcTitle();
+		setItem(item, bag);
 	}
 
 	// Get the item.
@@ -34,6 +32,11 @@ public class ItemDisplay extends CollapsibleStringGroup {
 		return bag;
 	}
 	
+	// Does this have a certain item?
+	public boolean hasItem(Item other) {
+		return item.equals(other);
+	}
+	
 	// Add to the count.
 	public void increaseQuantity(int amount) {
 		bag.add(item, amount);
@@ -44,35 +47,44 @@ public class ItemDisplay extends CollapsibleStringGroup {
 	public void decreaseQuantity(int amount) {
 		bag.remove(item, amount);
 		recalcTitle();
-	}
-	
-	// Does this have a certain item?
-	public boolean hasItem(Item other) {
-		return item.equals(other);
-	}
-	
-	// Recalc this, making it for dead if its count is less than 1 and changing the title as appropriate.
-	public void recalcTitle() {
-		int count = bag.getCount(item);
-		if (count < 1) {
+		
+		if (bag.getCount(item) < 1) {
 			dead = true;
-			return;
-		}
-		String newTitle = item.getName() + (count > 1 ? " x" + count : "");
-		if (!newTitle.equals(title)) {
-			title = newTitle;
-			try {
-				redraw();
-			} catch (SlickException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	
-	// Override dead() to return dead.
-	@Override
-	public boolean dead() {
-		return dead;
+	// Set the item.
+	public void setItem(Item i, ListBag<Item> b) {
+		item = i;
+		bag = b;
+		recalcTitle();
+		recalcStrings();
+	}
+	
+	// Recalc the title.
+	public void recalcTitle() {
+		String newTitle = item.getName();
+		int count = bag.getCount(item);
+		if (count > 1)
+			newTitle += " x" + count;
+		setTitle(newTitle, font);
+	}
+	
+	// Recalc the strings.
+	public void recalcStrings() {
+		StatMap itemStats = item.getStatMap();
+		String[] statStrings = itemStats.toDisplayStrings();
+		
+		clearElements();
+		
+		int statDisplayOffset = font.getLineHeight();
+		int statDisplayWidth = width - statDisplayOffset;
+		TextDisplay[] statDisplays = new TextDisplay[statStrings.length];
+		for (int i = 0; i < statStrings.length; i++) {
+			statDisplays[i] = new TextDisplay(0, 0, statDisplayWidth, Integer.MAX_VALUE, 0, statStrings[i], font, textColor);
+		}
+		
+		addElements(statDisplays);
 	}
 
 }

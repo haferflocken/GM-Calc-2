@@ -3,12 +3,11 @@ package org.gmcalc2.gui;
 import org.gmcalc2.item.Player;
 import org.gmcalc2.item.Stat;
 import org.gmcalc2.item.Item;
-
-import org.haferlib.slick.gui.CollapsibleStringGroup;
+import org.haferlib.slick.gui.CollapsibleListFrame;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
+import org.haferlib.slick.gui.TextDisplay;
 import org.haferlib.util.ListBag;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
@@ -28,9 +27,10 @@ public class PlayerTab extends Tab {
 	private Player player;
 	private ScrollableListFrame statColumn, equippedColumn, inventoryColumn;
 	private ItemDisplay selectedItemDisplay;
-	private Image dragImage;
+	private String dragString;
+	private Color dragStringColor;
+	private int dragStringXOffset, dragStringYOffset;
 	private boolean dragging;
-	private int dragImageXOffset, dragImageYOffset;
 
 	// Constructor.
 	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, Font font, Font columnFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor) {
@@ -115,11 +115,18 @@ public class PlayerTab extends Tab {
 			categoryContents.add(catStats);
 		}
 		
-		// Make the ItemDisplays from them.
-		GUIElement[] statDisplays = new GUIElement[categoryNames.size()];
+		// Make the stat displays from them.
+		CollapsibleListFrame[] statDisplays = new CollapsibleListFrame[categoryNames.size()];
 		int groupWidth = statColumn.getWidth() - statColumn.getScrollBarWidth();
-		for (int i = 0; i < statDisplays.length; i++) {
-			statDisplays[i] = new CollapsibleStringGroup(categoryNames.get(i), categoryContents.get(i), Color.white, 0, 0, groupWidth, 0, columnFont, true);
+		int groupSubwidth = groupWidth - columnFont.getLineHeight();
+		for (int q, i = 0; i < statDisplays.length; i++) {
+			statDisplays[i] = new CollapsibleListFrame(categoryNames.get(i), Color.white, columnFont, 0, 0, groupWidth, 0, true);
+			String[] strings = categoryContents.get(i);
+			TextDisplay[] stringDisplays = new TextDisplay[strings.length];
+			for (q = 0; q < strings.length; q++) {
+				stringDisplays[q] = new TextDisplay(0, 0, groupSubwidth, Integer.MAX_VALUE, 0, strings[q], columnFont, Color.white);
+			}
+			statDisplays[i].addElements(stringDisplays);
 		}
 		statColumn.addElements(statDisplays);
 	}
@@ -172,52 +179,18 @@ public class PlayerTab extends Tab {
 		System.out.println("Selecting an item display.");
 		
 		selectedItemDisplay = group;
-		int dragImageWidth = columnFont.getWidth(selectedItemDisplay.getTitle());
-		int dragImageHeight = columnFont.getLineHeight();
-		dragImageXOffset = -dragImageWidth / 2;
-		dragImageYOffset = -dragImageHeight / 2;
-		// Draw the new drag image.
-		try {
-			// Create the drag image and a graphics to draw to it.
-			dragImage = Image.createOffscreenImage(dragImageWidth, dragImageHeight);
-			Graphics g = dragImage.getGraphics();
-			
-			// Fill the background with transparency.
-			Color transparency = new Color(0, 0, 0, 0);
-			g.setDrawMode(Graphics.MODE_ALPHA_MAP);
-			g.setColor(transparency);
-			g.fillRect(0, 0, dragImageWidth, dragImageHeight);
-			g.setDrawMode(Graphics.MODE_NORMAL);
-			
-			// Draw the string.
-			g.setFont(columnFont);
-			g.setColor(selectedItemDisplay.getTextColor());
-			g.drawString(selectedItemDisplay.getTitle(), 0, 0);
-			
-			// Flush the graphics and destroy it.
-			g.flush();
-			g.destroy();
-		}
-		catch (SlickException e) {
-			e.printStackTrace();
-			clearSelectedItemDisplay();
-			return;
-		}
+		dragString = selectedItemDisplay.getItem().getName();
+		dragStringColor = selectedItemDisplay.getTextColor();
+		int dragStringWidth = columnFont.getWidth(dragString);
+		int dragStringHeight = columnFont.getLineHeight();
+		dragStringXOffset = -dragStringWidth / 2;
+		dragStringYOffset = -dragStringHeight / 2;
 	}
 	
 	// Clear the selected item display.
 	private void clearSelectedItemDisplay() {
 		selectedItemDisplay = null;
-		// Destroy the old drag image.
-		if (dragImage != null) {
-			try {
-				dragImage.destroy();
-				dragImage = null;
-			}
-			catch (SlickException e) {
-				e.printStackTrace();
-			}
-		}
+		dragString = null;
 	}
 	
 	// Stop dragging the selected item display and, if needed, move it to its new position.
@@ -319,7 +292,8 @@ public class PlayerTab extends Tab {
 		
 		// Draw the dragImage if we are dragging and the mouse isn't inside of the selected item display.
 		if (dragging && !selectedItemDisplay.pointIsWithin(mouseX, mouseY)) {
-			g.drawImage(dragImage, mouseX + dragImageXOffset, mouseY + dragImageYOffset);
+			g.setColor(dragStringColor);
+			g.drawString(dragString, mouseX + dragStringXOffset, mouseY + dragStringYOffset);
 		}
 	}
 
@@ -373,7 +347,7 @@ public class PlayerTab extends Tab {
 		super.mouseDown(x, y, button);
 		
 		// Drag if we are holding the left button, have a drag image and we are on top of selectedItemDisplay.
-		if (button == Input.MOUSE_LEFT_BUTTON && dragImage != null && selectedItemDisplay.pointIsWithin(x, y))
+		if (button == Input.MOUSE_LEFT_BUTTON && dragString != null && selectedItemDisplay.pointIsWithin(x, y))
 			dragging = true;
 	}
 	
@@ -393,7 +367,7 @@ public class PlayerTab extends Tab {
 		super.clickedElsewhere(target, button);
 		
 		// Don't drag if we're doing stuff elsewhere.
-		if (dragImage != null) {
+		if (dragString != null) {
 			dragging = false;
 			clearSelectedItemDisplay();
 		}
@@ -405,7 +379,7 @@ public class PlayerTab extends Tab {
 		super.mouseDownElsewhere(target, button);
 		
 		// Don't drag if we're doing stuff elsewhere.
-		if (dragImage != null) {
+		if (dragString != null) {
 			dragging = false;
 			clearSelectedItemDisplay();
 		}
