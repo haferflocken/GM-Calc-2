@@ -40,7 +40,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	private int workbenchWidth, workbenchHeight;		// The size of the workbench.
 	
 	// Color scheme.
-	private Color elementTextColor, elementHighlightColor, elementBackgroundColor;
+	private Color elementTextColor, elementHighlightColor, elementBackgroundColor, elementSelectColor;
 	
 	// Constructor.
 	public TabState(GMCalc2 gmcalc2) {
@@ -123,8 +123,8 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	
 	// Make and add a player tab.
 	public void addTabForPlayer(Player player) {
-		PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0,
-				GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor, elementBackgroundColor, elementTextColor, elementBackgroundColor);
+		PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, GMCalc2.HEADERFONT, GMCalc2.BODYFONT,
+				elementHighlightColor, elementBackgroundColor, elementTextColor, elementBackgroundColor, elementSelectColor);
 		tab.disable();
 		addTab(tab);
 	}
@@ -145,6 +145,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		elementTextColor = Color.white;
 		elementHighlightColor = Color.gray;
 		elementBackgroundColor = Color.darkGray;
+		elementSelectColor = new Color(95, 95, 95);
 	}
 	
 	@Override

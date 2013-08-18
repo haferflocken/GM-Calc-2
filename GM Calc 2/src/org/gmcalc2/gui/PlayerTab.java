@@ -11,9 +11,7 @@ import org.haferlib.util.ListBag;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
 
 import java.util.TreeMap;
 import java.util.ArrayList;
@@ -22,8 +20,7 @@ import java.util.Map;
 public class PlayerTab extends Tab {
 	
 	private Font columnFont;
-	private Color backgroundColor;
-	private Image labelsImage;
+	private Color backgroundColor, itemDisplayHighlightColor;
 	private Player player;
 	private ScrollableListFrame statColumn, equippedColumn, inventoryColumn;
 	private ItemDisplay selectedItemDisplay;
@@ -33,12 +30,13 @@ public class PlayerTab extends Tab {
 	private boolean dragging;
 
 	// Constructor.
-	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, Font font, Font columnFont, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor) {
+	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, Font font, Font columnFont,
+			Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor, Color backgroundColor, Color itemDisplayHighlightColor) {
 		super(player.getId(), player.getName(), x, y, width, height, tabX, font.getWidth(player.getName()) * 10 / 9, font, tabEnabledColor, tabDisabledColor, tabNameColor);
 		this.columnFont = columnFont;
 		this.backgroundColor = backgroundColor;
+		this.itemDisplayHighlightColor = itemDisplayHighlightColor;
 		setPlayer(player);
-		redrawLabels();
 	}
 	
 	// Set the player and recreate the columns.
@@ -151,28 +149,6 @@ public class PlayerTab extends Tab {
 		return itemDisplay;
 	}
 
-	// Redraw the labels that are displayed above the columns.
-	private void redrawLabels() {
-		try {
-			labelsImage = Image.createOffscreenImage(width, font.getLineHeight());
-			Graphics g = labelsImage.getGraphics();
-			g.setColor(tabEnabledColor);
-			g.fillRect(0, 0, width, font.getLineHeight());
-			
-			g.setColor(tabNameColor);
-			g.setFont(font);
-			g.drawString("Stats", statColumn.getX() - x1, 0);
-			g.drawString("Equipped", equippedColumn.getX() - x1, 0);
-			g.drawString("Inventory", inventoryColumn.getX() - x1, 0);
-			
-			g.flush();
-			g.destroy();
-		}
-		catch (SlickException e) {
-			System.out.println("Failed to draw labels for tab.");
-		}
-	}
-	
 	// Select an item display.
 	// REQUIRES: group is not null
 	private void selectItemDisplay(ItemDisplay group) {
@@ -229,7 +205,7 @@ public class PlayerTab extends Tab {
 			else
 				return;
 			
-			// Otherwise, move the item display.
+			// Move the item display.
 			moveItemDisplay(fromColumn, toColumn, fromBag, toBag, selectedItemDisplay, mouseY, 1);
 		}
 	}
@@ -269,6 +245,10 @@ public class PlayerTab extends Tab {
 				toColumn.addElement(toDisplay, placeAtY); // Add to the to column at the given y.
 			}
 			
+			// If itemDisplay is the selected item display, select toDisplay.
+			if (itemDisplay == selectedItemDisplay)
+				selectItemDisplay(toDisplay);
+			
 			player.recalculateStats(); // Recalc the stats.
 			fillStatColumn(); // Update the stat display.
 		}
@@ -277,18 +257,27 @@ public class PlayerTab extends Tab {
 	@Override
 	public void renderInterior(Graphics g) {
 		// Draw the top labels.
-		g.drawImage(labelsImage, x1, tabY2);
+		g.setColor(tabEnabledColor);
+		g.fillRect(x1, tabY2, width, font.getLineHeight());
 		
-		// Draw the subcontext and its background.
+		g.setColor(tabNameColor);
+		g.setFont(font);
+		g.drawString("Stats", statColumn.getX(), tabY2);
+		g.drawString("Equipped", equippedColumn.getX(), tabY2);
+		g.drawString("Inventory", inventoryColumn.getX(), tabY2);
+		
+		// Draw the background of the subcontext.
 		g.setColor(backgroundColor);
 		g.fillRect(x1, statColumn.getY(), width, statColumn.getHeight());
-		renderSubcontext(g, x1, tabY2, x2, y2);
 		
-		// Draw the selection box.
+		// Draw the selection highlight.
 		if (selectedItemDisplay != null) {
-			g.setColor(Color.red);
-			g.drawRect(selectedItemDisplay.getX(), selectedItemDisplay.getY(), selectedItemDisplay.getWidth(), selectedItemDisplay.getHeight());
+			g.setColor(itemDisplayHighlightColor);
+			g.fillRect(selectedItemDisplay.getX(), selectedItemDisplay.getY(), selectedItemDisplay.getWidth(), selectedItemDisplay.getHeight());
 		}
+		
+		// Draw the subcontext.
+		renderSubcontext(g, x1, tabY2, x2, y2);
 		
 		// Draw the dragImage if we are dragging and the mouse isn't inside of the selected item display.
 		if (dragging && !selectedItemDisplay.pointIsWithin(mouseX, mouseY)) {
