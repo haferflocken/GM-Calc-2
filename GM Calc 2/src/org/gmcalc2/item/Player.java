@@ -5,8 +5,8 @@ package org.gmcalc2.item;
 import java.util.TreeMap;
 
 import org.gmcalc2.World;
-
 import org.haferlib.util.ListBag;
+import org.haferlib.util.Log;
 
 public class Player {
 
@@ -52,7 +52,7 @@ public class Player {
 			}
 		}
 
-		System.out.println("Player (" + hashCode() + ") " + name + " in world " + world.getName() + " loaded " + equipped.size() + " equipped items.");
+		Log.getDefaultLog().info("Player (" + hashCode() + ") " + name + " in world " + world.getName() + " loaded " + equipped.size() + " equipped items.");
 		// Get the inventory items.
 		val = values.get(INVENTORY_KEY);
 		if (val instanceof Object[]) {
@@ -63,7 +63,7 @@ public class Player {
 				}
 			}
 		}
-		System.out.println("Player (" + hashCode() + ") " + name + " in world " + world.getName() + " loaded " + inventory.size() + " inventory items.");
+		Log.getDefaultLog().info("Player (" + hashCode() + ") " + name + " in world " + world.getName() + " loaded " + inventory.size() + " inventory items.");
 
 		// Recalculate the stats.
 		recalculateStats();
@@ -124,7 +124,7 @@ public class Player {
 				|| !(data[1] instanceof Object[])
 				|| !(data[2] instanceof Object[])
 				|| !(data[3] instanceof String)) {
-			System.out.println("Invalid item declaration in player " + name);
+			Log.getDefaultLog().info("Invalid item declaration in player " + name);
 			return;
 		}
 
@@ -139,7 +139,7 @@ public class Player {
 		// Make the itemBase.
 		ItemBase itemBase = world.getItemBase(rawItemBase);
 		if (itemBase == null) {
-			System.out.println("Could not find itemBase " + rawItemBase + " for player " + name);
+			Log.getDefaultLog().info("Could not find itemBase " + rawItemBase + " for player " + name);
 			return;
 		}
 

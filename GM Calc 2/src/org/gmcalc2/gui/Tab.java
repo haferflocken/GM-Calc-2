@@ -17,11 +17,11 @@ public class Tab extends GUISubcontext {
 	protected Color tabEnabledColor, tabDisabledColor, tabNameColor;
 	protected Polygon tabShape;
 	protected int tabY2;	//The tab shape. No need for tabY1 because it is the same as y1.
-	protected int x2, y2, width, height, interiorHeight;
-	protected int depth;
-	protected boolean dead, enabled;
+	protected int interiorHeight;
+	protected boolean enabled;
 	
 	public Tab(String id, String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor) {
+		super(x, y, width, height, 0);
 		// Set the parameters.
 		this.id = id;
 		this.tabName = tabName;
@@ -29,10 +29,6 @@ public class Tab extends GUISubcontext {
 		this.tabDisabledColor = tabDisabledColor;
 		this.tabNameColor = tabNameColor;
 		createTab(tabX, tabWidth, font);
-		setWidth(width);
-		setHeight(height);
-		setX(x);
-		setY(y);
 		enable();
 	}
 	
@@ -116,40 +112,21 @@ public class Tab extends GUISubcontext {
 	@Override
 	public void setX(int x) {
 		int dX = x - x1;
-		super.setX(x);
-		x2 = x1 + width;
 		setTabX((int)tabShape.getX() + dX);
+		super.setX(x);
 	}
 	
 	@Override
 	public void setY(int y) {
 		super.setY(y);
-		y2 = y1 + height;
 		tabShape.setY(y);
 		tabY2 = y1 + font.getLineHeight();
 	}
 	
 	@Override
-	public void setWidth(int w) {
-		width = w;
-		x2 = x1 + width;
-	}
-
-	@Override
-	public int getWidth() {
-		return width;
-	}
-	
-	@Override
 	public void setHeight(int h) {
-		height = h;
-		y2 = y1 + height;
+		super.setHeight(h);
 		interiorHeight = y2 - tabY2;
-	}
-
-	@Override
-	public int getHeight() {
-		return height;
 	}
 
 	@Override
@@ -176,19 +153,5 @@ public class Tab extends GUISubcontext {
 			disable();
 		}
 	}
-	
-	@Override
-	public void setDepth(int d) {
-		depth = d;
-	}
-	
-	@Override
-	public int getDepth() {
-		return depth;
-	}
-	
-	@Override
-	public boolean dead() {
-		return dead;
-	}
+
 }

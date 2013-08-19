@@ -11,7 +11,6 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import org.gmcalc2.World;
-import org.haferlib.slick.gui.OutputFrame;
 import org.haferlib.util.DataReader;
 import org.haferlib.util.expression.ExpressionBuilder;
 
@@ -35,13 +34,6 @@ public class WorldFactory implements Factory<World> {
 			itemBaseFactory = new ItemBaseFactory(WorldFactory.this.dataReader, WorldFactory.this.expBuilder);
 			playerFactory = new PlayerFactory(WorldFactory.this.dataReader, null);
 			totalSize = 0;
-		}
-		
-		private void setOutputFrame() {
-			prefixFactory.setOutputFrame(WorldFactory.this.out);
-			materialFactory.setOutputFrame(WorldFactory.this.out);
-			itemBaseFactory.setOutputFrame(WorldFactory.this.out);
-			playerFactory.setOutputFrame(WorldFactory.this.out);
 		}
 		
 		private void setDirectory(String dirPath) throws IOException {
@@ -111,23 +103,12 @@ public class WorldFactory implements Factory<World> {
 	private File[] worldDirectories;
 	private WorldBuilder[] worldBuilders;
 	private int worldIndex;
-	private OutputFrame out;
 	private int totalSize;
 	
 	// Constructor.
 	public WorldFactory(DataReader dataReader, ExpressionBuilder expBuilder) {
 		this.dataReader = dataReader;
 		this.expBuilder = expBuilder;
-	}
-
-	// Set the output frame.
-	@Override
-	public void setOutputFrame(OutputFrame frame) {
-		out = frame;
-		if (worldBuilders != null) {
-			for (WorldBuilder wB : worldBuilders)
-				wB.setOutputFrame();
-		}
 	}
 
 	// Set the directory.
@@ -168,7 +149,6 @@ public class WorldFactory implements Factory<World> {
 				
 				// Make the builder and set its directory.
 				worldBuilders[i] = new WorldBuilder();
-				worldBuilders[i].setOutputFrame();
 				worldBuilders[i].setDirectory(worldPath);
 				
 				

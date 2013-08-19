@@ -8,6 +8,7 @@ import org.haferlib.slick.gui.GUIContext;
 import org.haferlib.slick.gui.ImageFrame;
 import org.haferlib.slick.gui.OutputFrame;
 import org.haferlib.util.DataReader;
+import org.haferlib.util.Log;
 import org.haferlib.util.expression.ExpressionBuilder;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -107,12 +108,17 @@ public class LoadingState extends BasicGameState {
 		out = new OutputFrame(outX, outY, outWidth, outHeight, Integer.MIN_VALUE, GMCalc2.BODYFONT,
 				elementTextColor, 10, elementTextColor);
 		ui.addElement(out);
+		
+		// Dump the existing log contents to out.
+		out.append(Log.getDefaultLog().getContents());
+		
+		// Make out observe the log.
+		Log.getDefaultLog().addObserver(out);
 
 		// Create the world factory.
 		loadCount = 0;
 		try {
 			worldFactory = new WorldFactory(new DataReader(), new ExpressionBuilder());
-			worldFactory.setOutputFrame(out);
 			worldFactory.setDirectory(worldsFolder);
 		} catch (IOException e) {
 			ui.destroy();
@@ -122,6 +128,9 @@ public class LoadingState extends BasicGameState {
 	
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) {
+		// Make the output frame stop observing the log.
+		Log.getDefaultLog().removeObserver(out);
+		
 		// Destroy the UI when we leave. We never come back so it isn't really needed.
 		ui.destroy();
 	}

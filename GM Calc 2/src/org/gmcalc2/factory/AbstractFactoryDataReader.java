@@ -9,9 +9,9 @@ import java.util.TreeMap;
 import java.io.File;
 import java.io.IOException;
 
-import org.haferlib.slick.gui.OutputFrame;
 import org.haferlib.util.FileTree;
 import org.haferlib.util.DataReader;
+import org.haferlib.util.Log;
 
 public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 	
@@ -24,7 +24,6 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 	private File[] curDir;						// The contents of the current folder.
 	private int curDirIndex;					// The index in the current folder.
 	private boolean doneLoading;				// Are we done loading?
-	private OutputFrame out;					// The output frame.
 
 	//Constructor.
 	public AbstractFactoryDataReader(DataReader dataReader) {
@@ -96,10 +95,10 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 			
 			//Add the component to the cache.
 			cache.put(relativePath, component);
-			out.println("Cached object from " + relativePath);
+			Log.getDefaultLog().info("Cached object from " + relativePath);
 		}
 		catch (IOException e) {
-			out.println("Failed to read file " + file.getAbsolutePath());
+			Log.getDefaultLog().error("Failed to read file " + file.getAbsolutePath());
 		}
 		
 		//Find the next file.
@@ -111,12 +110,6 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 	
 	// Get the file extension to look for.
 	public abstract String getFileExtension();
-
-	// Set the output frame.
-	@Override
-	public void setOutputFrame(OutputFrame frame) {
-		out = frame;
-	}
 
 	// Return true if we are done loading, false otherwise.
 	@Override

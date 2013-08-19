@@ -1,21 +1,23 @@
 package org.gmcalc2.state;
 
-import java.util.LinkedHashSet;
-
 import org.gmcalc2.GMCalc2;
-import org.gmcalc2.gui.PlayerTab;
-import org.gmcalc2.gui.Tab;
+import org.gmcalc2.World;
+import org.gmcalc2.gui.LogDisplay;
+import org.gmcalc2.gui.TabContainer;
 import org.gmcalc2.gui.WorldExplorer;
 import org.gmcalc2.item.Component;
 import org.gmcalc2.item.ItemBase;
 import org.gmcalc2.item.Player;
 import org.haferlib.slick.gui.Button;
 import org.haferlib.slick.gui.GUIContext;
+import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.GUIEvent;
 import org.haferlib.slick.gui.GUIEventListener;
 import org.haferlib.slick.gui.ImageButton;
 import org.haferlib.slick.gui.ListFrame;
+import org.haferlib.util.Log;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -31,13 +33,14 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	public static final int ID = 1;
 	
 	private GMCalc2 gmcalc2;
-	private GUIContext ui;								// The UI.
-	private ListFrame toolbar;							// The toolbar on the left side of the window.
-	private Button<WorldExplorer> worldExplorerButton;	// The button in the toolbar that opens the world explorer.
-	private WorldExplorer worldExplorer;				// The world explorer.
-	private LinkedHashSet<Tab> tabs;					// The tabs in this state.
-	private int workbenchX, workbenchY;					// The position of the workbench.
-	private int workbenchWidth, workbenchHeight;		// The size of the workbench.
+	private GUIContext ui;							// The UI.
+	private int workbenchX, workbenchY;				// The position of the workbench.
+	private int workbenchWidth, workbenchHeight;	// The size of the workbench.
+	private GUIElement[] workbenchViews;			// Each element is a different view of the workbench.
+	private int currentView;						// The index of the current view.
+	private int worldExplorerView;					// The index of the world explorer view.
+	private int tabContainerView;					// The index of the tab container view.
+	private ListFrame toolbar;						// The toolbar on the left side of the window.
 	
 	// Color scheme.
 	private Color elementTextColor, elementHighlightColor, elementBackgroundColor, elementSelectColor;
@@ -47,96 +50,28 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		this.gmcalc2 = gmcalc2;
 	}
 	
-	// EFFECTS:  Sets the currently enabled tab by name.
-	//			 Returns true if successful, false if not.
-	public boolean setEnabledTabById(String tabId) {
-		boolean result = false; // Did we find and enable a tab?
-		
-		// Disable the world explorer.
-		ui.removeElement(worldExplorer);
-		
-		// Loop through the tabs, looking for one with the given name.
-		for (Tab t : tabs) {
-			if (t.getId().equals(tabId)) {
-				t.enable();
-				result = true;
-			}
-			else {
-				t.disable();
-			}
+	// Switch the workbench to a particular view.
+	private void switchWorkbench(int view) {
+		if (view != currentView) {
+			ui.removeElement(workbenchViews[currentView]);
+			currentView = view;
+			ui.addElement(workbenchViews[currentView]);
 		}
-		
-		// Return the result.
-		return result;
 	}
 	
-	// EFFECTS:  Sets the currently enabled tab, adding it
-	//			 to the tabs if it is not already there.
-	//			 Returns true if successful, false if not.
-	public boolean setEnabledTab(Tab tab) {
-		// Can't enable a null tab.
-		if (tab == null)
-			return false;
-		
-		// Disable the world explorer.
-		ui.removeElement(worldExplorer);
-		
-		// Disable all tabs besides the given one.
-		for (Tab t : tabs) {
-			if (!tab.equals(t)) {
-				t.disable();
-			}
-		}
-		
-		// Try and add the tab. If we already have it, nothing will happen.
-		addTab(tab);
-		
-		// Enable the given tab.
-		tab.enable();
-		
-		// Return true.
-		return true;
-	}
-	
-	// EFFECTS:  Add a tab to this.
-	//			 Return true if successful, false otherwise.
-	public boolean addTab(Tab tab) {
-		// Return false if the tab is null or we already have it.
-		if (tab == null)
-			return false;
-		if (tabs.contains(tab))
-			return false;
-		
-		// Otherwise, add the tab and set its tabX appropriately.
-		int newTabX = workbenchX;
-		for (Tab t : tabs) {
-			int tabX2 = t.getTabX() + t.getTabWidth();
-			if (tabX2 > newTabX)
-				newTabX = tabX2;
-		}
-		
-		tab.setTabX(newTabX);
-		tabs.add(tab);
-		ui.addElement(tab);
-		return true;
-	}
-	
-	// Make and add a player tab.
-	public void addTabForPlayer(Player player) {
-		PlayerTab tab = new PlayerTab(player, workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, GMCalc2.HEADERFONT, GMCalc2.BODYFONT,
-				elementHighlightColor, elementBackgroundColor, elementTextColor, elementBackgroundColor, elementSelectColor);
-		tab.disable();
-		addTab(tab);
-	}
-	
-	// Make and add a component tab.
-	public void addTabForComponent(Component component) {
-		
-	}
-	
-	// Make and add a item base tab.
-	public void addTabForItemBase(ItemBase itemBase) {
-		
+	// Add a workbench view and make a button for it in the toolbar.
+	private void addWorkbenchView(GUIElement view, int index, String buttonIconPath, int toolbarButtonSize) throws SlickException {
+		// Place the view in workbenchViews.
+		workbenchViews[index] = view;
+
+		// Add a button for the view to the toolbar.
+		Image buttonImage = new Image(buttonIconPath);
+		Button<Integer> button = new ImageButton<>(index, 0, 0,
+				toolbarButtonSize, toolbarButtonSize, 0, null,
+				elementHighlightColor, Input.KEY_ENTER, buttonImage,
+				Button.CENTER, 0);
+		button.addListener(this);
+		toolbar.addElement(button);
 	}
 
 	@Override
@@ -150,11 +85,6 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {		
-		// Create the UI.
-		ui = new GUIContext();
-		container.getInput().addKeyListener(ui);
-		tabs = new LinkedHashSet<>();
-		
 		// Find some dimensions.
 		int toolbarX = BORDER_THICKNESS;
 		int toolbarY = BORDER_THICKNESS;
@@ -166,22 +96,42 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		workbenchWidth = container.getWidth() - workbenchX - BORDER_THICKNESS;
 		workbenchHeight = container.getHeight() - BORDER_THICKNESS * 2;
 		
-		// Create the world explorer. 
-		worldExplorer = new WorldExplorer(workbenchX, workbenchY, workbenchWidth, workbenchHeight, Integer.MAX_VALUE,
-				this, gmcalc2.getWorlds(),
-				elementTextColor, elementHighlightColor, elementBackgroundColor,
-				GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementHighlightColor);
-		ui.addElement(worldExplorer);
+		// Create the UI.
+		ui = new GUIContext();
+		container.getInput().addKeyListener(ui);
 		
 		// Create the toolbar.
 		toolbar = new ListFrame(toolbarX, toolbarY, toolbarWidth, 100, ListFrame.XALIGN_CENTER, 0, toolbarButtonBorder);
-		Image wEButtonImage = new Image("resources\\worldExplorerIcon.png");
-		worldExplorerButton = new ImageButton<>(worldExplorer, 0, 0, toolbarButtonSize, toolbarButtonSize,
-				0, null, elementHighlightColor, Input.KEY_ENTER,
-				wEButtonImage, Button.CENTER, 0);
-		worldExplorerButton.addListener(this);
-		toolbar.addElement(worldExplorerButton);
 		ui.addElement(toolbar);
+		
+		// Initialize workbenchViews and an index to place views at.
+		workbenchViews = new GUIElement[3];
+		currentView = 0;
+		int viewIndex = 0;
+		
+		// Create the world explorer view.
+		WorldExplorer worldExplorer = new WorldExplorer(workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, gmcalc2.getWorlds(),
+				elementTextColor, elementHighlightColor, elementBackgroundColor, elementSelectColor, GMCalc2.HEADERFONT, GMCalc2.BODYFONT);
+		worldExplorer.addListener(this);
+		addWorkbenchView(worldExplorer, viewIndex, "resources\\worldExplorerIcon.png", toolbarButtonSize);
+		worldExplorerView = viewIndex;
+		viewIndex++;
+		
+		// Create the tab container view.
+		TabContainer tabContainer = new TabContainer(workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0,
+				elementTextColor, elementHighlightColor, elementBackgroundColor, elementSelectColor);
+		addWorkbenchView(tabContainer, viewIndex, "resources\\editIcon.png", toolbarButtonSize);
+		tabContainerView = viewIndex;
+		viewIndex++;
+		
+		// Create the log display and place it in workbenchViews.
+		LogDisplay logDisplay = new LogDisplay(workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0, 10,
+				GMCalc2.HEADERFONT, GMCalc2.BODYFONT, elementTextColor, elementHighlightColor, elementBackgroundColor);
+		addWorkbenchView(logDisplay, viewIndex, "resources\\consoleIcon.png", toolbarButtonSize);
+		viewIndex++;
+		
+		// Add the first workbench view to the ui context.
+		ui.addElement(workbenchViews[currentView]);
 	}
 
 	@Override
@@ -206,18 +156,44 @@ public class TabState extends BasicGameState implements GUIEventListener {
 
 	@Override
 	public void guiEvent(GUIEvent<?> event) {
-		System.out.println("Received GUIEvent!");
-		System.out.println("\tGenerator: " + System.identityHashCode(event.getGenerator()));
-		System.out.println("\tData: " + System.identityHashCode(event.getData()));
-		// If the world explorer button was pushed, toggle the world explorer.
-		if (event.getGenerator() == worldExplorerButton) {
-			if (ui.contains(worldExplorer)) {
-				ui.removeElement(worldExplorer);
-				System.out.println("Removed world explorer");
+		// If the generator is a button, then we know it is a toolbar button.
+		// Switch to the appropriate workbench view.
+		if (event.getGenerator() instanceof Button) {
+			int view = (Integer)event.getData();
+			switchWorkbench(view);
+		}
+		// If the generator is the world explorer, we need to switch the
+		// workbench to view a tab for the data.
+		else if (event.getGenerator() instanceof WorldExplorer) {
+			Object eventData = event.getData();
+			
+			// Switch to the tab container view.
+			switchWorkbench(tabContainerView);
+			
+			// Open a tab.
+			if (eventData instanceof Player) {
+				Log.getDefaultLog().info("Clicked player!");
+				
+				TabContainer tabContainer = (TabContainer)workbenchViews[tabContainerView];
+				Player player = (Player)eventData;
+				
+				boolean success = tabContainer.setEnabledTabById(player.getId());
+				if (!success) {
+					tabContainer.addTabForPlayer(player);
+					tabContainer.setEnabledTabById(player.getId());
+				}
 			}
-			else {
-				ui.addElement(worldExplorer);
-				System.out.println("Added world explorer");
+			else if (eventData instanceof ItemBase) {
+				Log.getDefaultLog().info("Clicked item base!");
+				// TODO
+			}
+			else if (eventData instanceof Component) {
+				Log.getDefaultLog().info("Clicked component!");
+				// TODO
+			}
+			else if (eventData instanceof World) {
+				Log.getDefaultLog().info("Clicked world!");
+				// TODO
 			}
 		}
 	}

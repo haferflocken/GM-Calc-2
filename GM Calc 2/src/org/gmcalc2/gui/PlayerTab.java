@@ -8,6 +8,7 @@ import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.haferlib.slick.gui.TextDisplay;
 import org.haferlib.util.ListBag;
+import org.haferlib.util.Log;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
@@ -152,7 +153,7 @@ public class PlayerTab extends Tab {
 	// Select an item display.
 	// REQUIRES: group is not null
 	private void selectItemDisplay(ItemDisplay group) {
-		System.out.println("Selecting an item display.");
+		Log.getDefaultLog().info("Selecting an item display.");
 		
 		selectedItemDisplay = group;
 		dragString = selectedItemDisplay.getItem().getName();
@@ -295,10 +296,10 @@ public class PlayerTab extends Tab {
 		if (button == Input.MOUSE_LEFT_BUTTON || button == Input.MOUSE_RIGHT_BUTTON) {
 			// If the click was within the equipped column, see if there is a new group to select and select it if there is.
 			if (equippedColumn.pointIsWithin(x, y)) {
-				System.out.println("Clicked equipped column");
+				Log.getDefaultLog().info("Clicked equipped column");
 				GUIElement e = equippedColumn.getElementAtPoint(x, y);
 				if (!(e instanceof ItemDisplay)) {
-					System.out.println("Null? " + e);
+					Log.getDefaultLog().info("Null? " + e);
 					clearSelectedItemDisplay();
 				}
 				else if (selectedItemDisplay == null || !selectedItemDisplay.equals(e)) {
@@ -309,7 +310,7 @@ public class PlayerTab extends Tab {
 			
 			// If the click was within the equipped column, see if there is a new group to select and select it if there is.
 			else if (inventoryColumn.pointIsWithin(x, y)) {
-				System.out.println("Clicked inventory column");
+				Log.getDefaultLog().info("Clicked inventory column");
 				GUIElement e = inventoryColumn.getElementAtPoint(x, y);
 				if (!(e instanceof ItemDisplay))
 					clearSelectedItemDisplay();
