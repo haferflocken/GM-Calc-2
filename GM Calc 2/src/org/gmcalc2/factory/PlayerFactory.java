@@ -1,6 +1,6 @@
 package org.gmcalc2.factory;
 
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.gmcalc2.World;
 import org.gmcalc2.item.Player;
@@ -24,7 +24,7 @@ public class PlayerFactory extends AbstractFactoryDataReader<Player> {
 	}
 	
 	// Make the component.
-	public Player makeFromValues(String absolutePath, String relativePath, TreeMap<String, Object> values) {
+	public Player makeFromValues(String absolutePath, String relativePath, Map<String, Object> values) {
 		return new Player(world, absolutePath, values);
 	}
 	

@@ -8,7 +8,6 @@
 package org.gmcalc2;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Arrays;
@@ -80,7 +79,7 @@ public class World {
 	private Map<String, Player> players;							// The players.
 	
 	// Constructor.
-	public World(TreeMap<String, Object> ruleValues, ExpressionBuilder expBuilder, Map<String, Component> prefixes,
+	public World(Map<String, Object> ruleValues, ExpressionBuilder expBuilder, Map<String, Component> prefixes,
 			Map<String, Component> materials, Map<String, ItemBase> itemBases) {
 		setRulesToDefault();
 		setRules(ruleValues, expBuilder);
@@ -99,7 +98,7 @@ public class World {
 	}
 	
 	// Set the rules using loaded data.
-	public void setRules(TreeMap<String, Object> rawRules, ExpressionBuilder expBuilder) {
+	public void setRules(Map<String, Object> rawRules, ExpressionBuilder expBuilder) {
 		Object val;
 		// Get the name.
 		val = rawRules.get(NAME_KEY);

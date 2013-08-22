@@ -24,7 +24,7 @@ public class WorldFactory implements Factory<World> {
 		private ComponentFactory materialFactory;
 		private ItemBaseFactory itemBaseFactory;
 		private PlayerFactory playerFactory;
-		private TreeMap<String, Object> ruleValues;
+		private Map<String, Object> ruleValues;
 		private World world;
 		private int totalSize; // The total number of times loadNext can be called before failing.
 		
@@ -119,7 +119,7 @@ public class WorldFactory implements Factory<World> {
 			throw new IOException("Null directory passed to WorldFactory.");
 		File dirFile = new File(dirPath);
 		if (!dirFile.isDirectory())
-			throw new IllegalArgumentException("dirPath must represent a directory.");
+			throw new IOException("dirPath must represent a directory.");
 		
 		// Get the world directories and clear the cache.
 		worldDirectories = dirFile.listFiles(
@@ -169,13 +169,19 @@ public class WorldFactory implements Factory<World> {
 		if (worldIndex >= worldDirectories.length) 
 			throw new NoSuchElementException();
 		
-		// Tell the world builder to load the next thing.
-		worldBuilders[worldIndex].loadNext();
-		
-		// If the world is finished loading, move on to the next world.
-		if (worldBuilders[worldIndex].isFinished()) {
-			cache.put(worldDirectories[worldIndex].getName(), worldBuilders[worldIndex].world);
+		// If the world builder is null, skip it.
+		if (worldBuilders[worldIndex] == null) {
 			worldIndex++;
+		}
+		// Otherwise, tell the world builder to load the next thing.
+		else {
+			worldBuilders[worldIndex].loadNext();
+			
+			// If the world is finished loading, move on to the next world.
+			if (worldBuilders[worldIndex].isFinished()) {
+				cache.put(worldDirectories[worldIndex].getName(), worldBuilders[worldIndex].world);
+				worldIndex++;
+			}
 		}
 	}
 

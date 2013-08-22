@@ -4,7 +4,7 @@ package org.gmcalc2.factory;
 
 import org.gmcalc2.item.ItemBase;
 
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.haferlib.util.DataReader;
 import org.haferlib.util.expression.ExpressionBuilder;
@@ -22,7 +22,7 @@ public class ItemBaseFactory extends AbstractFactoryDataReader<ItemBase> {
 	}
 	
 	// Make the component.
-	public ItemBase makeFromValues(String absolutePath, String relativePath, TreeMap<String, Object> values) {
+	public ItemBase makeFromValues(String absolutePath, String relativePath, Map<String, Object> values) {
 		return new ItemBase(values, expBuilder);
 	}
 	

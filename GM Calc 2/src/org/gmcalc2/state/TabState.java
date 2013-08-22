@@ -17,7 +17,6 @@ import org.haferlib.slick.gui.ImageButton;
 import org.haferlib.slick.gui.ListFrame;
 import org.haferlib.util.Log;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -26,13 +25,20 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+/**
+ * The tab state is the main state where the user can edit things.
+ * 
+ * @author John Werner
+ *
+ */
+
 public class TabState extends BasicGameState implements GUIEventListener {
 	
 	private static final int BORDER_THICKNESS = 6;		// The thickness of the border around elements.
 	
-	public static final int ID = 1;
+	public static final int ID = 2;
 	
-	private GMCalc2 gmcalc2;
+	private final GMCalc2 gmcalc2;
 	private GUIContext ui;							// The UI.
 	private int workbenchX, workbenchY;				// The position of the workbench.
 	private int workbenchWidth, workbenchHeight;	// The size of the workbench.
@@ -151,7 +157,7 @@ public class TabState extends BasicGameState implements GUIEventListener {
 
 	@Override
 	public int getID() {
-		return 1;
+		return ID;
 	}
 
 	@Override

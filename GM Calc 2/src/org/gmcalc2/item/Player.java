@@ -2,7 +2,7 @@
 
 package org.gmcalc2.item;
 
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.gmcalc2.World;
 import org.haferlib.util.ListBag;
@@ -32,7 +32,7 @@ public class Player {
 		inventory = new ListBag<>();
 	}
 
-	public Player(World world, String id, TreeMap<String, Object> values) {
+	public Player(World world, String id, Map<String, Object> values) {
 		this(world, id);
 
 		Object val;

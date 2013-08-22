@@ -1,6 +1,6 @@
 package org.gmcalc2.item;
 
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.haferlib.util.expression.ExpressionBuilder;
 
@@ -19,7 +19,7 @@ public class ItemBase extends Component {
 		super();
 	}
 	
-	public ItemBase(TreeMap<String, Object> values, ExpressionBuilder expBuilder) {
+	public ItemBase(Map<String, Object> values, ExpressionBuilder expBuilder) {
 		super(values, expBuilder);
 		
 		Object val;

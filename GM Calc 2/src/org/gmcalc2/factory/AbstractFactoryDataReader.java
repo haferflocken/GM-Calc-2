@@ -32,15 +32,15 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 	
 	// Set the directory and prepare to load it.
 	@Override
-	public void setDirectory(String dirPath) {
+	public void setDirectory(String dirPath) throws IOException {
 		// Make sure the dir path is not null.
 		if (dirPath == null)
-			throw new NullPointerException("dirPath must not be null.");
+			throw new IOException("dirPath must not be null.");
 		
 		//Make sure the path is a directory.
 		File dirFile = new File(dirPath);
 		if (!dirFile.isDirectory())
-			throw new IllegalArgumentException("dirPath must represent a directory.");
+			throw new IOException("dirPath must represent a directory.");
 		
 		//If the file is a directory, make a file tree and an iterator to look through it.
 		dirTree = new FileTree(dirPath, getFileExtension());
@@ -84,7 +84,7 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 			
 		try {
 			//Read the file.
-			TreeMap<String, Object> values = dataReader.readFile(file.toPath());
+			Map<String, Object> values = dataReader.readFile(file.toPath());
 			
 			// Get both the full and relative file paths.
 			String absolutePath = file.getAbsolutePath();
@@ -106,7 +106,7 @@ public abstract class AbstractFactoryDataReader<E> implements Factory<E> {
 	}
 	
 	// Make an object from given values.
-	public abstract E makeFromValues(String absolutePath, String relativePath, TreeMap<String, Object> values);
+	public abstract E makeFromValues(String absolutePath, String relativePath, Map<String, Object> values);
 	
 	// Get the file extension to look for.
 	public abstract String getFileExtension();

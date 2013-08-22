@@ -18,15 +18,21 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+/**
+ * This state loads the worlds and then switches to the TabState.
+ * 
+ * @author John Werner
+ *
+ */
+
 public class LoadingState extends BasicGameState {
 	
-	public static final int ID = 0;
+	public static final int ID = 1;
 	
 	private static final int BORDER_THICKNESS = 6; // The thickness of the border around elements.
 	
 	// Instance fields.
-	private GMCalc2 gmcalc2;					// The main app, kept track of to tell it to switch states.
-	private String worldsFolder;				// Where the worlds are kept.
+	private final GMCalc2 gmcalc2;				// The main app, kept track of to tell it to switch states.
 	private GUIContext ui;						// The UI.
 	private OutputFrame out;					// The output frame.
 	private WorldFactory worldFactory;			// The factory that makes the worlds.
@@ -42,14 +48,8 @@ public class LoadingState extends BasicGameState {
 	private Color elementTextColor, elementBackgroundColor, loadBarColor;
 	
 	// Constructors.
-	public LoadingState(GMCalc2 gmcalc2, String worldsFolder) {
+	public LoadingState(GMCalc2 gmcalc2) {
 		this.gmcalc2 = gmcalc2;
-		this.worldsFolder = worldsFolder;
-	}
-	
-	// Check if we are done loading.
-	public boolean isFinished() {
-		return worldFactory.isFinished();
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class LoadingState extends BasicGameState {
 	}
 	
 	@Override
-	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
+	public void enter(GameContainer container, StateBasedGame game) throws SlickException {		
 		// Initialize the ui.
 		ui = new GUIContext();
 		container.getInput().addKeyListener(ui);
@@ -73,8 +73,8 @@ public class LoadingState extends BasicGameState {
 		Graphics bannerG = bannerImage.getGraphics();
 		
 		// Fill the banner's background with elementBackgroundColor.
-		//bannerG.setColor(elementBackgroundColor);
-		//bannerG.fillRect(0, 0, bannerImage.getWidth(), bannerImage.getHeight());
+		// bannerG.setColor(elementBackgroundColor);
+		// bannerG.fillRect(0, 0, bannerImage.getWidth(), bannerImage.getHeight());
 		
 		// Draw the banner's text.
 		bannerG.setFont(GMCalc2.HEADERFONT);
@@ -114,15 +114,20 @@ public class LoadingState extends BasicGameState {
 		
 		// Make out observe the log.
 		Log.getDefaultLog().addObserver(out);
+		
+		// Get the worlds folder from gmcalc2.
+		String worldsFolder = gmcalc2.getWorldsFolder();
 
 		// Create the world factory.
 		loadCount = 0;
 		try {
 			worldFactory = new WorldFactory(new DataReader(), new ExpressionBuilder());
 			worldFactory.setDirectory(worldsFolder);
-		} catch (IOException e) {
-			ui.destroy();
-			throw new SlickException("Failed to create world factory.");
+		}
+		// If the world factory fails, return to the setup state.
+		catch (IOException e) {
+			worldFactory = null;
+			gmcalc2.enterState(SetupState.ID);
 		}
 	}
 	

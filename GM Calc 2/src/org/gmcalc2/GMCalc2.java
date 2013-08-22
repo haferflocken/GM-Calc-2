@@ -21,6 +21,7 @@ public class GMCalc2 extends StateBasedGame {
 	private static boolean STATICS_CREATED = false;
 	
 	// Instance fields.
+	private String worldsFolder;
 	private Map<String, World> worlds;
 	
 	// Constructor.
@@ -42,17 +43,30 @@ public class GMCalc2 extends StateBasedGame {
 			STATICS_CREATED = true;
 		}
 		
-		// Make the loading state.
-		LoadingState loadingState = new LoadingState(this, "E:\\John\\Google Drive\\gmcalc2 worlds\\");
-		addState(loadingState);
+		// Make the states.
+		LoadingState loadingState = new LoadingState(this);
+		SetupState setupState = new SetupState(this);
+		TabState tabState = new TabState(this);
 		
-		// Make the tab state.
-		addState(new TabState(this));
+		// Add the states.
+		addState(setupState);
+		addState(loadingState);
+		addState(tabState);
+	}
+	
+	// Set the worlds folder.
+	public void setWorldsFolder(String wF) {
+		worldsFolder = wF;
 	}
 	
 	// Set the worlds.
 	public void setWorlds(Map<String, World> w) {
 		worlds = w;
+	}
+	
+	// Get the worlds folder.
+	public String getWorldsFolder() {
+		return worldsFolder;
 	}
 	
 	// Get the worlds.

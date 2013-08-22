@@ -2,7 +2,6 @@
 
 package org.gmcalc2.item;
 
-import java.util.TreeMap;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -33,7 +32,7 @@ public class Component {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Component(TreeMap<String, Object> values, ExpressionBuilder expBuilder) {
+	public Component(Map<String, Object> values, ExpressionBuilder expBuilder) {
 		this();
 		Object val;
 		//Get the name.
