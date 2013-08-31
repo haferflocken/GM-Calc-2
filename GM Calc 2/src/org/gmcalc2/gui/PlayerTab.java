@@ -1,10 +1,13 @@
 package org.gmcalc2.gui;
 
+import org.gmcalc2.GMCalc2;
 import org.gmcalc2.item.Player;
 import org.gmcalc2.item.Stat;
 import org.gmcalc2.item.Item;
 import org.haferlib.slick.gui.CollapsibleListFrame;
 import org.haferlib.slick.gui.GUIElement;
+import org.haferlib.slick.gui.GUIEvent;
+import org.haferlib.slick.gui.GUIEventListener;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.haferlib.slick.gui.TextDisplay;
 import org.haferlib.util.ListBag;
@@ -18,7 +21,13 @@ import java.util.TreeMap;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class PlayerTab extends Tab {
+public class PlayerTab extends Tab implements GUIEventListener {
+	
+	private static final String CONTEXT_MENU_EDIT = "Edit";
+	private static final String CONTEXT_MENU_ADJUST_QUANTITY = "Adjust Quantity";
+	private static final String CONTEXT_MENU_DELETE_STACK = "Delete Stack";
+	private static final String[] CONTEXT_MENU_OPTIONS =
+		{ CONTEXT_MENU_EDIT, CONTEXT_MENU_ADJUST_QUANTITY, CONTEXT_MENU_DELETE_STACK };
 	
 	private Font columnFont;
 	private Color backgroundColor, itemDisplayHighlightColor;
@@ -29,6 +38,8 @@ public class PlayerTab extends Tab {
 	private Color dragStringColor;
 	private int dragStringXOffset, dragStringYOffset;
 	private boolean dragging;
+	private ContextMenu contextMenu;
+	private ItemEditor itemEditor;
 
 	// Constructor.
 	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, Font font, Font columnFont,
@@ -294,6 +305,16 @@ public class PlayerTab extends Tab {
 		
 		// If the click is the left or right button...
 		if (button == Input.MOUSE_LEFT_BUTTON || button == Input.MOUSE_RIGHT_BUTTON) {
+			// If the click was within the context menu, ignore it.
+			if (contextMenu != null && !contextMenu.dead() && contextMenu.pointIsWithin(x, y)) {
+				return;
+			}
+			
+			// If the click was within the item editor, ignore it.
+			if (itemEditor != null && !itemEditor.dead() && itemEditor.pointIsWithin(x, y)) {
+				return;
+			}
+			
 			// If the click was within the equipped column, see if there is a new group to select and select it if there is.
 			if (equippedColumn.pointIsWithin(x, y)) {
 				Log.getDefaultLog().info("Clicked equipped column");
@@ -326,7 +347,17 @@ public class PlayerTab extends Tab {
 			
 			// If the click was the right mouse button and an item display was selected, open the context menu.
 			if (button == Input.MOUSE_RIGHT_BUTTON && selectedItemDisplay != null) {
-				// TODO
+				int contextMenuWidth = 0;
+				for (String s : CONTEXT_MENU_OPTIONS) {
+					int sWidth = GMCalc2.BODYFONT.getWidth(s);
+					if (sWidth > contextMenuWidth)
+						contextMenuWidth = sWidth;
+				}
+				
+				contextMenu = new ContextMenu(x, y, contextMenuWidth, Integer.MAX_VALUE,
+						columnFont, CONTEXT_MENU_OPTIONS, tabNameColor, itemDisplayHighlightColor, tabEnabledColor, tabNameColor);
+				contextMenu.addListener(this);
+				subcontext.addElement(contextMenu);
 			}
 		}
 	}
@@ -372,6 +403,37 @@ public class PlayerTab extends Tab {
 		if (dragString != null) {
 			dragging = false;
 			clearSelectedItemDisplay();
+		}
+	}
+
+	@Override
+	public void guiEvent(GUIEvent<?> event) {
+		// Events that come from the context menu are a notification to stop listening to it.
+		// They also tell this what to do.
+		if (event.getGenerator().equals(contextMenu)) {
+			// Stop listening to the context menu.
+			contextMenu.removeListener(this);
+			contextMenu = null;
+			
+			// If the player wants to edit the item, pop up an editor.
+			if (event.getData().equals(CONTEXT_MENU_EDIT)) {
+				int iEW = width / 2;
+				int iEH = height / 2;
+				int iEX = x1 + width / 2 - iEW / 2; 
+				int iEY = y1 + height / 2 - iEH / 2;
+				itemEditor = new ItemEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
+						selectedItemDisplay.getItem(), columnFont, tabNameColor, backgroundColor, tabEnabledColor);
+				subcontext.addElement(itemEditor);
+			}
+			// If the player wants to adjust the quantity...
+			else if (event.getData().equals(CONTEXT_MENU_ADJUST_QUANTITY)) {
+				// TODO
+			}
+			// If the player wants to delete the stack, delete it.
+			else if (event.getData().equals(CONTEXT_MENU_DELETE_STACK)) {
+				selectedItemDisplay.decreaseQuantity(selectedItemDisplay.getQuantity());
+				clearSelectedItemDisplay();
+			}
 		}
 	}
 	

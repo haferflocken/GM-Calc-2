@@ -37,6 +37,11 @@ public class ItemDisplay extends CollapsibleListFrame {
 		return item.equals(other);
 	}
 	
+	// Get the quantity.
+	public int getQuantity() {
+		return bag.getCount(item);
+	}
+	
 	// Add to the count.
 	public void increaseQuantity(int amount) {
 		bag.add(item, amount);

@@ -24,6 +24,7 @@ import org.newdawn.slick.state.StateBasedGame;
 public class SetupState extends BasicGameState {
 	
 	private static final int BORDER_THICKNESS = 6;
+	private static final int FLASH_DURATION = 500;
 	
 	public static final int ID = 0;
 	
@@ -31,8 +32,9 @@ public class SetupState extends BasicGameState {
 	private GUIContext ui;
 	private TextField pathInput;
 	private int frameX, frameY, frameWidth, frameHeight;
+	private int flashCounter;
 	
-	private Color elementTextColor, elementBackgroundColor, elementSelectColor, elementFieldColor;
+	private Color elementTextColor, elementBackgroundColor, elementSelectColor, elementFieldColor, elementFailureColor;
 	
 	public SetupState(GMCalc2 gmcalc2) {
 		this.gmcalc2 = gmcalc2;
@@ -44,6 +46,7 @@ public class SetupState extends BasicGameState {
 		elementBackgroundColor = Color.darkGray;
 		elementSelectColor = Color.gray;
 		elementFieldColor = Color.gray;
+		elementFailureColor = new Color(221, 0, 33);
 	}
 
 	@Override
@@ -97,6 +100,9 @@ public class SetupState extends BasicGameState {
 		// Set the frame height.
 		int tY2 = pathInput.getY() + pathInput.getHeight();
 		frameHeight = tY2 - iDY + BORDER_THICKNESS * 2;
+		
+		// Set the flash counter to 0.
+		flashCounter = 0;
 	}
 	
 	@Override
@@ -113,14 +119,27 @@ public class SetupState extends BasicGameState {
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		ui.update(container.getInput(), delta);
 		
+		// Decrease the flash counter and set pathInput's background if it hits 0.
+		if (flashCounter > 0) {
+			flashCounter -= delta;
+			if (flashCounter <= 0) {
+				pathInput.setBackgroundColor(elementFieldColor);
+			}
+		}
+		
 		// If enter is pressed, make sure the given string is a directory path,
 		// and if it is, set the worlds folder and switch to the loading state.
+		// Otherwise, trigger a flash of pathInput's background.
 		if (container.getInput().isKeyPressed(Input.KEY_ENTER)) {
 			String pathString = pathInput.toString();
 			File pathFile = new File(pathString);
 			if (pathFile.exists() && pathFile.isDirectory()) {
 				gmcalc2.setWorldsFolder(pathInput.toString());
 				gmcalc2.enterState(LoadingState.ID);
+			}
+			else {
+				pathInput.setBackgroundColor(elementFailureColor);
+				flashCounter = FLASH_DURATION;
 			}
 		}
 	}
