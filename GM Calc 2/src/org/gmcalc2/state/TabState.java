@@ -90,7 +90,9 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	}
 	
 	@Override
-	public void enter(GameContainer container, StateBasedGame game) throws SlickException {		
+	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
+		container.getInput().enableKeyRepeat();
+		
 		// Find some dimensions.
 		int toolbarX = BORDER_THICKNESS;
 		int toolbarY = BORDER_THICKNESS;
@@ -138,6 +140,11 @@ public class TabState extends BasicGameState implements GUIEventListener {
 		
 		// Add the first workbench view to the ui context.
 		ui.addElement(workbenchViews[currentView]);
+	}
+	
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) {
+		container.getInput().disableKeyRepeat();
 	}
 
 	@Override

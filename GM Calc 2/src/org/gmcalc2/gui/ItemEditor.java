@@ -2,6 +2,8 @@ package org.gmcalc2.gui;
 
 import org.gmcalc2.item.Component;
 import org.gmcalc2.item.Item;
+import org.gmcalc2.item.ItemBase;
+import org.gmcalc2.item.TagRequirement;
 import org.haferlib.slick.gui.GUISubcontext;
 import org.haferlib.slick.gui.ListFrame;
 import org.haferlib.slick.gui.ScrollableFrame;
@@ -25,40 +27,57 @@ public class ItemEditor extends GUISubcontext {
 	private ScrollableFrame scrollFrame;
 	private ListFrame scrollListFrame;
 	private Font font;
-	private Color textColor, backgroundColor, fieldColor;
+	private Color textColor, backgroundColor, fieldMessageColor, fieldColor;
 	
 	// Constructor.
 	public ItemEditor(int x, int y, int width, int height, int depth,
-			Item item, Font font, Color textColor, Color backgroundColor, Color fieldColor) {
+			Item item, Font font, Color textColor, Color backgroundColor, Color fieldMessageColor, Color fieldColor) {
 		super(x, y, width, height, depth);
 		
 		this.item = item;
 		this.font = font;
 		this.textColor = textColor;
 		this.backgroundColor = backgroundColor;
+		this.fieldMessageColor = fieldMessageColor;
 		this.fieldColor = fieldColor;
 		
 		makeScrollableList();
+		
+		ItemBase itemBase = item.getItemBase();
 		
 		Component[] prefixes = item.getPrefixes();
 		String[] prefixNames = new String[prefixes.length];
 		for (int i = 0; i < prefixes.length; i++)
 			prefixNames[i] = prefixes[i].getName();
+		
+		String prefixReq = itemBase.getPrefixReqs().toString();
+		String[] prefixRequirements = new String[prefixes.length];
+		for (int i = 0; i < prefixes.length; i++)
+			prefixRequirements[i] = prefixReq;
+		
 		ListEditor prefixEditor = new ListEditor(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
-				"Prefixes", prefixNames, font, textColor, null, fieldColor);
+				"Prefixes", prefixNames, prefixRequirements, font, textColor, null, fieldMessageColor, fieldColor);
 		scrollListFrame.addElement(prefixEditor);
 		
 		Component[] materials = item.getMaterials();
 		String[] materialNames = new String[materials.length];
 		for (int i = 0; i < materials.length; i++)
 			materialNames[i] = materials[i].getName();
-		ListEditor materialEditor = new ListEditor(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
-				"Materials", materialNames, font, textColor, null, fieldColor);
+		
+		TagRequirement[] materialReqs = itemBase.getMaterialReqs();
+		String[] materialRequirements = new String[materials.length];
+		for (int i = 0; i < materials.length; i++)
+			materialRequirements[i] = materialReqs[i].toString();
+		
+		TextFieldGroup materialEditor = new TextFieldGroup(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
+				"Materials", materialNames, materialRequirements, font, textColor, null, fieldMessageColor, fieldColor);
 		scrollListFrame.addElement(materialEditor);
 		
-		int iBEHeight = font.getLineHeight();
-		TextField itemBaseEditor = new TextField(0, 0, scrollListFrame.getWidth(), iBEHeight, 0,
-				item.getItemBase().getName(), null, font, textColor, null, fieldColor);
+		String[] itemBaseName = new String[] { itemBase.getName() };
+		String[] itemBaseBackground = new String[1];
+		
+		TextFieldGroup itemBaseEditor = new TextFieldGroup(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
+				"Item Base", itemBaseName, itemBaseBackground, font, textColor, null, fieldMessageColor, fieldColor);
 		scrollListFrame.addElement(itemBaseEditor);
 		
 		subcontext.addAndRemoveElements();

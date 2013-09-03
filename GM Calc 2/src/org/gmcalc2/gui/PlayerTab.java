@@ -422,7 +422,7 @@ public class PlayerTab extends Tab implements GUIEventListener {
 				int iEX = x1 + width / 2 - iEW / 2; 
 				int iEY = y1 + height / 2 - iEH / 2;
 				itemEditor = new ItemEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
-						selectedItemDisplay.getItem(), columnFont, tabNameColor, backgroundColor, tabEnabledColor);
+						selectedItemDisplay.getItem(), columnFont, tabNameColor, backgroundColor,itemDisplayHighlightColor, tabEnabledColor);
 				subcontext.addElement(itemEditor);
 			}
 			// If the player wants to adjust the quantity...

@@ -1,14 +1,15 @@
-//Checks to see if a component has certain tags.
+// Checks to see if a component has certain tags.
 
 package org.gmcalc2.item;
 
+import java.util.Arrays;
 import java.util.TreeSet;
 
 public class TagRequirement {
 	
 	private String[] requiredTags;
 	
-	//Constructor.
+	// Constructor.
 	public TagRequirement(String[] requiredTags) {
 		this.requiredTags = requiredTags;
 	}
@@ -17,7 +18,7 @@ public class TagRequirement {
 		this(new String[0]);
 	}
 	
-	//See if a component has the right tags.
+	// See if a component has the right tags.
 	public boolean passes(Component component) {
 		TreeSet<String> tags = component.getTags();
 		for (int i = 0; i < requiredTags.length; i++) {
@@ -27,4 +28,8 @@ public class TagRequirement {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return Arrays.toString(requiredTags);
+	}
 }
