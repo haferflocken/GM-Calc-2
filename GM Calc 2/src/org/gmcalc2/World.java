@@ -263,4 +263,35 @@ public class World {
 		}
 		return Color.black;
 	}
+	
+	// Helper method to get components matching from a map.
+	private Component[] getComponentsMatching(TagRequirement requirement, Map<String, Component> map) {
+		// Count the number of prefixes.
+		int numOut = 0;
+		for (Map.Entry<String, Component> entry : map.entrySet()) {
+			Component c = entry.getValue();
+			if (requirement.passes(c))
+				numOut++;
+		}
+				
+		// Fill and return an output array.
+		Component[] out = new Component[numOut];
+		int i = 0;
+		for (Map.Entry<String, Component> entry : map.entrySet()) {
+			Component c = entry.getValue();
+			if (requirement.passes(c))
+				out[i++] = c;
+		}
+		return out;
+	}
+	
+	// Get the prefixes matching a tag requirement.
+	public Component[] getPrefixesMatching(TagRequirement requirement) {
+		return getComponentsMatching(requirement, prefixes);
+	}
+	
+	// Get the materials matching a tag requirement.
+	public Component[] getMaterialsMatching(TagRequirement requirement) {
+		return getComponentsMatching(requirement, materials);
+	}
 }

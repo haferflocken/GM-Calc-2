@@ -3,7 +3,7 @@
 package org.gmcalc2.item;
 
 import java.util.Arrays;
-import java.util.TreeSet;
+import java.util.Set;
 
 public class TagRequirement {
 	
@@ -20,7 +20,7 @@ public class TagRequirement {
 	
 	// See if a component has the right tags.
 	public boolean passes(Component component) {
-		TreeSet<String> tags = component.getTags();
+		Set<String> tags = component.getTags();
 		for (int i = 0; i < requiredTags.length; i++) {
 			if (!tags.contains(requiredTags[i]))
 				return false;

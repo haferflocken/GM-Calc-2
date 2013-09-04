@@ -8,6 +8,7 @@ import org.haferlib.slick.gui.GUIEventGenerator;
 import org.haferlib.slick.gui.GUIEventListener;
 import org.haferlib.slick.gui.GUISubcontext;
 import org.haferlib.slick.gui.ListFrame;
+import org.haferlib.slick.gui.SearchField;
 import org.haferlib.slick.gui.TextField;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
@@ -24,7 +25,7 @@ public class TextFieldGroup extends GUISubcontext implements GUIEventGenerator, 
 	
 	// Constructor.
 	public TextFieldGroup(int x, int y, int width, int maxHeight, int depth,
-			String title, String[] list, String[] backgroundList, Font font,
+			String title, String[] list, String[] backgroundList, String[][] listSearchStrings, Font font,
 			Color textColor, Color backgroundColor, Color fieldMessageColor, Color fieldColor) {
 		super(x, y, width, font.getLineHeight(), depth);
 		listeners = new HashSet<>();
@@ -49,9 +50,8 @@ public class TextFieldGroup extends GUISubcontext implements GUIEventGenerator, 
 		subcontext.addElement(listFrame);
 		
 		// Add fields for the given list.
-		int numFields = (list.length > backgroundList.length)? backgroundList.length : list.length;
-		for (int i = 0; i < numFields; i++) {
-			addField(list[i], backgroundList[i]);
+		for (int i = 0; i < list.length; i++) {
+			addField(list[i], backgroundList[i], listSearchStrings[i]);
 		}
 		
 		// Add and remove so that the elements will be moved by any setX/setY operations
@@ -65,10 +65,11 @@ public class TextFieldGroup extends GUISubcontext implements GUIEventGenerator, 
 	 * @param fieldContents The contents of the new field. Can be null.
 	 * @param fieldBackgroundMessage The background message of the field. Can be null.
 	 */
-	public void addField(String fieldContents, String fieldBackgroundMessage) {
+	public void addField(String fContents, String fBackgroundMessage, String[] fSearchStrings) {
 		int fieldWidth = listFrame.getWidth() - listFrame.getXAlignOffset();
-		TextField field =  new TextField(0, 0, fieldWidth, font.getLineHeight(), 0,
-				fieldContents, fieldBackgroundMessage, font, textColor, fieldMessageColor, fieldColor);
+		TextField field = new SearchField(0, 0, fieldWidth, font.getLineHeight(), 0,
+				fContents, fBackgroundMessage, fSearchStrings,
+				font, textColor, fieldMessageColor, textColor, fieldColor);
 		listFrame.addElement(field);
 	}
 	
@@ -76,7 +77,7 @@ public class TextFieldGroup extends GUISubcontext implements GUIEventGenerator, 
 	 * Add a new empty field.
 	 */
 	public void addField() {
-		addField(null, null);
+		addField(null, null, new String[] {});
 	}
 	
 	@Override

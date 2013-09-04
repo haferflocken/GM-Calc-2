@@ -13,9 +13,9 @@ public class ListEditor extends TextFieldGroup {
 	
 	// Constructor.
 	public ListEditor(int x, int y, int width, int maxHeight, int depth,
-			String title, String[] list, String[] backgroundList, Font font,
+			String title, String[] list, String[] backgroundList, String[][] listSearchStrings, Font font,
 			Color textColor, Color backgroundColor, Color fieldMessageColor, Color fieldColor) {
-		super(x, y, width, maxHeight, depth, title, list, backgroundList, font, textColor, backgroundColor, fieldMessageColor, fieldColor);
+		super(x, y, width, maxHeight, depth, title, list, backgroundList, listSearchStrings, font, textColor, backgroundColor, fieldMessageColor, fieldColor);
 		
 		// Figure out where to put the buttons.
 		int buttonSize = font.getLineHeight();

@@ -3,6 +3,7 @@
 package org.gmcalc2.item;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.haferlib.util.expression.ExpressionBuilder;
@@ -17,7 +18,7 @@ public class Component {
 	private String name;
 	private StatMap statMap;
 	private int rarity;
-	private TreeSet<String> tags;
+	private Set<String> tags;
 	
 	//Constructors.
 	public Component(String name, StatMap statMap, int rarity, TreeSet<String> tags) {
@@ -72,7 +73,7 @@ public class Component {
 		return rarity;
 	}
 	
-	public TreeSet<String> getTags() {
+	public Set<String> getTags() {
 		return tags;
 	}
 
