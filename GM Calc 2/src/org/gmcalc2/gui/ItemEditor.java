@@ -1,5 +1,7 @@
 package org.gmcalc2.gui;
 
+import java.util.Map;
+
 import org.gmcalc2.World;
 import org.gmcalc2.item.Component;
 import org.gmcalc2.item.Item;
@@ -8,6 +10,8 @@ import org.gmcalc2.item.TagRequirement;
 import org.haferlib.slick.gui.GUISubcontext;
 import org.haferlib.slick.gui.ListFrame;
 import org.haferlib.slick.gui.ScrollableFrame;
+import org.haferlib.slick.gui.SearchField;
+import org.haferlib.slick.gui.TextDisplay;
 import org.haferlib.slick.gui.TextField;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
@@ -46,45 +50,30 @@ public class ItemEditor extends GUISubcontext {
 		
 		ItemBase itemBase = item.getItemBase();
 		
-		// Get the names of the prefixes.
+		// Get the prefixes and their requirements.
 		Component[] prefixes = item.getPrefixes();
-		String[] prefixNames = new String[prefixes.length];
-		for (int i = 0; i < prefixes.length; i++)
-			prefixNames[i] = prefixes[i].getName();
-		
-		// Get the prefix requirements as the background messages.
-		String prefixReq = itemBase.getPrefixReqs().toString();
-		String[] prefixRequirements = new String[prefixes.length];
-		for (int i = 0; i < prefixes.length; i++)
-			prefixRequirements[i] = prefixReq;
+		String prefixReqString = itemBase.getPrefixReqs().toString();
 		
 		// Get the prefix search strings.
 		Component[] compPrefixSearch = world.getPrefixesMatching(itemBase.getPrefixReqs());
-		String[] basePrefixSearch = new String[compPrefixSearch.length];
+		String[] prefixSearch = new String[compPrefixSearch.length];
 		for (int i = 0; i < compPrefixSearch.length; i++) {
-			basePrefixSearch[i] = compPrefixSearch[i].getName();
-		}
-		String[][] prefixSearch = new String[prefixes.length][0];
-		for (int i = 0; i < prefixes.length; i++) {
-			prefixSearch[i] = basePrefixSearch;
+			prefixSearch[i] = compPrefixSearch[i].getName();
 		}
 
 		// Create the prefix editor.
-		ListEditor prefixEditor = new ListEditor(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
-				"Prefixes", prefixNames, prefixRequirements, prefixSearch, font, textColor, null, fieldMessageColor, fieldColor);
-		scrollListFrame.addElement(prefixEditor);
+		TextDisplay prefixEditorTitle = new TextDisplay(0, 0, scrollListFrame.getWidth(), font.getLineHeight(), 0,
+				"Prefixes", font, textColor);
+		SearchField[] prefixEditorFields = new SearchField[prefixes.length];
+		for (int i = 0; i < prefixes.length; i++) {
+			prefixEditorFields[i] = new SearchField(0, 0, scrollListFrame.getWidth(), font.getLineHeight(), 0,
+					prefixes[i].getName(), prefixReqString, prefixSearch, font,
+					textColor, fieldMessageColor, Color.red, fieldColor);
+		}
 		
-		// Get the names of the materials.
+		// Get the materials and their requirements.
 		Component[] materials = item.getMaterials();
-		String[] materialNames = new String[materials.length];
-		for (int i = 0; i < materials.length; i++)
-			materialNames[i] = materials[i].getName();
-		
-		// Get the material requirements as the background messages.
 		TagRequirement[] materialReqs = itemBase.getMaterialReqs();
-		String[] materialRequirements = new String[materials.length];
-		for (int i = 0; i < materials.length; i++)
-			materialRequirements[i] = materialReqs[i].toString();
 		
 		// Get the material search strings.
 		String[][] materialSearch = new String[materials.length][0];
@@ -97,20 +86,49 @@ public class ItemEditor extends GUISubcontext {
 		}
 		
 		// Make the material editor.
-		TextFieldGroup materialEditor = new TextFieldGroup(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
-				"Materials", materialNames, materialRequirements, materialSearch, font, textColor, null, fieldMessageColor, fieldColor);
-		scrollListFrame.addElement(materialEditor);
+		TextDisplay materialEditorTitle = new TextDisplay(0, 0, scrollListFrame.getWidth(), font.getLineHeight(), 0,
+				"Materials", font, textColor);
+		SearchField[] materialEditorFields = new SearchField[materials.length];
+		for (int i = 0; i < materials.length; i++) {
+			materialEditorFields[i] = new SearchField(0, 0, scrollListFrame.getWidth(), font.getLineHeight(), 0,
+					materials[i].getName(), materialReqs[i].toString(), materialSearch[i], font,
+					textColor, fieldMessageColor, Color.red, fieldColor);
+		}
 		
-		// Get the item base name and some dummy values to fill the item base editor.
-		String[] itemBaseName = new String[] { itemBase.getName() };
-		String[] itemBaseBackground = new String[1];
-		String[][] itemBaseSearch = new String[1][0];
+		/*TextFieldGroup materialEditor = new TextFieldGroup(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
+				"Materials", materialNames, materialRequirements, materialSearch, font, textColor, null, fieldMessageColor, fieldColor);
+		scrollListFrame.addElement(materialEditor);*/
+		
+		// Make the item base search strings.
+		String[] itemBaseSearchStrings = new String[world.getItemBaseMap().size()];
+		int i = 0;
+		for (Map.Entry<String, ItemBase> entry : world.getItemBaseMap().entrySet()) {
+			itemBaseSearchStrings[i] = entry.getValue().getName();
+			i++;
+		}
 		
 		// Make the item base editor.
-		TextFieldGroup itemBaseEditor = new TextFieldGroup(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
-				"Item Base", itemBaseName, itemBaseBackground, itemBaseSearch, font, textColor, null, fieldMessageColor, fieldColor);
-		scrollListFrame.addElement(itemBaseEditor);
+		TextDisplay itemBaseEditorTitle = new TextDisplay(0, 0, scrollListFrame.getWidth(), font.getLineHeight(), 0,
+				"Item Base", font, textColor);
+		SearchField itemBaseEditorField = new SearchField(0, 0, scrollListFrame.getWidth(), font.getLineHeight(), 0,
+				itemBase.getName(), null, itemBaseSearchStrings, font,
+				textColor, fieldMessageColor, Color.red, fieldColor);
 		
+		/*TextFieldGroup itemBaseEditor = new TextFieldGroup(0, 0, scrollListFrame.getWidth(), Integer.MAX_VALUE, 0,
+				"Item Base", itemBaseName, itemBaseBackground, itemBaseSearch, font, textColor, null, fieldMessageColor, fieldColor);
+		scrollListFrame.addElement(itemBaseEditor);*/
+		
+		// Add the elements to the scroll list frame.
+		scrollListFrame.addElement(itemBaseEditorTitle);
+		scrollListFrame.addElement(itemBaseEditorField);
+		
+		scrollListFrame.addElement(materialEditorTitle);
+		scrollListFrame.addElements(materialEditorFields);
+		
+		scrollListFrame.addElement(prefixEditorTitle);
+		scrollListFrame.addElements(prefixEditorFields);
+		
+		// Update the subcontext.
 		subcontext.addAndRemoveElements();
 	}
 	

@@ -23,11 +23,14 @@ import java.util.Map;
 
 public class PlayerTab extends Tab implements GUIEventListener {
 	
-	private static final String CONTEXT_MENU_EDIT = "Edit";
+	private static final String CONTEXT_MENU_EDIT_PREFIXES = "Edit Prefixes";
+	private static final String CONTEXT_MENU_EDIT_MATERIALS = "Edit Materials";
+	private static final String CONTEXT_MENU_EDIT_ITEMBASE = "Edit Item Base";
 	private static final String CONTEXT_MENU_ADJUST_QUANTITY = "Adjust Quantity";
 	private static final String CONTEXT_MENU_DELETE_STACK = "Delete Stack";
 	private static final String[] CONTEXT_MENU_OPTIONS =
-		{ CONTEXT_MENU_EDIT, CONTEXT_MENU_ADJUST_QUANTITY, CONTEXT_MENU_DELETE_STACK };
+		{ CONTEXT_MENU_EDIT_PREFIXES, CONTEXT_MENU_EDIT_MATERIALS, CONTEXT_MENU_EDIT_ITEMBASE, 
+		CONTEXT_MENU_ADJUST_QUANTITY, CONTEXT_MENU_DELETE_STACK };
 	
 	private Font columnFont;
 	private Color backgroundColor, itemDisplayHighlightColor;
@@ -39,7 +42,7 @@ public class PlayerTab extends Tab implements GUIEventListener {
 	private int dragStringXOffset, dragStringYOffset;
 	private boolean dragging;
 	private ContextMenu contextMenu;
-	private ItemEditor itemEditor;
+	private GUIElement itemEditor;
 
 	// Constructor.
 	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, Font font, Font columnFont,
@@ -415,14 +418,39 @@ public class PlayerTab extends Tab implements GUIEventListener {
 			contextMenu.removeListener(this);
 			contextMenu = null;
 			
-			// If the player wants to edit the item, pop up an editor.
-			if (event.getData().equals(CONTEXT_MENU_EDIT)) {
+			Object eventData = event.getData();
+			// If the player wants to edit something about an item...
+			if (eventData.equals(CONTEXT_MENU_EDIT_PREFIXES) ||
+					eventData.equals(CONTEXT_MENU_EDIT_MATERIALS) ||
+					eventData.equals(CONTEXT_MENU_EDIT_ITEMBASE)) {
+				
+				// Remove the old item editor.
+				if (itemEditor != null) {
+					subcontext.removeElement(itemEditor);
+				}
+				
+				// Get the dimensions for the new editor.
 				int iEW = width / 2;
 				int iEH = height / 2;
 				int iEX = x1 + width / 2 - iEW / 2; 
 				int iEY = y1 + height / 2 - iEH / 2;
-				itemEditor = new ItemEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
-						player.getWorld(), selectedItemDisplay.getItem(), columnFont, tabNameColor, backgroundColor,itemDisplayHighlightColor, tabEnabledColor);
+				
+				// Make the appropriate editor.
+				if (eventData.equals(CONTEXT_MENU_EDIT_PREFIXES)) {
+					itemEditor = new ItemPrefixEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
+							selectedItemDisplay.getItem(), player.getWorld(), columnFont,
+							tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
+				}
+				else if (eventData.equals(CONTEXT_MENU_EDIT_MATERIALS)) {
+					itemEditor = new ItemMaterialEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
+							selectedItemDisplay.getItem(), player.getWorld(), columnFont,
+							tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
+				}
+				else {
+					itemEditor = new ItemItemBaseEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
+							selectedItemDisplay.getItem(), player.getWorld(), columnFont,
+							tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
+				}
 				subcontext.addElement(itemEditor);
 			}
 			// If the player wants to adjust the quantity...

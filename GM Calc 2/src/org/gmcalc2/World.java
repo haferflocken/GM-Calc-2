@@ -206,39 +206,6 @@ public class World {
 		return itemBases;
 	}
 	
-	
-	// Make an item with no prefixes and with default materials.
-	public Item makeItem(ItemBase itemBase) {
-		// Get the default materials.
-		String[] defMatNames = itemBase.getDefaultMaterials();
-		
-		// If there are no default materials, make a materialless item.
-		if (defMatNames == null)
-			return makeItem(new Component[0], itemBase);
-		
-		// Otherwise, find the materials and make the item.
-		ArrayList<Component> materialList = new ArrayList<>();
-		for (int i = 0; i < defMatNames.length; i++) {
-			Component mat = materials.get(defMatNames[i]);
-			if (mat != null)
-				materialList.add(mat);
-		}
-		
-		// Make and return the item.
-		Component[] materials = materialList.toArray(new Component[materialList.size()]);
-		return makeItem(materials, itemBase);
-	}
-	
-	// Make an item with no prefixes and some materials.
-	public Item makeItem(Component[] materials, ItemBase itemBase) {
-		return makeItem(new Component[0], materials, itemBase);
-	}
-	
-	// Make an item with some prefixes and some materials.
-	public Item makeItem(Component[] prefixes, Component[] materials, ItemBase itemBase) {
-		return new Item(prefixes, materials, itemBase);
-	}
-	
 	// Get a player.
 	public Player getPlayer(String playerFile) {
 		return players.get(playerFile);
@@ -247,11 +214,6 @@ public class World {
 	// Get the player map.
 	public Map<String, Player> getPlayerMap() {
 		return players;
-	}
-	
-	// Set the player map.
-	public void setPlayerMap(Map<String, Player> p) {
-		players = p;
 	}
 	
 	// Get the rarity color of an item.
@@ -293,5 +255,62 @@ public class World {
 	// Get the materials matching a tag requirement.
 	public Component[] getMaterialsMatching(TagRequirement requirement) {
 		return getComponentsMatching(requirement, materials);
+	}
+	
+	// Get the number of prefixes.
+	public int getNumPrefixes() {
+		return prefixes.size();
+	}
+	
+	// Get the number of materials.
+	public int getNumMaterials() {
+		return materials.size();
+	}
+	
+	// Get the number of item bases.
+	public int getNumItemBases() {
+		return itemBases.size();
+	}
+	
+	// Get the number of players.
+	public int getNumPlayers() {
+		return players.size();
+	}
+
+	// Set the player map.
+	public void setPlayerMap(Map<String, Player> p) {
+		players = p;
+	}
+	
+	// Make an item with no prefixes and with default materials.
+	public Item makeItem(ItemBase itemBase) {
+		// Get the default materials.
+		String[] defMatNames = itemBase.getDefaultMaterials();
+		
+		// If there are no default materials, make a materialless item.
+		if (defMatNames == null)
+			return makeItem(new Component[0], itemBase);
+		
+		// Otherwise, find the materials and make the item.
+		ArrayList<Component> materialList = new ArrayList<>();
+		for (int i = 0; i < defMatNames.length; i++) {
+			Component mat = materials.get(defMatNames[i]);
+			if (mat != null)
+				materialList.add(mat);
+		}
+		
+		// Make and return the item.
+		Component[] materials = materialList.toArray(new Component[materialList.size()]);
+		return makeItem(materials, itemBase);
+	}
+	
+	// Make an item with no prefixes and some materials.
+	public Item makeItem(Component[] materials, ItemBase itemBase) {
+		return makeItem(new Component[0], materials, itemBase);
+	}
+	
+	// Make an item with some prefixes and some materials.
+	public Item makeItem(Component[] prefixes, Component[] materials, ItemBase itemBase) {
+		return new Item(prefixes, materials, itemBase);
 	}
 }
