@@ -3,12 +3,12 @@ package org.gmcalc2.gui;
 import java.util.HashSet;
 
 import org.haferlib.slick.gui.GUIElement;
-import org.haferlib.slick.gui.GUIEvent;
-import org.haferlib.slick.gui.GUIEventGenerator;
-import org.haferlib.slick.gui.GUIEventListener;
 import org.haferlib.slick.gui.ListFrame;
 import org.haferlib.slick.gui.TextButton;
 import org.haferlib.slick.gui.GUISubcontext;
+import org.haferlib.slick.gui.event.GUIEvent;
+import org.haferlib.slick.gui.event.GUIEventGenerator;
+import org.haferlib.slick.gui.event.GUIEventListener;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;

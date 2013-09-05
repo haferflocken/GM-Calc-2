@@ -6,10 +6,10 @@ import org.gmcalc2.item.Stat;
 import org.gmcalc2.item.Item;
 import org.haferlib.slick.gui.CollapsibleListFrame;
 import org.haferlib.slick.gui.GUIElement;
-import org.haferlib.slick.gui.GUIEvent;
-import org.haferlib.slick.gui.GUIEventListener;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.haferlib.slick.gui.TextDisplay;
+import org.haferlib.slick.gui.event.GUIEvent;
+import org.haferlib.slick.gui.event.GUIEventListener;
 import org.haferlib.util.ListBag;
 import org.haferlib.util.Log;
 import org.newdawn.slick.Color;
@@ -425,7 +425,7 @@ public class PlayerTab extends Tab implements GUIEventListener {
 					eventData.equals(CONTEXT_MENU_EDIT_ITEMBASE)) {
 				
 				// Remove the old item editor.
-				if (itemEditor != null) {
+				if (itemEditor != null && !itemEditor.dead()) {
 					subcontext.removeElement(itemEditor);
 				}
 				
