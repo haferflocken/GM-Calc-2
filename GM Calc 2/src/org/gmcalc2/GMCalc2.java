@@ -3,10 +3,12 @@ package org.gmcalc2;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.StateBasedGame;
 import org.gmcalc2.state.*;
+import org.haferlib.slick.gui.GUIContext;
 
 import java.util.Map;
 
@@ -72,6 +74,17 @@ public class GMCalc2 extends StateBasedGame {
 	// Get the worlds.
 	public Map<String, World> getWorlds() {
 		return worlds;
+	}
+	
+	// Override the main update so that GUIContext.debugMode can be toggled at any time.
+	@Override
+	public void update(GameContainer container, int delta) throws SlickException {
+		super.update(container, delta);
+		
+		if (container.getInput().isKeyPressed(Input.KEY_GRAVE)) {
+			GUIContext.debugMode++;
+			GUIContext.debugMode %= GUIContext.NUM_DEBUG_MODES;
+		}
 	}
 	
 	// The main method.

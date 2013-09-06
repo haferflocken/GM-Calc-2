@@ -64,7 +64,17 @@ public class SetupState extends BasicGameState {
 		frameWidth = container.getWidth() - BORDER_THICKNESS * 2;
 		
 		// Add a text display with instructions.
-		final String instructions = "Hi! Thank you for helping me test this.\n\n"
+		final String instructions = "New features:\n"
+				+ "1) Context menu! Try it out by right clicking on items.\n"
+				+ "2) Debug visualization! Code wise, most of it has been there for a while, but "
+				+ "I've now bound it to a key. Try hitting ~ to advance through the different "
+				+ "visualizations. There is the default (no visualization), focus (showing what the "
+				+ "GUI is keeping track of for hovering/click/input handling), clip (showing the clip "
+				+ "applied to the GUI on rendering; darker areas have overlapping contexts), and both "
+				+ "(a combination of focus and clip).\n"
+				+ "There are probably little things here and there that I forgot about as well.\n\n"
+				+ "----------------------------------------------------------------------------------\n\n"
+				+ "Hi! Thank you for helping me test this.\n\n"
 				+ "This is a tool that helps a game master run a tabletop roleplaying game. "
 				+ "Currently, it's very basic. Items cannot be added to players and items cannot "
 				+ "be edited. All you can really do is drag and drop items within a player to "
@@ -83,7 +93,7 @@ public class SetupState extends BasicGameState {
 		int iDY = frameY + BORDER_THICKNESS;
 		int iDWidth = frameWidth - BORDER_THICKNESS * 2;
 		TextDisplay instructionsDisplay = new TextDisplay(iDX, iDY, iDWidth, Integer.MAX_VALUE, 0,
-				instructions, GMCalc2.BODYFONT, elementTextColor);
+				instructions, GMCalc2.BODYFONT, elementTextColor, TextDisplay.WIDTH_STATIC_HEIGHT_DYNAMIC, TextDisplay.TEXT_ALIGN_LEFT);
 		ui.addElement(instructionsDisplay);
 		
 		// Add a text field.

@@ -4,7 +4,9 @@ import org.gmcalc2.World;
 import org.gmcalc2.item.Component;
 import org.gmcalc2.item.Item;
 import org.haferlib.slick.gui.Button;
+import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.GUISubcontext;
+import org.haferlib.slick.gui.HorizontalListFrame;
 import org.haferlib.slick.gui.ListFrame;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.haferlib.slick.gui.SearchField;
@@ -19,16 +21,14 @@ import org.newdawn.slick.Input;
 
 public abstract class AbstractItemComponentEditor extends GUISubcontext implements GUIEventListener {
 	
-	private static final Object CLOSE_DATA = new Object();
-	
 	protected Font font;
 	protected Color textColor, backgroundColor, fieldColor, borderColor, searchColor;
 	protected Item item;
 	protected World world;
-	private TextDisplay titleDisplay;
-	private Button<?> closeButton;
-	private ScrollableListFrame fieldFrame;
-	private SearchField[] searchFields;
+	protected TextDisplay titleDisplay;
+	protected Button<?> closeButton;
+	protected ScrollableListFrame fieldFrame;
+	protected SearchField[] searchFields;
 
 	/**
 	 * Constructor.
@@ -107,7 +107,7 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 		int cBX = x2 - cBWidth;
 		int cBY = y1;
 		
-		closeButton = new TextButton<Object>(CLOSE_DATA, cBX, cBY, cBWidth, cBHeight, 1,
+		closeButton = new TextButton<Object>(null, cBX, cBY, cBWidth, cBHeight, 1,
 				null, fieldColor, Input.KEY_ENTER,
 				"|X|", textColor, font, TextButton.CENTER, 0);
 		closeButton.addListener(this);
@@ -133,22 +133,35 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 		int fFWidth = width;
 		int fFHeight = height - titleDisplay.getHeight();
 		int fFScrollBarWidth = 10;
-		int fFXOffset = fFScrollBarWidth;
+		int fFXOffset = 0;
 		int fFYSpacing = 2;
 		fieldFrame = new ScrollableListFrame(fFX, fFY, fFWidth, fFHeight, 0,
 				fFScrollBarWidth, textColor, ListFrame.XALIGN_LEFT, fFXOffset, fFYSpacing);
 		subcontext.addElement(fieldFrame);
 			
 		// Add fields to it for the current prefixes.
-		int fieldWidth = fFWidth - fFXOffset;
+		// They are within horizontal frames so they can have bullet points.
+		int bulletSize = font.getLineHeight();
+		int fieldWidth = fieldFrame.getWidth() - fieldFrame.getScrollBarWidth() - fieldFrame.getXAlignOffset() - bulletSize;
+		int fieldHeight = font.getLineHeight();
 		Component[] fieldComponents = getFieldComponents();
+		HorizontalListFrame[] fieldBars = new HorizontalListFrame[fieldComponents.length];
 		searchFields = new SearchField[fieldComponents.length];
 		for (int i = 0; i < fieldComponents.length; i++) {
-			searchFields[i] = new SearchField(0, 0, fieldWidth, font.getLineHeight(), 0,
+			searchFields[i] = new SearchField(0, 0, fieldWidth, fieldHeight, 0,
 					fieldComponents[i].getName(), "Type here to search.", getSearchStrings(i), font,
 					textColor, textColor, searchColor, fieldColor);
+			
+			fieldBars[i] = new HorizontalListFrame(0, 0, fieldHeight, 0);
+			fieldBars[i].addElement(makeBullet(bulletSize, fieldBars[i]));
+			fieldBars[i].addElement(searchFields[i]);
 		}
-		fieldFrame.addElements(searchFields);
+		fieldFrame.addElements(fieldBars);
+	}
+	
+	protected GUIElement makeBullet(int bulletSize, GUIElement fieldBar) {
+		return new TextDisplay(0, 0, bulletSize, bulletSize, 0,
+				"o", font, textColor, TextDisplay.WIDTH_STATIC_HEIGHT_STATIC, TextDisplay.TEXT_ALIGN_CENTER);
 	}
 	
 	@Override
