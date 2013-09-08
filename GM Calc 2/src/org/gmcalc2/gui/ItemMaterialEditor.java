@@ -1,8 +1,6 @@
 package org.gmcalc2.gui;
 
-import org.gmcalc2.World;
 import org.gmcalc2.item.Component;
-import org.gmcalc2.item.Item;
 import org.gmcalc2.item.TagRequirement;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
@@ -15,9 +13,9 @@ public class ItemMaterialEditor extends AbstractItemComponentEditor {
 	
 	// Constructor.
 	public ItemMaterialEditor(int x, int y, int width, int height, int depth,
-			Item item, World world, Font font, Color textColor,
+			ItemDisplay itemDisplay, PlayerTab playerTab, Font font, Color textColor,
 			Color backgroundColor, Color fieldColor, Color borderColor, Color searchColor) {
-		super(x, y, width, height, depth, item, world, font,
+		super(x, y, width, height, depth, itemDisplay, playerTab, font,
 				textColor, backgroundColor, fieldColor, borderColor, searchColor);
 	}
 	
@@ -48,5 +46,20 @@ public class ItemMaterialEditor extends AbstractItemComponentEditor {
 	@Override
 	protected Component[] getFieldComponents() {
 		return item.getMaterials();
+	}
+	
+	@Override
+	protected Component getComponentFromWorld(String path) {
+		return world.getMaterial(path);
+	}
+	
+	@Override
+	protected Component getCurrentComponent(int index) {
+		return item.getMaterials()[index];
+	}
+	
+	@Override
+	protected void assignComponents(Component[] components) {
+		item.setMaterials(components);
 	}
 }

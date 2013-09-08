@@ -2,8 +2,14 @@
 
 package org.gmcalc2.item;
 
+import java.util.Arrays;
+
+import org.gmcalc2.World;
+import org.haferlib.util.Log;
+
 public class Item {
 	
+	private final World world;		// The world this item exists in. It's too integral to the other fields to allow it to change.
 	private Component[] prefixes;	// The prefixes.
 	private Component[] materials;	// The materials.
 	private ItemBase itemBase;		// The item base.
@@ -12,7 +18,8 @@ public class Item {
 	private int rarity;				// The rarity. This is the sum of the rarities of the prefixes, materials, and item base.
 	
 	// Constructor.
-	public Item(Component[] prefixes, Component[] materials, ItemBase itemBase) {
+	public Item(World world, Component[] prefixes, Component[] materials, ItemBase itemBase) {
+		this.world = world;
 		this.prefixes = prefixes;
 		this.materials = materials;
 		this.itemBase = itemBase;
@@ -22,6 +29,10 @@ public class Item {
 	}
 	
 	// Accessors.
+	public World getWorld() {
+		return world;
+	}
+	
 	public Component[] getPrefixes() {
 		return prefixes;
 	}
@@ -99,6 +110,81 @@ public class Item {
 		
 		// Assign the name.
 		name = nameBuilder.toString();
+	}
+	
+	// Set the prefixes to something.
+	public void setPrefixes(Component[] newPrefixes) {
+		Log.getDefaultLog().info("Changing prefixes from "
+				+ Arrays.toString(prefixes) + " to " + Arrays.toString(newPrefixes));
+		
+		// First, filter out the invalid prefixes.
+		int numValid = 0;
+		boolean[] validity = new boolean[newPrefixes.length];
+		for (int i = 0; i < newPrefixes.length; i++) {
+			validity[i] = itemBase.getPrefixReqs().passes(newPrefixes[i]);
+			if (validity[i])
+				numValid++;
+		}
+		
+		// Then assign our prefixes to the valid ones.
+		prefixes = new Component[numValid];
+		for (int j = 0, i = 0; i < newPrefixes.length; i++) {
+			if (validity[i]) {
+				prefixes[j] = newPrefixes[i];
+				j++;
+			}
+		}
+		
+		// Recalculate our name and stats.
+		recalculateName();
+		recalculateStats();
+	}
+	
+	// Set the materials to something.
+	public void setMaterials(Component[] newMaterials) {
+		Log.getDefaultLog().info("Changing materials from "
+				+ Arrays.toString(materials) + " to " + Arrays.toString(newMaterials));
+		
+		// Get the default materials.
+		String[] defaultMaterials = itemBase.getDefaultMaterials();
+		
+		// Figure out how many times we'll have to loop.
+		int numChecks = (defaultMaterials.length < newMaterials.length) ?
+				defaultMaterials.length : newMaterials.length;
+		
+		// Assign the valid materials from newMaterials and use the defaults otherwise.
+		materials = new Component[defaultMaterials.length];
+		for (int i = 0; i < numChecks; i++) {
+			boolean valid = itemBase.getMaterialReqs()[i].passes(newMaterials[i]);
+			if (valid)
+				materials[i] = newMaterials[i];
+			else
+				materials[i] = world.getMaterial(defaultMaterials[i]);
+		}
+		
+		// If numChecks is less than materials.length, fill in the remainder
+		// of materials with the defaults.
+		for (int i = numChecks; i < materials.length; i++) {
+			materials[i] = world.getMaterial(defaultMaterials[i]);
+		}
+		
+		// Recalculate our name and stats.
+		recalculateName();
+		recalculateStats();
+	}
+	
+	// Set the item base to something.
+	public void setItemBase(ItemBase newItemBase) {
+		Log.getDefaultLog().info("Changing item base from "
+				+ itemBase.getName() + " to " + newItemBase.getName());
+		
+		// Assign the item base.
+		itemBase = newItemBase;
+		
+		// Reassign the materials and prefixes to ensure they are valid.
+		// This also takes care of recalculating the name and stats.
+		setMaterials(materials);
+		setPrefixes(prefixes);
 	}
 
 }

@@ -66,7 +66,8 @@ public class SetupState extends BasicGameState {
 		// Add a text display with instructions.
 		final String instructions = "New features:\n"
 				+ "1) Context menu! Try it out by right clicking on items.\n"
-				+ "2) Debug visualization! Code wise, most of it has been there for a while, but "
+				+ "2) Item editors! They're accessible from the context menu.\n"
+				+ "3) Debug visualization! Code wise, most of it has been there for a while, but "
 				+ "I've now bound it to a key. Try hitting ~ to advance through the different "
 				+ "visualizations. There is the default (no visualization), focus (showing what the "
 				+ "GUI is keeping track of for hovering/click/input handling), clip (showing the clip "

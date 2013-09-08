@@ -311,6 +311,6 @@ public class World {
 	
 	// Make an item with some prefixes and some materials.
 	public Item makeItem(Component[] prefixes, Component[] materials, ItemBase itemBase) {
-		return new Item(prefixes, materials, itemBase);
+		return new Item(this, prefixes, materials, itemBase);
 	}
 }

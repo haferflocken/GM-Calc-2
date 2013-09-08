@@ -54,6 +54,11 @@ public class PlayerTab extends Tab implements GUIEventListener {
 		setPlayer(player);
 	}
 	
+	// Get the player.
+	public Player getPlayer() {
+		return player;
+	}
+	
 	// Set the player and recreate the columns.
 	public void setPlayer(Player p) {
 		// Set the player.
@@ -91,7 +96,7 @@ public class PlayerTab extends Tab implements GUIEventListener {
 	}
 	
 	// Fill the stat column with the sorted stats of the player.
-	private void fillStatColumn() {
+	public void fillStatColumn() {
 		statColumn.reinitSubcontext();
 		
 		// Some fields that will help sort the stats.
@@ -145,7 +150,7 @@ public class PlayerTab extends Tab implements GUIEventListener {
 	}
 	
 	// Fill a column with collapsible string groups representing a list of items.
-	private void fillItemColumn(ScrollableListFrame column, ListBag<Item> bag, boolean expanded) {
+	public void fillItemColumn(ScrollableListFrame column, ListBag<Item> bag, boolean expanded) {
 		column.reinitSubcontext();
 		
 		int displayWidth = column.getWidth() - column.getScrollBarWidth();
@@ -437,19 +442,16 @@ public class PlayerTab extends Tab implements GUIEventListener {
 				
 				// Make the appropriate editor.
 				if (eventData.equals(CONTEXT_MENU_EDIT_PREFIXES)) {
-					itemEditor = new ItemPrefixEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
-							selectedItemDisplay.getItem(), player.getWorld(), columnFont,
-							tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
+					itemEditor = new ItemPrefixEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE, selectedItemDisplay, this,
+							columnFont, tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
 				}
 				else if (eventData.equals(CONTEXT_MENU_EDIT_MATERIALS)) {
-					itemEditor = new ItemMaterialEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
-							selectedItemDisplay.getItem(), player.getWorld(), columnFont,
-							tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
+					itemEditor = new ItemMaterialEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE, selectedItemDisplay, this,
+							columnFont, tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
 				}
 				else {
-					itemEditor = new ItemItemBaseEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE,
-							selectedItemDisplay.getItem(), player.getWorld(), columnFont,
-							tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
+					itemEditor = new ItemItemBaseEditor(iEX, iEY, iEW, iEH, Integer.MAX_VALUE, selectedItemDisplay, this,
+							columnFont, tabNameColor, backgroundColor, tabEnabledColor, tabNameColor, itemDisplayHighlightColor);
 				}
 				subcontext.addElement(itemEditor);
 			}
@@ -461,6 +463,8 @@ public class PlayerTab extends Tab implements GUIEventListener {
 			else if (event.getData().equals(CONTEXT_MENU_DELETE_STACK)) {
 				selectedItemDisplay.decreaseQuantity(selectedItemDisplay.getQuantity());
 				clearSelectedItemDisplay();
+				player.recalculateStats();
+				fillStatColumn();
 			}
 		}
 	}

@@ -1,9 +1,11 @@
 package org.gmcalc2.gui;
 
-import org.gmcalc2.World;
+import java.util.ArrayList;
+
 import org.gmcalc2.item.Component;
-import org.gmcalc2.item.Item;
 import org.haferlib.slick.gui.GUIElement;
+import org.haferlib.slick.gui.GUISubcontext;
+import org.haferlib.slick.gui.SearchField;
 import org.haferlib.slick.gui.TextButton;
 import org.haferlib.slick.gui.event.GUIEvent;
 import org.newdawn.slick.Color;
@@ -18,9 +20,9 @@ public class ItemPrefixEditor extends AbstractItemComponentEditor {
 
 	// Constructor.
 	public ItemPrefixEditor(int x, int y, int width, int height, int depth,
-			Item item, World world, Font font, Color textColor,
+			ItemDisplay itemDisplay, PlayerTab playerTab, Font font, Color textColor,
 			Color backgroundColor, Color fieldColor, Color borderColor, Color searchColor) {
-		super(x, y, width, height, depth, item, world, font,
+		super(x, y, width, height, depth, itemDisplay, playerTab, font,
 				textColor, backgroundColor, fieldColor, borderColor, searchColor);
 	}
 
@@ -50,19 +52,47 @@ public class ItemPrefixEditor extends AbstractItemComponentEditor {
 	}
 	
 	@Override
-	protected GUIElement makeBullet(int bulletSize, GUIElement field) {
-		TextButton<GUIElement> bullet = new TextButton<>(field, 0, 0, bulletSize, bulletSize, 0, null, fieldColor, Input.KEY_ENTER,
+	protected GUIElement makeBullet(int bulletSize, GUISubcontext field) {
+		TextButton<GUISubcontext> bullet = new TextButton<>(field, 0, 0, bulletSize, bulletSize, 0, null, fieldColor, Input.KEY_ENTER,
 				"|X|", textColor, font, TextButton.CENTER, 0);
 		bullet.addListener(this);
 		return bullet;
 	}
-
+	
+	@Override
+	protected Component getComponentFromWorld(String path) {
+		return world.getPrefix(path);
+	}
+	
+	@Override
+	protected Component getCurrentComponent(int index) {
+		return item.getPrefixes()[index];
+	}
+	
+	@Override
+	protected void assignComponents(Component[] components) {
+		item.setPrefixes(components);
+	}
+	
 	@Override
 	public void guiEvent(GUIEvent<?> event) {
-		// If the event has a GUIElement as the data, remove the element from the fieldFrame.
-		if (event.getData() instanceof GUIElement) {
-			GUIElement e = (GUIElement)event.getData();
+		// If the event has a GUISubcontext as the data, remove the subcontext from the fieldFrame
+		// and discard its corresponding search field.
+		if (event.getData() instanceof GUISubcontext) {
+			GUISubcontext e = (GUISubcontext)event.getData();
 			fieldFrame.removeElement(e);
+			ArrayList<GUIElement> subElements = e.getElements();
+			for (GUIElement elem : subElements) {
+				if (elem instanceof SearchField) {
+					SearchField[] oldFields = searchFields;
+					searchFields = new SearchField[oldFields.length - 1];
+					for (int j = 0, i = 0; i < oldFields.length; i++) {
+						if (oldFields[i] != elem)
+							searchFields[j++] = oldFields[i];
+					}
+					break;
+				}
+			}
 		}
 		// Otherwise, pass this along to the super method.
 		else

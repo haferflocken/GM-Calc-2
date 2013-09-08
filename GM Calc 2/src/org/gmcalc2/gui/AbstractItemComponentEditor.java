@@ -25,6 +25,8 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 	protected Color textColor, backgroundColor, fieldColor, borderColor, searchColor;
 	protected Item item;
 	protected World world;
+	protected ItemDisplay itemDisplay;
+	protected PlayerTab playerTab;
 	protected TextDisplay titleDisplay;
 	protected Button<?> closeButton;
 	protected ScrollableListFrame fieldFrame;
@@ -48,7 +50,7 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 	 * @param searchColor The color of the search function of the fields.
 	 */
 	protected AbstractItemComponentEditor(int x, int y, int width, int height, int depth,
-			Item item, World world, Font font, Color textColor,
+			ItemDisplay itemDisplay, PlayerTab playerTab, Font font, Color textColor,
 			Color backgroundColor, Color fieldColor, Color borderColor, Color searchColor) {
 		super(x, y, width, height, depth);
 		
@@ -59,8 +61,10 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 		this.borderColor = borderColor;
 		this.searchColor = searchColor;
 		
-		this.item = item;
-		this.world = world;
+		item = itemDisplay.getItem();
+		world = item.getWorld();
+		this.itemDisplay = itemDisplay;
+		this.playerTab = playerTab;
 		
 		rethinkSearchStrings();
 		makeTitleBar();
@@ -159,14 +163,81 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 		fieldFrame.addElements(fieldBars);
 	}
 	
-	protected GUIElement makeBullet(int bulletSize, GUIElement fieldBar) {
+	/**
+	 * Make a bullet for the list of components.
+	 * 
+	 * @param bulletSize The size of the bullet.
+	 * @param fieldBar What the bullet will be placed in.
+	 * @return A GUIElement with width and height equal to bulletSize.
+	 */
+	protected GUIElement makeBullet(int bulletSize, GUISubcontext fieldBar) {
 		return new TextDisplay(0, 0, bulletSize, bulletSize, 0,
 				"o", font, textColor, TextDisplay.WIDTH_STATIC_HEIGHT_STATIC, TextDisplay.TEXT_ALIGN_CENTER);
 	}
 	
-	// Modify the item, and refresh the item display.
-	private void updateItem() {
+	/**
+	 * Make components from the search fields.
+	 * 
+	 * @return Components made from the contents of the search fields.
+	 */
+	private Component[] makeComponentsFromSearchFields() {
+		// Get the components.
+		Component[] out = new Component[searchFields.length];
+		for (int i = 0; i < out.length; i++) {
+			out[i] = getComponentFromWorld(searchFields[i].toString());
+			
+			// If a component isn't found, just use the old one.
+			if (out[i] == null)
+				out[i] = getCurrentComponent(i);
+		}
 		
+		// Return them.
+		return out;
+	}
+	
+	/**
+	 * An abstract method to let subclasses tell makeComponentsFromSearchFields()
+	 * where to look for components.
+	 * 
+	 * @param path The path to the component.
+	 * @return A component corresponding to the given path.
+	 */
+	protected abstract Component getComponentFromWorld(String path);
+	
+	/**
+	 * An abstract method to let subclasses tell makeComponentsFromSearchFields()
+	 * what component is currently in the item at a given index.
+	 * 
+	 * @param index The index of the component.
+	 * @return The component at the index in the item.
+	 */
+	protected abstract Component getCurrentComponent(int index);
+	
+	/**
+	 * An abstract method to let subclasses assign the result of
+	 * makeComponentsFromSearchFields() appropriately.
+	 *
+	 * @param components The components from the search fields.
+	 */
+	protected abstract void assignComponents(Component[] components);
+	
+	/**
+	 * Make the item display rethink its appearance.
+	 */
+	private void refreshItemDisplay() {
+		itemDisplay.recalcTitle();
+		itemDisplay.recalcStrings();
+	}
+	
+	/**
+	 * Update the item with the contents of the search fields.
+	 */
+	private void updateItem() {
+		Component[] newComponents = makeComponentsFromSearchFields();
+		assignComponents(newComponents);
+		playerTab.getPlayer().recalculateStats();
+		playerTab.fillStatColumn();
+		refreshItemDisplay();
 	}
 	
 	@Override
