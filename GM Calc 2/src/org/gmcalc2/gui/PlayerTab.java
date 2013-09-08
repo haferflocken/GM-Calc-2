@@ -313,7 +313,7 @@ public class PlayerTab extends Tab implements GUIEventListener {
 				return;
 			}
 			
-			// If the click was within the item editor, ignore it.
+			// If the click is within the item editor, ignore the click.
 			if (itemEditor != null && !itemEditor.dead() && itemEditor.pointIsWithin(x, y)) {
 				return;
 			}

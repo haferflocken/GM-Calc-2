@@ -23,7 +23,7 @@ public class ItemBaseFactory extends AbstractFactoryDataReader<ItemBase> {
 	
 	// Make the component.
 	public ItemBase makeFromValues(String absolutePath, String relativePath, Map<String, Object> values) {
-		return new ItemBase(values, expBuilder);
+		return new ItemBase(relativePath, values, expBuilder);
 	}
 	
 	// Get the file extension.

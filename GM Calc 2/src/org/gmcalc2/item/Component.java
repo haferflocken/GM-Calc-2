@@ -15,26 +15,27 @@ public class Component {
 	public static final String RARITY_KEY = "rarity";
 	public static final String TAGS_KEY = "tags";
 
+	private String filePath;
 	private String name;
 	private StatMap statMap;
 	private int rarity;
 	private Set<String> tags;
 	
 	//Constructors.
-	public Component(String name, StatMap statMap, int rarity, TreeSet<String> tags) {
+	public Component(String filePath, String name, StatMap statMap, int rarity, TreeSet<String> tags) {
+		this.filePath = filePath;
 		this.name = name;
 		this.statMap = statMap;
 		this.rarity = rarity;
 		this.tags = tags;
 	}
 	
-	public Component() {
-		this("Untitled Item", new StatMap(), 0, new TreeSet<String>());
+	public Component(String filePath) {
+		this(filePath, "Untitled Item", new StatMap(), 0, new TreeSet<String>());
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Component(Map<String, Object> values, ExpressionBuilder expBuilder) {
-		this();
+	public Component(String filePath, Map<String, Object> values, ExpressionBuilder expBuilder) {
+		this(filePath);
 		Object val;
 		//Get the name.
 		val = values.get(NAME_KEY);
@@ -43,7 +44,7 @@ public class Component {
 		//Get the stats.
 		val = values.get(STATMAP_KEY);
 		if (val instanceof Map<?, ?>) 
-			statMap = new StatMap((Map<Object, Object>)val, expBuilder);
+			statMap = new StatMap((Map<?, ?>)val, expBuilder);
 		//Get the rarity.
 		val = values.get(RARITY_KEY);
 		if (val instanceof Integer)
@@ -61,6 +62,10 @@ public class Component {
 	}
 	
 	//Accessors.
+	public String getFilePath() {
+		return filePath;
+	}
+	
 	public String getName() {
 		return name;
 	}

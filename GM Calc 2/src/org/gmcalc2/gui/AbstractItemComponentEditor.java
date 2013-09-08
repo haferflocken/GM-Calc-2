@@ -149,7 +149,7 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 		searchFields = new SearchField[fieldComponents.length];
 		for (int i = 0; i < fieldComponents.length; i++) {
 			searchFields[i] = new SearchField(0, 0, fieldWidth, fieldHeight, 0,
-					fieldComponents[i].getName(), "Type here to search.", getSearchStrings(i), font,
+					fieldComponents[i].getFilePath(), "Type here to search.", getSearchStrings(i), font,
 					textColor, textColor, searchColor, fieldColor);
 			
 			fieldBars[i] = new HorizontalListFrame(0, 0, fieldHeight, 0);
@@ -162,6 +162,11 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 	protected GUIElement makeBullet(int bulletSize, GUIElement fieldBar) {
 		return new TextDisplay(0, 0, bulletSize, bulletSize, 0,
 				"o", font, textColor, TextDisplay.WIDTH_STATIC_HEIGHT_STATIC, TextDisplay.TEXT_ALIGN_CENTER);
+	}
+	
+	// Modify the item, and refresh the item display.
+	private void updateItem() {
+		
 	}
 	
 	@Override
@@ -180,8 +185,10 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 
 	@Override
 	public void guiEvent(GUIEvent<?> event) {
-		// If the event is from the close button, set dead to true.
-		if (closeButton.equals(event.getGenerator()))
+		// If the event is from the close button, update the item and set dead to true.
+		if (closeButton.equals(event.getGenerator())) {
+			updateItem();
 			dead = true;
+		}
 	}
 }

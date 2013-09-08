@@ -34,7 +34,7 @@ public class ItemItemBaseEditor extends AbstractItemComponentEditor {
 		searchStrings = new String[world.getNumItemBases()];
 		int i = 0;
 		for (Map.Entry<String, ItemBase> entry : world.getItemBaseMap().entrySet()) {
-			searchStrings[i] = entry.getValue().getName();
+			searchStrings[i] = entry.getValue().getFilePath();
 			i++;
 		}
 	}

@@ -15,12 +15,8 @@ public class ItemBase extends Component {
 	private String[] defaultMaterials;		//The default materials that Item uses if no materials are passed to item.
 	
 	//Constructors.
-	public ItemBase() {
-		super();
-	}
-	
-	public ItemBase(Map<String, Object> values, ExpressionBuilder expBuilder) {
-		super(values, expBuilder);
+	public ItemBase(String filePath, Map<String, Object> values, ExpressionBuilder expBuilder) {
+		super(filePath, values, expBuilder);
 		
 		Object val;
 		//Get the prefix tag requirements.

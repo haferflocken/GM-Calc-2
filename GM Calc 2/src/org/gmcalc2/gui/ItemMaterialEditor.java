@@ -35,7 +35,7 @@ public class ItemMaterialEditor extends AbstractItemComponentEditor {
 			Component[] validMaterials = world.getMaterialsMatching(materialReqs[i]);
 			searchStrings[i] = new String[validMaterials.length];
 			for (int q = 0; q < validMaterials.length; q++) {
-				searchStrings[i][q] = validMaterials[q].getName();
+				searchStrings[i][q] = validMaterials[q].getFilePath();
 			}
 		}
 	}

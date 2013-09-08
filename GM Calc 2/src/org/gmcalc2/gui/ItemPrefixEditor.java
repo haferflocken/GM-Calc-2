@@ -35,7 +35,7 @@ public class ItemPrefixEditor extends AbstractItemComponentEditor {
 			
 		searchStrings = new String[validPrefixes.length];
 		for (int i = 0; i < searchStrings.length; i++) {
-			searchStrings[i] = validPrefixes[i].getName();
+			searchStrings[i] = validPrefixes[i].getFilePath();
 		}
 	}
 

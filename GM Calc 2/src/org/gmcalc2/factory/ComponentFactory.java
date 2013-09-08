@@ -23,7 +23,7 @@ public class ComponentFactory extends AbstractFactoryDataReader<Component> {
 	
 	// Make the component.
 	public Component makeFromValues(String absolutePath, String relativePath, Map<String, Object> values) {
-		return new Component(values, expBuilder);
+		return new Component(relativePath, values, expBuilder);
 	}
 
 	// Get the file extension.

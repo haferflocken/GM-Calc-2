@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import org.gmcalc2.World;
 import org.haferlib.util.DataReader;
+import org.haferlib.util.Log;
 import org.haferlib.util.expression.ExpressionBuilder;
 
 public class WorldFactory implements Factory<World> {
@@ -179,8 +180,11 @@ public class WorldFactory implements Factory<World> {
 			
 			// If the world is finished loading, move on to the next world.
 			if (worldBuilders[worldIndex].isFinished()) {
-				cache.put(worldDirectories[worldIndex].getName(), worldBuilders[worldIndex].world);
+				String key = worldDirectories[worldIndex].getName();
+				World value = worldBuilders[worldIndex].world;
+				cache.put(key, value);
 				worldIndex++;
+				Log.getDefaultLog().info("Loaded world: " + value.getName());
 			}
 		}
 	}
