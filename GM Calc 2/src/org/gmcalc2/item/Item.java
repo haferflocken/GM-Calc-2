@@ -1,11 +1,18 @@
-// An item is made of several components and pools their stats into its stat map.
-
 package org.gmcalc2.item;
 
 import java.util.Arrays;
 
 import org.gmcalc2.World;
 import org.haferlib.util.Log;
+
+/**
+ * An item contains an ItemBase, an array of Components representing the materials
+ * applied to the ItemBase, and an array of Components representing the prefixes
+ * applied to the ItemBase. It also accumulates the stats of these into a StatMap
+ * and accumulates their rarity and names.
+ * 
+ * @author John Werner
+ */
 
 public class Item {
 	
@@ -20,9 +27,9 @@ public class Item {
 	// Constructor.
 	public Item(World world, Component[] prefixes, Component[] materials, ItemBase itemBase) {
 		this.world = world;
-		this.prefixes = prefixes;
-		this.materials = materials;
 		this.itemBase = itemBase;
+		setPrefixesFilter(prefixes);
+		setMaterialsFilter(materials);
 		statMap = new StatMap();
 		recalculateStats();
 		recalculateName();
@@ -112,12 +119,9 @@ public class Item {
 		name = nameBuilder.toString();
 	}
 	
-	// Set the prefixes to something.
-	public void setPrefixes(Component[] newPrefixes) {
-		Log.getDefaultLog().info("Changing prefixes from "
-				+ Arrays.toString(prefixes) + " to " + Arrays.toString(newPrefixes));
-		
-		// First, filter out the invalid prefixes.
+	// Set the prefixes to the valid prefixes from a given array.
+	private void setPrefixesFilter(Component[] newPrefixes) {
+		// Filter out the invalid prefixes.
 		int numValid = 0;
 		boolean[] validity = new boolean[newPrefixes.length];
 		for (int i = 0; i < newPrefixes.length; i++) {
@@ -125,8 +129,8 @@ public class Item {
 			if (validity[i])
 				numValid++;
 		}
-		
-		// Then assign our prefixes to the valid ones.
+				
+		// Assign our prefixes to the valid ones.
 		prefixes = new Component[numValid];
 		for (int j = 0, i = 0; i < newPrefixes.length; i++) {
 			if (validity[i]) {
@@ -134,24 +138,28 @@ public class Item {
 				j++;
 			}
 		}
+	}
+	
+	// Set the prefixes to something.
+	public void setPrefixes(Component[] newPrefixes) {
+		Log.getDefaultLog().info("Changing prefixes from "
+				+ Arrays.toString(prefixes) + " to " + Arrays.toString(newPrefixes));
 		
-		// Recalculate our name and stats.
+		setPrefixesFilter(newPrefixes);
 		recalculateName();
 		recalculateStats();
 	}
 	
-	// Set the materials to something.
-	public void setMaterials(Component[] newMaterials) {
-		Log.getDefaultLog().info("Changing materials from "
-				+ Arrays.toString(materials) + " to " + Arrays.toString(newMaterials));
-		
+	// Set the materials to the valid materials in a given array,
+	// and the invalid ones to default.
+	private void setMaterialsFilter(Component[] newMaterials) {
 		// Get the default materials.
 		String[] defaultMaterials = itemBase.getDefaultMaterials();
-		
+
 		// Figure out how many times we'll have to loop.
 		int numChecks = (defaultMaterials.length < newMaterials.length) ?
 				defaultMaterials.length : newMaterials.length;
-		
+
 		// Assign the valid materials from newMaterials and use the defaults otherwise.
 		materials = new Component[defaultMaterials.length];
 		for (int i = 0; i < numChecks; i++) {
@@ -161,12 +169,20 @@ public class Item {
 			else
 				materials[i] = world.getMaterial(defaultMaterials[i]);
 		}
-		
+
 		// If numChecks is less than materials.length, fill in the remainder
 		// of materials with the defaults.
 		for (int i = numChecks; i < materials.length; i++) {
 			materials[i] = world.getMaterial(defaultMaterials[i]);
 		}
+	}
+	
+	// Set the materials to something.
+	public void setMaterials(Component[] newMaterials) {
+		Log.getDefaultLog().info("Changing materials from "
+				+ Arrays.toString(materials) + " to " + Arrays.toString(newMaterials));
+		
+		setMaterialsFilter(newMaterials);
 		
 		// Recalculate our name and stats.
 		recalculateName();
@@ -182,9 +198,12 @@ public class Item {
 		itemBase = newItemBase;
 		
 		// Reassign the materials and prefixes to ensure they are valid.
-		// This also takes care of recalculating the name and stats.
-		setMaterials(materials);
-		setPrefixes(prefixes);
+		setMaterialsFilter(materials);
+		setPrefixesFilter(prefixes);
+		
+		// Recalculate the name and stats.
+		recalculateName();
+		recalculateStats();
 	}
 
 }

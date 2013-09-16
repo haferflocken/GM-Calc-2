@@ -28,9 +28,12 @@ public class PlayerTab extends Tab implements GUIEventListener {
 	private static final String CONTEXT_MENU_EDIT_ITEMBASE = "Edit Item Base";
 	private static final String CONTEXT_MENU_ADJUST_QUANTITY = "Adjust Quantity";
 	private static final String CONTEXT_MENU_DELETE_STACK = "Delete Stack";
-	private static final String[] CONTEXT_MENU_OPTIONS =
+	private static final String[] CONTEXT_MENU_OPTIONS_ALL =
 		{ CONTEXT_MENU_EDIT_PREFIXES, CONTEXT_MENU_EDIT_MATERIALS, CONTEXT_MENU_EDIT_ITEMBASE, 
 		CONTEXT_MENU_ADJUST_QUANTITY, CONTEXT_MENU_DELETE_STACK };
+	private static final String[] CONTEXT_MENU_OPTIONS_NOMATERIALS =
+		{ CONTEXT_MENU_EDIT_PREFIXES, CONTEXT_MENU_EDIT_ITEMBASE, CONTEXT_MENU_ADJUST_QUANTITY,
+		CONTEXT_MENU_DELETE_STACK };
 	
 	private Font columnFont;
 	private Color backgroundColor, itemDisplayHighlightColor;
@@ -355,15 +358,24 @@ public class PlayerTab extends Tab implements GUIEventListener {
 			
 			// If the click was the right mouse button and an item display was selected, open the context menu.
 			if (button == Input.MOUSE_RIGHT_BUTTON && selectedItemDisplay != null) {
+				// First, get the string array for the needed options.
+				String[] options;
+				if (selectedItemDisplay.getItem().getMaterials().length > 0) {
+					options = CONTEXT_MENU_OPTIONS_ALL;
+				}
+				else {
+					options = CONTEXT_MENU_OPTIONS_NOMATERIALS;
+				}
+				
 				int contextMenuWidth = 0;
-				for (String s : CONTEXT_MENU_OPTIONS) {
+				for (String s : options) {
 					int sWidth = GMCalc2.BODYFONT.getWidth(s);
 					if (sWidth > contextMenuWidth)
 						contextMenuWidth = sWidth;
 				}
 				
 				contextMenu = new ContextMenu(x, y, contextMenuWidth, Integer.MAX_VALUE,
-						columnFont, CONTEXT_MENU_OPTIONS, tabNameColor, itemDisplayHighlightColor, tabEnabledColor, tabNameColor);
+						columnFont, options, tabNameColor, itemDisplayHighlightColor, tabEnabledColor, tabNameColor);
 				contextMenu.addListener(this);
 				subcontext.addElement(contextMenu);
 			}

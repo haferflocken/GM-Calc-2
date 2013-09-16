@@ -76,10 +76,10 @@ public class GMCalc2 extends StateBasedGame {
 		return worlds;
 	}
 	
-	// Override the main update so that GUIContext.debugMode can be toggled at any time.
+	// Override the preupdate state so that GUIContext.debugMode can be toggled at any time.
 	@Override
-	public void update(GameContainer container, int delta) throws SlickException {
-		super.update(container, delta);
+	public void preUpdateState(GameContainer container, int delta) throws SlickException {
+		super.preUpdateState(container, delta);
 		
 		if (container.getInput().isKeyPressed(Input.KEY_GRAVE)) {
 			GUIContext.debugMode++;
