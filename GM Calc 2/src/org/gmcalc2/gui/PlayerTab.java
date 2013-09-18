@@ -45,7 +45,7 @@ public class PlayerTab extends Tab implements GUIEventListener {
 	private int dragStringXOffset, dragStringYOffset;
 	private boolean dragging;
 	private ContextMenu contextMenu;
-	private GUIElement itemEditor;
+	private AbstractItemComponentEditor itemEditor;
 
 	// Constructor.
 	public PlayerTab(Player player, int x, int y, int width, int height, int tabX, Font font, Font columnFont,

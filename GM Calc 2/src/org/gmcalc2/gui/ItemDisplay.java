@@ -62,8 +62,14 @@ public class ItemDisplay extends CollapsibleListFrame {
 	public void setItem(Item i, ListBag<Item> b) {
 		item = i;
 		bag = b;
+		recalcColor();
 		recalcTitle();
 		recalcStrings();
+	}
+	
+	// Recalc the color.
+	public void recalcColor() {
+		textColor = item.getWorld().getRarityColor(item);
 	}
 	
 	// Recalc the title.

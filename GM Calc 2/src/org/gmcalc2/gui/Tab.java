@@ -20,7 +20,8 @@ public class Tab extends GUISubcontext {
 	protected int interiorHeight;
 	protected boolean enabled;
 	
-	public Tab(String id, String tabName, int x, int y, int width, int height, int tabX, int tabWidth, Font font, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor) {
+	public Tab(String id, String tabName, int x, int y, int width, int height, int tabX, int tabWidth,
+			Font font, Color tabEnabledColor, Color tabDisabledColor, Color tabNameColor) {
 		super(x, y, width, height, 0);
 		// Set the parameters.
 		this.id = id;

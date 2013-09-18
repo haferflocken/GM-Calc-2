@@ -6,7 +6,6 @@ import org.gmcalc2.item.Item;
 import org.haferlib.slick.gui.Button;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.GUISubcontext;
-import org.haferlib.slick.gui.HorizontalListFrame;
 import org.haferlib.slick.gui.ListFrame;
 import org.haferlib.slick.gui.ScrollableListFrame;
 import org.haferlib.slick.gui.SearchField;
@@ -113,7 +112,7 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 		
 		closeButton = new TextButton<Object>(null, cBX, cBY, cBWidth, cBHeight, 1,
 				null, fieldColor, Input.KEY_ENTER,
-				"|X|", textColor, font, TextButton.CENTER, 0);
+				"[X]", textColor, font, TextButton.CENTER, 0);
 		closeButton.addListener(this);
 		subcontext.addElement(closeButton);
 		
@@ -137,7 +136,7 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 		int fFWidth = width;
 		int fFHeight = height - titleDisplay.getHeight();
 		int fFScrollBarWidth = 10;
-		int fFXOffset = 0;
+		int fFXOffset = fFScrollBarWidth;
 		int fFYSpacing = 2;
 		fieldFrame = new ScrollableListFrame(fFX, fFY, fFWidth, fFHeight, 0,
 				fFScrollBarWidth, textColor, ListFrame.XALIGN_LEFT, fFXOffset, fFYSpacing);
@@ -145,34 +144,25 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 			
 		// Add fields to it for the current prefixes.
 		// They are within horizontal frames so they can have bullet points.
-		int bulletSize = font.getLineHeight();
-		int fieldWidth = fieldFrame.getWidth() - fieldFrame.getScrollBarWidth() - fieldFrame.getXAlignOffset() - bulletSize;
+		int fieldWidth = calcFieldWidth();
 		int fieldHeight = font.getLineHeight();
 		Component[] fieldComponents = getFieldComponents();
-		HorizontalListFrame[] fieldBars = new HorizontalListFrame[fieldComponents.length];
 		searchFields = new SearchField[fieldComponents.length];
 		for (int i = 0; i < fieldComponents.length; i++) {
-			searchFields[i] = new SearchField(0, 0, fieldWidth, fieldHeight, 0,
-					fieldComponents[i].getFilePath(), "Type here to search.", getSearchStrings(i), font,
-					textColor, textColor, searchColor, fieldColor);
-			
-			fieldBars[i] = new HorizontalListFrame(0, 0, fieldHeight, 0);
-			fieldBars[i].addElement(makeBullet(bulletSize, fieldBars[i]));
-			fieldBars[i].addElement(searchFields[i]);
+			GUIElement field = makeField(fieldWidth, fieldHeight, i, fieldComponents);
+			fieldFrame.addElement(field);
 		}
-		fieldFrame.addElements(fieldBars);
 	}
 	
-	/**
-	 * Make a bullet for the list of components.
-	 * 
-	 * @param bulletSize The size of the bullet.
-	 * @param fieldBar What the bullet will be placed in.
-	 * @return A GUIElement with width and height equal to bulletSize.
-	 */
-	protected GUIElement makeBullet(int bulletSize, GUISubcontext fieldBar) {
-		return new TextDisplay(0, 0, bulletSize, bulletSize, 0,
-				"o", font, textColor, TextDisplay.WIDTH_STATIC_HEIGHT_STATIC, TextDisplay.TEXT_ALIGN_CENTER);
+	protected int calcFieldWidth() {
+		return fieldFrame.getWidth() - fieldFrame.getScrollBarWidth() - fieldFrame.getXAlignOffset();
+	}
+	
+	protected GUIElement makeField(int fieldWidth, int fieldHeight, int index, Component[] fieldComponents) {
+		searchFields[index] =  new SearchField(0, 0, fieldWidth, fieldHeight, 0,
+				fieldComponents[index].getFilePath(), "Type here to search.", getSearchStrings(index), font,
+				textColor, textColor, searchColor, fieldColor);
+		return searchFields[index];
 	}
 	
 	/**
@@ -225,6 +215,7 @@ public abstract class AbstractItemComponentEditor extends GUISubcontext implemen
 	 * Make the item display rethink its appearance.
 	 */
 	private void refreshItemDisplay() {
+		itemDisplay.recalcColor();
 		itemDisplay.recalcTitle();
 		itemDisplay.recalcStrings();
 	}

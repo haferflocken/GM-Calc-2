@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.gmcalc2.item.Component;
 import org.haferlib.slick.gui.GUIElement;
 import org.haferlib.slick.gui.GUISubcontext;
+import org.haferlib.slick.gui.HorizontalListFrame;
 import org.haferlib.slick.gui.SearchField;
 import org.haferlib.slick.gui.TextButton;
 import org.haferlib.slick.gui.event.GUIEvent;
@@ -52,11 +53,23 @@ public class ItemPrefixEditor extends AbstractItemComponentEditor {
 	}
 	
 	@Override
-	protected GUIElement makeBullet(int bulletSize, GUISubcontext field) {
-		TextButton<GUISubcontext> bullet = new TextButton<>(field, 0, 0, bulletSize, bulletSize, 0, null, fieldColor, Input.KEY_ENTER,
-				"|X|", textColor, font, TextButton.CENTER, 0);
-		bullet.addListener(this);
-		return bullet;
+	protected int calcFieldWidth() {
+		return super.calcFieldWidth() - font.getLineHeight();
+	}
+	
+	@Override
+	protected GUIElement makeField(int fieldWidth, int fieldHeight, int index, Component[] fieldComponents) {
+		GUIElement field = super.makeField(fieldWidth, fieldHeight, index, fieldComponents);
+		HorizontalListFrame bar = new HorizontalListFrame(0, 0, field.getHeight(), 0);
+		
+		int buttonSize = font.getLineHeight();
+		TextButton<?> deleteButton = new TextButton<GUISubcontext>(bar, 0, 0, buttonSize, buttonSize, 0, null, fieldColor, Input.KEY_ENTER,
+				"[X]", textColor, font, TextButton.CENTER, 0);
+		deleteButton.addListener(this);
+		
+		bar.addElement(field);
+		bar.addElement(deleteButton);
+		return bar;
 	}
 	
 	@Override
@@ -75,7 +88,7 @@ public class ItemPrefixEditor extends AbstractItemComponentEditor {
 	}
 	
 	@Override
-	public void guiEvent(GUIEvent<?> event) {
+	public void guiEvent(GUIEvent<?> event) {		
 		// If the event has a GUISubcontext as the data, remove the subcontext from the fieldFrame
 		// and discard its corresponding search field.
 		if (event.getData() instanceof GUISubcontext) {

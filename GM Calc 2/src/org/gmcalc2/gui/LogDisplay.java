@@ -27,8 +27,12 @@ public class LogDisplay extends GUISubcontext {
 		this.titleBackgroundColor = titleBackgroundColor;
 		this.logViewBackgroundColor = logViewBackgroundColor;
 		
-		int logX = x;
-		int logY = y + titleFont.getLineHeight();
+		makeLog(scrollBarWidth);
+	}
+	
+	private void makeLog(int scrollBarWidth) {
+		int logX = x1;
+		int logY = y1 + titleFont.getLineHeight();
 		int logWidth = width;
 		int logHeight = height - titleFont.getLineHeight();
 		logView = new OutputFrame(logX, logY, logWidth, logHeight, depth, logFont, textColor, scrollBarWidth, textColor);

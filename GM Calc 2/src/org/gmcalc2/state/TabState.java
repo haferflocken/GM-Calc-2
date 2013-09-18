@@ -44,7 +44,6 @@ public class TabState extends BasicGameState implements GUIEventListener {
 	private int workbenchWidth, workbenchHeight;	// The size of the workbench.
 	private GUIElement[] workbenchViews;			// Each element is a different view of the workbench.
 	private int currentView;						// The index of the current view.
-	private int worldExplorerView;					// The index of the world explorer view.
 	private int tabContainerView;					// The index of the tab container view.
 	private ListFrame toolbar;						// The toolbar on the left side of the window.
 	
@@ -122,14 +121,13 @@ public class TabState extends BasicGameState implements GUIEventListener {
 				elementTextColor, elementHighlightColor, elementBackgroundColor, elementSelectColor, GMCalc2.HEADERFONT, GMCalc2.BODYFONT);
 		worldExplorer.addListener(this);
 		addWorkbenchView(worldExplorer, viewIndex, "resources\\worldExplorerIcon.png", toolbarButtonSize);
-		worldExplorerView = viewIndex;
 		viewIndex++;
 		
 		// Create the tab container view.
 		TabContainer tabContainer = new TabContainer(workbenchX, workbenchY, workbenchWidth, workbenchHeight, 0,
 				elementTextColor, elementHighlightColor, elementBackgroundColor, elementSelectColor);
 		addWorkbenchView(tabContainer, viewIndex, "resources\\editIcon.png", toolbarButtonSize);
-		tabContainerView = viewIndex;
+		tabContainerView = viewIndex; // Store the tab container view so we can switch to it when the world explorer is pressed.
 		viewIndex++;
 		
 		// Create the log display and place it in workbenchViews.
@@ -182,12 +180,11 @@ public class TabState extends BasicGameState implements GUIEventListener {
 			
 			// Switch to the tab container view.
 			switchWorkbench(tabContainerView);
+			TabContainer tabContainer = (TabContainer)workbenchViews[tabContainerView];
 			
 			// Open a tab.
 			if (eventData instanceof Player) {
 				Log.getDefaultLog().info("Clicked player!");
-				
-				TabContainer tabContainer = (TabContainer)workbenchViews[tabContainerView];
 				Player player = (Player)eventData;
 				
 				boolean success = tabContainer.setEnabledTabById(player.getId());
@@ -198,14 +195,17 @@ public class TabState extends BasicGameState implements GUIEventListener {
 			}
 			else if (eventData instanceof ItemBase) {
 				Log.getDefaultLog().info("Clicked item base!");
+				ItemBase itemBase = (ItemBase)eventData;
 				// TODO
 			}
 			else if (eventData instanceof Component) {
 				Log.getDefaultLog().info("Clicked component!");
+				Component component = (Component)eventData;
 				// TODO
 			}
 			else if (eventData instanceof World) {
 				Log.getDefaultLog().info("Clicked world!");
+				World world = (World)eventData;
 				// TODO
 			}
 		}

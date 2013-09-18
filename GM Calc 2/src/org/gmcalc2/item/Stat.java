@@ -86,7 +86,6 @@ public class Stat {
 		return expression;
 	}
 
-	
 	// Return a copy of this stat.
 	public Stat copy() {
 		Stat out = new Stat();

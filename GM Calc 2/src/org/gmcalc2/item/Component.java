@@ -1,4 +1,4 @@
-//A component of an item.
+// A component of an item.
 
 package org.gmcalc2.item;
 
@@ -21,7 +21,7 @@ public class Component {
 	private int rarity;
 	private Set<String> tags;
 	
-	//Constructors.
+	// Constructors.
 	public Component(String filePath, String name, StatMap statMap, int rarity, TreeSet<String> tags) {
 		this.filePath = filePath;
 		this.name = name;
@@ -37,19 +37,19 @@ public class Component {
 	public Component(String filePath, Map<String, Object> values, ExpressionBuilder expBuilder) {
 		this(filePath);
 		Object val;
-		//Get the name.
+		// Get the name.
 		val = values.get(NAME_KEY);
 		if (val instanceof String)
 			name = (String)val;
-		//Get the stats.
+		// Get the stats.
 		val = values.get(STATMAP_KEY);
 		if (val instanceof Map<?, ?>) 
 			statMap = new StatMap((Map<?, ?>)val, expBuilder);
-		//Get the rarity.
+		// Get the rarity.
 		val = values.get(RARITY_KEY);
 		if (val instanceof Integer)
 			rarity = (Integer)val;
-		//Get the tags.
+		// Get the tags.
 		val = values.get(TAGS_KEY);
 		if (val instanceof Object[]) {
 			Object[] rawTags = (Object[])val;
@@ -61,7 +61,7 @@ public class Component {
 		}
 	}
 	
-	//Accessors.
+	// Accessors.
 	public String getFilePath() {
 		return filePath;
 	}
