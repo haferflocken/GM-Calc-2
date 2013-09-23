@@ -1,6 +1,6 @@
 package org.gmcalc2.gui;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.gmcalc2.item.Component;
 import org.haferlib.slick.gui.GUIElement;
@@ -94,7 +94,7 @@ public class ItemPrefixEditor extends AbstractItemComponentEditor {
 		if (event.getData() instanceof GUISubcontext) {
 			GUISubcontext e = (GUISubcontext)event.getData();
 			fieldFrame.removeElement(e);
-			ArrayList<GUIElement> subElements = e.getElements();
+			List<GUIElement> subElements = e.getElements();
 			for (GUIElement elem : subElements) {
 				if (elem instanceof SearchField) {
 					SearchField[] oldFields = searchFields;
