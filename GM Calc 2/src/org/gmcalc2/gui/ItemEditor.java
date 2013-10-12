@@ -58,6 +58,7 @@ public class ItemEditor extends GUISubcontext implements GUIEventListener {
 		int closeButtonY = y1;
 		closeButton = new TextButton<Object>(null, closeButtonX, closeButtonY, closeButtonSize, closeButtonSize, 0,
 				fieldColor, searchColor, Input.KEY_ESCAPE, "[X]", textColor, font);
+		closeButton.addListener(this);
 		subcontext.addElement(closeButton);
 		
 		// Create the editor list.
