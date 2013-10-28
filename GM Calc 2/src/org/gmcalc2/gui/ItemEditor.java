@@ -30,6 +30,7 @@ public class ItemEditor extends GUISubcontext implements GUIEventListener {
 	private final ArrayEditor itemBaseEditor;
 	private ArrayEditor materialEditor;
 	private ListEditor prefixEditor;
+	private String oldItemBaseString;
 	private final Font font;
 	private int titleBorderY;
 	private final Color textColor, fieldColor, backgroundColor, searchColor;
@@ -93,6 +94,9 @@ public class ItemEditor extends GUISubcontext implements GUIEventListener {
 		
 		createMaterialEditor();
 		createPrefixEditor();
+		
+		// Ensure the old item base string is empty.
+		oldItemBaseString = itemBaseEditor.getFieldContents()[0];
 		
 		subcontext.addAndRemoveElements();
 	}
@@ -214,6 +218,28 @@ public class ItemEditor extends GUISubcontext implements GUIEventListener {
 		
 		// Draw the subcontext.
 		renderSubcontext(g, x1, y1, x2, y2);
+	}
+	
+	@Override
+	public void keyInputDone() {
+		super.keyInputDone();
+		
+		// Determine if the item base field has changed to a new valid item base.
+		// If it has, change the item base in the item, then refresh the
+		// material and prefix editors.
+		String newItemBaseString = itemBaseEditor.getFieldContents()[0];
+		if (!oldItemBaseString.equals(newItemBaseString)) {
+			oldItemBaseString = newItemBaseString;
+			
+			System.out.println("New string: " + newItemBaseString);
+			
+			ItemBase newItemBase = item.getWorld().getItemBase(oldItemBaseString);
+			if (newItemBase != null) {
+				item.setItemBase(newItemBase);
+				refreshMaterialEditor();
+				refreshPrefixEditor();
+			}
+		}
 	}
 
 	@Override
