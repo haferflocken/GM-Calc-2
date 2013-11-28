@@ -8,7 +8,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.StateBasedGame;
 import org.gmcalc2.state.*;
-import org.haferlib.slick.gui.GUIContext;
+import org.haferslick.gui.GUIContext;
 
 import java.util.Map;
 

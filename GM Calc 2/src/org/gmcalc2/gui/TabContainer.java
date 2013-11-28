@@ -7,8 +7,8 @@ import org.gmcalc2.GMCalc2;
 import org.gmcalc2.item.Component;
 import org.gmcalc2.item.ItemBase;
 import org.gmcalc2.item.Player;
-import org.haferlib.slick.gui.GUISubcontext;
-import org.haferlib.util.Log;
+import org.haferslick.gui.GUISubcontext;
+import org.haferutil.Log;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 

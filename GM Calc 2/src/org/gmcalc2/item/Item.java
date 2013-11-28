@@ -3,7 +3,7 @@ package org.gmcalc2.item;
 import java.util.Arrays;
 
 import org.gmcalc2.World;
-import org.haferlib.util.Log;
+import org.haferutil.Log;
 
 /**
  * An item contains an ItemBase, an array of Components representing the materials

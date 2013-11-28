@@ -3,9 +3,9 @@ package org.gmcalc2.state;
 import java.io.File;
 
 import org.gmcalc2.GMCalc2;
-import org.haferlib.slick.gui.GUIContext;
-import org.haferlib.slick.gui.TextDisplay;
-import org.haferlib.slick.gui.TextField;
+import org.haferslick.gui.GUIContext;
+import org.haferslick.gui.TextDisplay;
+import org.haferslick.gui.TextField;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;

@@ -6,8 +6,8 @@ import org.gmcalc2.item.Component;
 
 import java.util.Map;
 
-import org.haferlib.util.DataReader;
-import org.haferlib.util.expression.ExpressionBuilder;
+import org.haferutil.DataReader;
+import org.hafermath.expression.ExpressionBuilder;
 
 public class ComponentFactory extends AbstractFactoryDataReader<Component> {
 	

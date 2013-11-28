@@ -2,9 +2,9 @@ package org.gmcalc2.gui;
 
 import org.gmcalc2.item.Item;
 import org.gmcalc2.item.StatMap;
-import org.haferlib.slick.gui.CollapsibleListFrame;
-import org.haferlib.slick.gui.TextDisplay;
-import org.haferlib.util.ListBag;
+import org.haferslick.gui.CollapsibleListFrame;
+import org.haferslick.gui.TextDisplay;
+import org.haferutil.ListBag;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 

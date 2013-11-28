@@ -3,12 +3,12 @@ package org.gmcalc2.gui;
 import java.util.List;
 
 import org.gmcalc2.item.Component;
-import org.haferlib.slick.gui.GUIElement;
-import org.haferlib.slick.gui.GUISubcontext;
-import org.haferlib.slick.gui.HorizontalListFrame;
-import org.haferlib.slick.gui.SearchField;
-import org.haferlib.slick.gui.TextButton;
-import org.haferlib.slick.gui.event.GUIEvent;
+import org.haferslick.gui.GUIElement;
+import org.haferslick.gui.GUISubcontext;
+import org.haferslick.gui.HorizontalListFrame;
+import org.haferslick.gui.SearchField;
+import org.haferslick.gui.TextButton;
+import org.haferslick.gui.event.GUIEvent;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Input;

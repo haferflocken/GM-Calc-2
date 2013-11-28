@@ -5,8 +5,8 @@ package org.gmcalc2.item;
 import java.util.Map;
 
 import org.gmcalc2.World;
-import org.haferlib.util.ListBag;
-import org.haferlib.util.Log;
+import org.haferutil.ListBag;
+import org.haferutil.Log;
 
 public class Player {
 

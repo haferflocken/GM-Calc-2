@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.gmcalc2.World;
 import org.gmcalc2.item.Player;
-import org.haferlib.util.DataReader;
+import org.haferutil.DataReader;
 
 public class PlayerFactory extends AbstractFactoryDataReader<Player> {
 

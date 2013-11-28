@@ -2,9 +2,9 @@ package org.gmcalc2.item;
 
 import java.util.Arrays;
 
-import org.haferlib.util.expression.ConstantExpression;
-import org.haferlib.util.expression.Expression;
-import org.haferlib.util.expression.ExpressionBuilder;
+import org.hafermath.expression.ConstantExpression;
+import org.hafermath.expression.Expression;
+import org.hafermath.expression.ExpressionBuilder;
 
 public class Stat {
 	

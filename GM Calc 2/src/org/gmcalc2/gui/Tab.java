@@ -7,8 +7,8 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.geom.Polygon;
-import org.haferlib.slick.gui.GUIElement;
-import org.haferlib.slick.gui.GUISubcontext;
+import org.haferslick.gui.GUIElement;
+import org.haferslick.gui.GUISubcontext;
 
 public class Tab extends GUISubcontext {
 	

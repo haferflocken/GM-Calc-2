@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import org.gmcalc2.GMCalc2;
 import org.gmcalc2.factory.WorldFactory;
-import org.haferlib.slick.gui.GUIContext;
-import org.haferlib.slick.gui.ImageFrame;
-import org.haferlib.slick.gui.OutputFrame;
-import org.haferlib.util.DataReader;
-import org.haferlib.util.Log;
-import org.haferlib.util.expression.ExpressionBuilder;
+import org.haferslick.gui.GUIContext;
+import org.haferslick.gui.ImageFrame;
+import org.haferslick.gui.OutputFrame;
+import org.haferutil.DataReader;
+import org.haferutil.Log;
+import org.hafermath.expression.ExpressionBuilder;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;

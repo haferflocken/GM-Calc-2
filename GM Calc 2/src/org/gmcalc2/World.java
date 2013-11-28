@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 import org.newdawn.slick.Color;
 import org.gmcalc2.item.*;
-import org.haferlib.util.expression.ExpressionBuilder;
+import org.hafermath.expression.ExpressionBuilder;
 
 public class World {
 	

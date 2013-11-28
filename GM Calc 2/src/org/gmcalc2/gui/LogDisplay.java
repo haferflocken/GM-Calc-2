@@ -1,8 +1,8 @@
 package org.gmcalc2.gui;
 
-import org.haferlib.slick.gui.GUISubcontext;
-import org.haferlib.slick.gui.OutputFrame;
-import org.haferlib.util.Log;
+import org.haferslick.gui.GUISubcontext;
+import org.haferslick.gui.OutputFrame;
+import org.haferutil.Log;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;

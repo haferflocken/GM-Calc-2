@@ -8,10 +8,10 @@ import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.Map;
 
-import org.haferlib.util.expression.ConstantExpression;
-import org.haferlib.util.expression.Expression;
-import org.haferlib.util.expression.ExpressionBuilder;
-import org.haferlib.util.expression.VariableExpression;
+import org.hafermath.expression.ConstantExpression;
+import org.hafermath.expression.Expression;
+import org.hafermath.expression.ExpressionBuilder;
+import org.hafermath.expression.VariableExpression;
 
 public class StatMap {
 	

@@ -11,9 +11,9 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import org.gmcalc2.World;
-import org.haferlib.util.DataReader;
-import org.haferlib.util.Log;
-import org.haferlib.util.expression.ExpressionBuilder;
+import org.haferutil.DataReader;
+import org.haferutil.Log;
+import org.hafermath.expression.ExpressionBuilder;
 
 public class WorldFactory implements Factory<World> {
 	
