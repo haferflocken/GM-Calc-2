@@ -1,6 +1,8 @@
 GM-Calc-2
 
-A tool for managing players' inventories in tabletop RPGs. Development is has been stopped as GMCalc3 is being developed to replace this.
+A tool for managing players' inventories in tabletop RPGs. Development is has been stopped as GMCalc3 is being developed to replace this. Feel free to use code from this project with respect to the Apache License 2.0.
+
+This project depends on Haferlib, which is hosted on my GitHub as well.
 
 ========================
 
